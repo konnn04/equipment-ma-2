@@ -1,0 +1,15 @@
+package com.hatecode.services;
+
+import com.hatecode.pojo.User;
+import java.sql.SQLException;
+import java.util.List;
+
+public interface UserService {
+    List<User> getUsers() throws SQLException;
+    User getUserById(int id) throws SQLException;
+    User getUserByUsername(String username) throws SQLException;
+    boolean addUser(User user) throws SQLException;
+    boolean updateUser(User user) throws SQLException;
+    boolean deleteUser(int id) throws SQLException;
+    boolean authenticateUser(String username, String password) throws SQLException;
+}
