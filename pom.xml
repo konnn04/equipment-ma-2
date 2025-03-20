@@ -69,7 +69,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.hatecode.equipmentma2/com.hatecode.equipmentma2.HelloApplication</mainClass>
+                            <mainClass>com.hatecode.equipmentma2/com.hatecode.equipmentma2.App</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
