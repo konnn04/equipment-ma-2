@@ -17,4 +17,7 @@ public interface EquipmentServices {
     List<Equipment> getEquipments() throws SQLException;
     void getEquipmentsImage() throws SQLException;
     List<EquipmentMaintainance> getEquipmentMaintainances(int id) throws SQLException;
+    boolean addEquipment(Equipment e) throws SQLException;
+    boolean updateEquipment(Equipment e) throws SQLException;
+    boolean deleteEquipment(int id) throws SQLException;
 }
