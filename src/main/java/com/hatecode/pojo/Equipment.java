@@ -14,19 +14,23 @@ public class Equipment {
     private int id;
     private String code;
     private String name;
-    private Date import_date;
+    private Date importDate;
     private int status;
     private int category;
 
     public Equipment() {
     }
 
-    public Equipment(int id, String code, String name, Date import_date) {
+    public Equipment(int id, String code, String name, Date importDate, int status, int category) {
         this.id = id;
         this.code = code;
         this.name = name;
-        this.import_date = import_date;
+        this.importDate = importDate;
+        this.status = status;
+        this.category = category;
     }
+
+    
     
 
     /**
@@ -103,15 +107,15 @@ public class Equipment {
     /**
      * @return the import_date
      */
-    public Date getImport_date() {
-        return import_date;
+    public Date getImportDate() {
+        return importDate;
     }
 
     /**
      * @param import_date the import_date to set
      */
     public void setImport_date(Date import_date) {
-        this.import_date = import_date;
+        this.importDate = import_date;
     }
     
     
