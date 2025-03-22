@@ -6,6 +6,10 @@ module com.hatecode.equipmentma2 {
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
 
+    requires java.sql;
+    requires junit;
+
+
     opens com.hatecode.equipmentma2 to javafx.fxml;
     exports com.hatecode.equipmentma2;
 
