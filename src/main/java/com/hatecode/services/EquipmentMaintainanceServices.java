@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface EquipmentMaintainanceServices {
     List<EquipmentMaintainance> getEquipmentMaintainance() throws SQLException;
-    List<Equipment> getEquipmentByEMId(int id) throws SQLException;
+    Equipment getEquipmentByEMId(int id) throws SQLException;
     boolean addEquipmentMaintainance(EquipmentMaintainance em) throws SQLException;
     boolean updateEquipmentMaintainance(EquipmentMaintainance em) throws SQLException;
     boolean deleteEquipmentMaintainance(int id) throws SQLException;

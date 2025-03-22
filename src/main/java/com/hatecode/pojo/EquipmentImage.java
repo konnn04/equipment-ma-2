@@ -9,9 +9,20 @@ package com.hatecode.pojo;
  * @author ADMIN
  */
 public class EquipmentImage {
+
     private int id;
-    private int equipment_id;
-    private int image_id;
+    private int equipmentId;
+    private int imageId;
+
+    public EquipmentImage() {
+    }
+
+    public EquipmentImage(int id, int equipmentId, int imageId) {
+        this.id = id;
+        this.equipmentId = equipmentId;
+        this.imageId = imageId;
+    }
+    
     
     /**
      * @return the id
@@ -28,31 +39,32 @@ public class EquipmentImage {
     }
 
     /**
-     * @return the equipment_id
+     * @return the equipmentId
      */
-    public int getEquipment_id() {
-        return equipment_id;
+    public int getEquipmentId() {
+        return equipmentId;
     }
 
     /**
-     * @param equipment_id the equipment_id to set
+     * @param equipmentId the equipmentId to set
      */
-    public void setEquipment_id(int equipment_id) {
-        this.equipment_id = equipment_id;
+    public void setEquipmentId(int equipmentId) {
+        this.equipmentId = equipmentId;
     }
 
     /**
-     * @return the image_id
+     * @return the imageId
      */
-    public int getImage_id() {
-        return image_id;
+    public int getImageId() {
+        return imageId;
     }
 
     /**
-     * @param image_id the image_id to set
+     * @param imageId the imageId to set
      */
-    public void setImage_id(int image_id) {
-        this.image_id = image_id;
+    public void setImageId(int imageId) {
+        this.imageId = imageId;
     }
+    
     
 }

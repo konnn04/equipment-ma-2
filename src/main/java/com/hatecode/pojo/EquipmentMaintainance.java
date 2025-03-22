@@ -10,11 +10,25 @@ package com.hatecode.pojo;
  */
 public class EquipmentMaintainance {
     private int id;
-    private int equipment_id;
+    private int equipmentId;
     private String description;
-    private int maintainance_type_id;
+    private int maintainanceTypeId;
     private float price;
-    private int maintainance_id;
+    private int maintainanceId;
+
+    public EquipmentMaintainance() {
+    }
+
+    public EquipmentMaintainance(int id, int equipmentId, String description, int maintainanceTypeId, float price, int maintainanceId) {
+        this.id = id;
+        this.equipmentId = equipmentId;
+        this.description = description;
+        this.maintainanceTypeId = maintainanceTypeId;
+        this.price = price;
+        this.maintainanceId = maintainanceId;
+    }
+    
+    
     /**
      * @return the id
      */
@@ -30,17 +44,17 @@ public class EquipmentMaintainance {
     }
 
     /**
-     * @return the equipment_id
+     * @return the equipmentId
      */
-    public int getEquipment_id() {
-        return equipment_id;
+    public int getEquipmentId() {
+        return equipmentId;
     }
 
     /**
-     * @param equipment_id the equipment_id to set
+     * @param equipmentId the equipmentId to set
      */
-    public void setEquipment_id(int equipment_id) {
-        this.equipment_id = equipment_id;
+    public void setEquipmentId(int equipmentId) {
+        this.equipmentId = equipmentId;
     }
 
     /**
@@ -58,17 +72,17 @@ public class EquipmentMaintainance {
     }
 
     /**
-     * @return the maintainance_type_id
+     * @return the maintainanceTypeId
      */
-    public int getMaintainance_type_id() {
-        return maintainance_type_id;
+    public int getMaintainanceTypeId() {
+        return maintainanceTypeId;
     }
 
     /**
-     * @param maintainance_type_id the maintainance_type_id to set
+     * @param maintainanceTypeId the maintainanceTypeId to set
      */
-    public void setMaintainance_type_id(int maintainance_type_id) {
-        this.maintainance_type_id = maintainance_type_id;
+    public void setMaintainanceTypeId(int maintainanceTypeId) {
+        this.maintainanceTypeId = maintainanceTypeId;
     }
 
     /**
@@ -86,17 +100,17 @@ public class EquipmentMaintainance {
     }
 
     /**
-     * @return the maintainance_id
+     * @return the maintainanceId
      */
-    public int getMaintainance_id() {
-        return maintainance_id;
+    public int getMaintainanceId() {
+        return maintainanceId;
     }
 
     /**
-     * @param maintainance_id the maintainance_id to set
+     * @param maintainanceId the maintainanceId to set
      */
-    public void setMaintainance_id(int maintainance_id) {
-        this.maintainance_id = maintainance_id;
+    public void setMaintainanceId(int maintainanceId) {
+        this.maintainanceId = maintainanceId;
     }
-    
+
 }

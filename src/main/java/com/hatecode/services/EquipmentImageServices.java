@@ -13,9 +13,9 @@ import java.util.List;
  * @author ADMIN
  */
 public interface EquipmentImageServices {
-    List<EquipmentImage> getEquipmentImage() throws SQLException;
+    List<EquipmentImage> getEquipmentImage(int id) throws SQLException;
     boolean addEquipmentImage(EquipmentImage cate) throws SQLException;
     boolean updateEquipmentImage(EquipmentImage cate) throws SQLException;
-    boolean deleteEquipmentImage(EquipmentImage id) throws SQLException;
+    boolean deleteEquipmentImage(int id) throws SQLException;
     
 }
