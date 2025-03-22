@@ -75,6 +75,35 @@ INSERT INTO `equipment` VALUES (1,'EQ001','Laptop Dell',1,1,'2022-01-01 00:00:00
 UNLOCK TABLES;
 
 --
+-- Table structure for table `equipment_image`
+--
+
+DROP TABLE IF EXISTS `equipment_image`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `equipment_image` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `equipment_id` int NOT NULL,
+  `image_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `Equipment_Image_fk1` (`equipment_id`),
+  KEY `Equipment_Image_fk2` (`image_id`),
+  CONSTRAINT `Equipment_Image_fk1` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`),
+  CONSTRAINT `Equipment_Image_fk2` FOREIGN KEY (`image_id`) REFERENCES `image` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `equipment_image`
+--
+
+LOCK TABLES `equipment_image` WRITE;
+/*!40000 ALTER TABLE `equipment_image` DISABLE KEYS */;
+/*!40000 ALTER TABLE `equipment_image` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `equipment_maintenance`
 --
 
@@ -107,6 +136,33 @@ LOCK TABLES `equipment_maintenance` WRITE;
 /*!40000 ALTER TABLE `equipment_maintenance` DISABLE KEYS */;
 INSERT INTO `equipment_maintenance` VALUES (1,1,'Vệ sinh laptop',1,50,1),(2,3,'Sửa chữa máy in',2,100,1),(3,5,'Kiểm tra ghế văn phòng',4,30,2),(4,7,'Bảo dưỡng router',3,80,2),(5,9,'Vệ sinh màn hình',1,50,3),(6,10,'Sửa chữa bàn phím',2,100,3);
 /*!40000 ALTER TABLE `equipment_maintenance` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `image`
+--
+
+DROP TABLE IF EXISTS `image`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `image` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `filename` varchar(100) NOT NULL,
+  `create_date` datetime NOT NULL,
+  `path` text NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  UNIQUE KEY `filename` (`filename`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `image`
+--
+
+LOCK TABLES `image` WRITE;
+/*!40000 ALTER TABLE `image` DISABLE KEYS */;
+/*!40000 ALTER TABLE `image` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -295,4 +351,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-20 23:33:58
+-- Dump completed on 2025-03-22 13:30:06
