@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.hatecode.equipmentma2.services;
+package com.hatecode.services;
 
-import com.hatecode.equipmentma2.pojo.Category;
-import com.hatecode.equipmentma2.pojo.Equipment;
-import com.hatecode.equipmentma2.pojo.JdbcUtils;
+import com.hatecode.pojo.Category;
+import com.hatecode.pojo.Equipment;
+import com.hatecode.pojo.JdbcUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
