@@ -20,8 +20,8 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("login-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Equipment Management System");
 
         stage.setScene(scene);
@@ -52,6 +52,8 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         primaryStage.setScene(scene);
+
+        primaryStage.setMaximized(true);
     }
 
     public static void main(String[] args) {
