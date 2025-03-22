@@ -12,4 +12,6 @@ public interface UserService {
     boolean updateUser(User user) throws SQLException;
     boolean deleteUser(int id) throws SQLException;
     boolean authenticateUser(String username, String password) throws SQLException;
+//    Features
+//    Get
 }
