@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS `User` (
 	`phone` varchar(20) NOT NULL UNIQUE,
 	`role` int NOT NULL,
 	`is_active` boolean NOT NULL DEFAULT '1',
+    `avatar` int,
 	PRIMARY KEY (`id`)
 );
 
@@ -108,6 +109,9 @@ ALTER TABLE `User_Maintenance` ADD CONSTRAINT `User_Maintenance_fk1` FOREIGN KEY
 
 ALTER TABLE `User_Maintenance` ADD CONSTRAINT `User_Maintenance_fk2` FOREIGN KEY (`maintenance_id`) REFERENCES `Maintenance`(`id`);
 
-ALTER TABLE `Equipment_Image` ADD CONSTRAINT `Equipment_Image_fk1` FOREIGN KEY (`equipment_id`) REFERENCES `Equipment`(`id`);
+ALTER TABLE `Equipment_Image` ADD CONSTRAINT `Equipmenst_Image_fk1` FOREIGN KEY (`equipment_id`) REFERENCES `Equipment`(`id`);
 
 ALTER TABLE `Equipment_Image` ADD CONSTRAINT `Equipment_Image_fk2` FOREIGN KEY (`image_id`) REFERENCES `Image`(`id`);
+
+ALTER TABLE `User` ADD CONSTRAINT `User_fk10` FOREIGN KEY (`avatar`) REFERENCES `Image`(`id`);
+
