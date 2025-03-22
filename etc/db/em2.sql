@@ -78,13 +78,26 @@ CREATE TABLE IF NOT EXISTS `Maintenance_Type` (
 	PRIMARY KEY (`id`)
 );
 
+CREATE TABLE IF NOT EXISTS `Image` (
+	`id` int AUTO_INCREMENT NOT NULL UNIQUE,
+	`filename` varchar(100) NOT NULL UNIQUE,
+	`create_date` datetime NOT NULL,
+	`path` text NOT NULL,
+	PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `Equipment_Image` (
+	`id` int AUTO_INCREMENT NOT NULL UNIQUE,
+    `equipment_id` int NOT NULL,
+    `image_id` int NOT NULL,
+    PRIMARY KEY (`id`)
+);   
+
 ALTER TABLE `Equipment` ADD CONSTRAINT `Equipment_fk3` FOREIGN KEY (`status`) REFERENCES `Status`(`id`);
 
 ALTER TABLE `Equipment` ADD CONSTRAINT `Equipment_fk4` FOREIGN KEY (`category`) REFERENCES `Category`(`id`);
 
-
 ALTER TABLE `User` ADD CONSTRAINT `User_fk7` FOREIGN KEY (`role`) REFERENCES `Role`(`id`);
-
 
 ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk1` FOREIGN KEY (`equipment_id`) REFERENCES `Equipment`(`id`);
 
@@ -95,3 +108,6 @@ ALTER TABLE `User_Maintenance` ADD CONSTRAINT `User_Maintenance_fk1` FOREIGN KEY
 
 ALTER TABLE `User_Maintenance` ADD CONSTRAINT `User_Maintenance_fk2` FOREIGN KEY (`maintenance_id`) REFERENCES `Maintenance`(`id`);
 
+ALTER TABLE `Equipment_Image` ADD CONSTRAINT `Equipment_Image_fk1` FOREIGN KEY (`equipment_id`) REFERENCES `Equipment`(`id`);
+
+ALTER TABLE `Equipment_Image` ADD CONSTRAINT `Equipment_Image_fk2` FOREIGN KEY (`image_id`) REFERENCES `Image`(`id`);
