@@ -28,7 +28,8 @@ public class UserServiceImpl implements UserService {
                         rs.getString("email"),
                         rs.getString("phone"),
                         rs.getInt("role"),
-                        rs.getBoolean("is_active")
+                        rs.getBoolean("is_active"),
+                        rs.getString("avatar")
                 );
                 users.add(user);
             }
@@ -65,7 +66,8 @@ public class UserServiceImpl implements UserService {
                     rs.getString("email"),
                     rs.getString("phone"),
                     rs.getInt("role"),
-                    rs.getBoolean("is_active")
+                    rs.getBoolean("is_active"),
+                    rs.getString("avatar")
             );
         }
         return user;
