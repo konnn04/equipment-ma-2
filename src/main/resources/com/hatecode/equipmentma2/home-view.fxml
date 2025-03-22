@@ -124,7 +124,7 @@
                                         <Font name="SF Pro Text Semibold" size="16.0" />
                                     </font>
                                 </Label>
-                                <GridPane hgap="15.0" prefHeight="376.0" prefWidth="858.0" vgap="15.0">
+                                <GridPane hgap="15.0" prefHeight="420.0" prefWidth="938.0" vgap="15.0" VBox.vgrow="ALWAYS">
                                     <columnConstraints>
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="146.6666259765625" minWidth="120.0" prefWidth="146.6666259765625" />
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="261.0" minWidth="10.0" prefWidth="258.3333740234375" />
@@ -182,12 +182,13 @@
                                     </Label>
                                     <TextField fx:id="equipmentId1" disable="true" prefHeight="42.0" prefWidth="225.0" styleClass="text-field-disabled" GridPane.columnIndex="3" />
                                 </GridPane>
-                                <Separator prefWidth="200.0">
+                        <Region prefHeight="18.0" prefWidth="938.0" />
+                                <Separator prefHeight="0.0" prefWidth="938.0">
                                     <VBox.margin>
                                         <Insets bottom="20.0" top="20.0" />
                                     </VBox.margin>
                                 </Separator>
-                                <HBox alignment="CENTER_RIGHT" prefHeight="60.0" prefWidth="200.0" spacing="15.0">
+                                <HBox alignment="CENTER_RIGHT" prefHeight="5.0" prefWidth="938.0" spacing="15.0">
                                     <Button fx:id="saveButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="primary-button" text="Save" />
                                     <Button fx:id="reportIssueButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="warning-button" text="Report Issue" />
                            <Button fx:id="saveButton1" mnemonicParsing="false" prefHeight="40.0" prefWidth="180.0" styleClass="primary-button" text="Add To New Plan" />
@@ -204,7 +205,7 @@
                             <center>
                                 <VBox prefHeight="340.0" prefWidth="1170.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" BorderPane.alignment="CENTER">
                                     <padding>
-                                        <Insets bottom="20.0" left="25.0" right="25.0" top="20.0" />
+                                        <Insets bottom="25.0" left="25.0" right="25.0" top="20.0" />
                                     </padding>
                                     <children>
                                         <Label styleClass="" text="Schedule Maintenance">
@@ -217,7 +218,7 @@
                                         </Label>
                               <HBox prefHeight="503.0" prefWidth="888.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                              <GridPane hgap="20.0" prefHeight="486.0" prefWidth="539.0" vgap="15.0">
+                                              <GridPane hgap="20.0" prefHeight="360.0" prefWidth="493.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                   <columnConstraints>
                                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.8333740234375" />
                                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="121.3333740234375" />
@@ -226,24 +227,18 @@
                                                   </columnConstraints>
                                                   <rowConstraints>
                                           <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                                                      <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                                                      <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
-                                                      <RowConstraints maxHeight="105.33331298828125" minHeight="10.0" prefHeight="105.33331298828125" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="75.66668701171875" minHeight="10.0" prefHeight="45.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="137.0" minHeight="10.0" prefHeight="75.66665649414062" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="121.33334350585938" minHeight="10.0" prefHeight="61.499969482421875" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="165.50003051757812" minHeight="10.0" prefHeight="165.50003051757812" vgrow="SOMETIMES" />
                                                   </rowConstraints>
                                                   <children>
-                                                      <Label styleClass="" text="Equipment:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                                      <Label styleClass="" text="Technician:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="1">
                                                           <font>
                                                               <Font name="SF Pro Text Semibold" size="14.0" />
                                                           </font>
                                                       </Label>
-                                                      <ComboBox fx:id="maintenanceEquipmentComboBox11" prefWidth="250.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                      <Label styleClass="" text="Technician:" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1">
-                                                          <font>
-                                                              <Font name="SF Pro Text Semibold" size="14.0" />
-                                                          </font>
-                                                      </Label>
-                                                      <ComboBox fx:id="technicianComboBox11" prefHeight="31.0" prefWidth="384.0" styleClass="combo-box" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                                                      <ComboBox fx:id="technicianComboBox11" prefHeight="31.0" prefWidth="437.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                                                       <Label styleClass="" text="Date:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                                                           <font>
                                                               <Font name="SF Pro Text Semibold" size="14.0" />
@@ -260,7 +255,7 @@
                                                               <Font name="SF Pro Text Semibold" size="14.0" />
                                                           </font>
                                                       </Label>
-                                                      <TextArea fx:id="maintenanceDescriptionTextArea11" prefHeight="79.0" prefWidth="738.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4" />
+                                                      <TextArea fx:id="maintenanceDescriptionTextArea11" prefHeight="74.0" prefWidth="395.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4" />
                                           <Label styleClass="" text="ID:" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
                                              <font>
                                                 <Font name="SF Pro Text Semibold" size="14.0" />
@@ -278,25 +273,34 @@
                                           <ComboBox fx:id="maintenanceTimeComboBox111" prefHeight="31.0" prefWidth="424.0" styleClass="combo-box" GridPane.columnIndex="3" GridPane.rowIndex="3" />
                                                   </children>
                                               </GridPane>
-                                    <Region prefHeight="487.0" prefWidth="57.0" HBox.hgrow="ALWAYS" />
-                                    <VBox prefHeight="487.0" prefWidth="368.0">
+                                    <Region prefHeight="490.0" prefWidth="39.0" />
+                                    <VBox prefHeight="486.0" prefWidth="450.0">
                                        <children>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                                          <HBox alignment="CENTER_LEFT" prefHeight="52.0" prefWidth="441.0">
                                              <children>
-                                                <TextField fx:id="searchField2" prefHeight="42.0" prefWidth="433.0" promptText="Search equipment..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" />
+                                                <TextField fx:id="searchField2" prefHeight="42.0" prefWidth="433.0" promptText="Search equipment..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field">
+                                                   <HBox.margin>
+                                                      <Insets bottom="5.0" />
+                                                   </HBox.margin>
+                                                </TextField>
                                              </children>
                                           </HBox>
                                           <TableView prefHeight="482.0" prefWidth="245.0">
                                              <columns>
                                                 <TableColumn prefWidth="90.8333740234375" text="E.Code" />
                                                 <TableColumn prefWidth="154.5" text="Name" />
-                                                <TableColumn prefWidth="94.5" text="Quanity" />
+                                                <TableColumn prefWidth="174.5" text="Quanity" />
                                              </columns>
                                           </TableView>
                                        </children>
                                     </VBox>
                                  </children>
                               </HBox>
+                              <Separator prefWidth="200.0">
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </Separator>
                                         <HBox alignment="CENTER_RIGHT" prefHeight="60.0" prefWidth="200.0" spacing="15.0">
                                             <VBox.margin>
                                                 <Insets top="10.0" />
@@ -307,6 +311,9 @@
                                             </children>
                                         </HBox>
                                     </children>
+                           <BorderPane.margin>
+                              <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                           </BorderPane.margin>
                                 </VBox>
                             </center>
                             <left>
@@ -357,7 +364,7 @@
                   <center>
                      <VBox prefHeight="340.0" prefWidth="1170.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" BorderPane.alignment="CENTER">
                         <padding>
-                           <Insets bottom="20.0" left="25.0" right="25.0" top="20.0" />
+                           <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                         </padding>
                         <children>
                            <Label styleClass="" text="Record New Repair">
@@ -370,7 +377,7 @@
                            </Label>
                            <HBox prefHeight="503.0" prefWidth="888.0" VBox.vgrow="ALWAYS">
                               <children>
-                                 <GridPane hgap="20.0" prefHeight="486.0" prefWidth="539.0" vgap="15.0">
+                                 <GridPane hgap="20.0" prefHeight="486.0" prefWidth="500.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                     <columnConstraints>
                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.8333740234375" />
                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="121.3333740234375" />
@@ -438,17 +445,22 @@
                                        <ComboBox fx:id="maintenanceTimeComboBox11111" prefHeight="31.0" prefWidth="424.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                     </children>
                                  </GridPane>
-                                 <Region prefHeight="487.0" prefWidth="57.0" HBox.hgrow="ALWAYS" />
-                                 <TableView prefHeight="482.0" prefWidth="364.0">
+                                 <Region prefHeight="487.0" prefWidth="57.0" />
+                                 <TableView prefHeight="480.0" prefWidth="450.0">
                                     <columns>
                                        <TableColumn prefWidth="90.8333740234375" text="E.Code" />
                                        <TableColumn prefWidth="154.5" text="Name" />
-                                       <TableColumn prefWidth="118.5" text="Quanity" />
+                                       <TableColumn prefWidth="180.5" text="Quanity" />
                                     </columns>
                                  </TableView>
                               </children>
                            </HBox>
-                           <HBox alignment="CENTER_RIGHT" prefHeight="60.0" prefWidth="200.0" spacing="15.0">
+                           <Separator prefWidth="200.0">
+                              <VBox.margin>
+                                 <Insets top="10.0" />
+                              </VBox.margin>
+                           </Separator>
+                           <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="938.0" spacing="15.0">
                               <VBox.margin>
                                  <Insets top="10.0" />
                               </VBox.margin>
@@ -457,6 +469,9 @@
                               </children>
                            </HBox>
                         </children>
+                        <BorderPane.margin>
+                           <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                        </BorderPane.margin>
                      </VBox>
                   </center>
                   <left>
@@ -601,7 +616,7 @@
                         <center>
                            <VBox prefHeight="340.0" prefWidth="1170.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" BorderPane.alignment="CENTER">
                               <padding>
-                                 <Insets bottom="20.0" left="25.0" right="25.0" top="20.0" />
+                                 <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                               </padding>
                               <children>
                                  <Label styleClass="" text="Record New Repair">
@@ -614,7 +629,7 @@
                                  </Label>
                                  <HBox prefHeight="503.0" prefWidth="888.0" VBox.vgrow="ALWAYS">
                                     <children>
-                                       <GridPane hgap="20.0" prefHeight="486.0" prefWidth="539.0" vgap="15.0">
+                                       <GridPane hgap="20.0" prefHeight="486.0" prefWidth="500.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                           <columnConstraints>
                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.8333740234375" />
                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="121.3333740234375" />
@@ -682,17 +697,25 @@
                                              <ComboBox fx:id="maintenanceTimeComboBox111111" prefHeight="31.0" prefWidth="424.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                           </children>
                                        </GridPane>
-                                       <Region prefHeight="487.0" prefWidth="57.0" HBox.hgrow="ALWAYS" />
-                                       <TableView prefHeight="482.0" prefWidth="364.0">
+                                       <Region prefHeight="487.0" prefWidth="57.0" />
+                                       <TableView prefHeight="548.0" prefWidth="450.0">
                                           <columns>
                                              <TableColumn prefWidth="90.8333740234375" text="E.Code" />
                                              <TableColumn prefWidth="154.5" text="Name" />
-                                             <TableColumn prefWidth="118.5" text="Quanity" />
+                                             <TableColumn prefWidth="187.8333740234375" text="Quanity" />
                                           </columns>
                                        </TableView>
                                     </children>
                                  </HBox>
+                                 <Separator prefWidth="200.0">
+                                    <VBox.margin>
+                                       <Insets top="10.0" />
+                                    </VBox.margin>
+                                 </Separator>
                               </children>
+                              <BorderPane.margin>
+                                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                              </BorderPane.margin>
                            </VBox>
                         </center>
                      </BorderPane>
