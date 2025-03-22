@@ -1,3 +1,5 @@
+package com.hatecode.services.impl;
+
 
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintainance;
