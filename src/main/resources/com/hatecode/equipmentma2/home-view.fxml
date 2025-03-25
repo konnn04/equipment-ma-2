@@ -43,14 +43,14 @@
                 <Region prefHeight="64.0" prefWidth="881.0" HBox.hgrow="ALWAYS" />
                 <HBox alignment="CENTER_RIGHT" prefHeight="44.0" prefWidth="457.0">
                     <children>
-                  <ImageView fitHeight="27.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
+                  <Button mnemonicParsing="false" text="Notis">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
                      <HBox.margin>
-                        <Insets right="30.0" />
+                        <Insets right="50.0" />
                      </HBox.margin>
-                     <image>
-                        <Image url="@../../../../../../../Downloads/notification.png" />
-                     </image>
-                  </ImageView>
+                  </Button>
                         <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0">
                             <children>
                                 <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="116.0" styleClass="" text="User name">
