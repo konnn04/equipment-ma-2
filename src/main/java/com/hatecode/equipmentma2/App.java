@@ -21,11 +21,10 @@ public class App extends Application {
         primaryStage = stage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("login-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Equipment Management System");
 
         stage.setScene(scene);
-        stage.setMaximized(true);
         stage.show();
 
         stage.setOnCloseRequest(event -> {
@@ -52,6 +51,8 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         primaryStage.setScene(scene);
+
+        primaryStage.setMaximized(true);
     }
 
     public static void main(String[] args) {
