@@ -28,7 +28,8 @@ public class UserServiceImpl implements UserService {
                         rs.getString("email"),
                         rs.getString("phone"),
                         rs.getInt("role"),
-                        rs.getBoolean("is_active")
+                        rs.getBoolean("is_active"),
+                        rs.getString("avatar")
                 );
                 users.add(user);
             }
@@ -46,23 +47,29 @@ public class UserServiceImpl implements UserService {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                user = new User(
-                        rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("email"),
-                        rs.getString("phone"),
-                        rs.getInt("role"),
-                        rs.getBoolean("is_active")
-                );
-            }
+            user = getUser(user, pstmt);
         }
 
+        return user;
+    }
+
+    private User getUser(User user, PreparedStatement pstmt) throws SQLException {
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            user = new User(
+                    rs.getInt("id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getString("username"),
+                    rs.getString("password"),
+                    rs.getString("email"),
+                    rs.getString("phone"),
+                    rs.getInt("role"),
+                    rs.getBoolean("is_active"),
+                    rs.getString("avatar")
+            );
+        }
         return user;
     }
 
@@ -75,21 +82,7 @@ public class UserServiceImpl implements UserService {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, username);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                user = new User(
-                        rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("email"),
-                        rs.getString("phone"),
-                        rs.getInt("role"),
-                        rs.getBoolean("is_active")
-                );
-            }
+            user = getUser(user, pstmt);
         }
 
         return user;
