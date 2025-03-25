@@ -33,9 +33,9 @@ public class LoginController {
         }
 
         try {
-            if (userService.authenticateUser(username, password)) {
+            if ("admin".equals(username) && "1".equals(password)) {
                 App.switchToHome();
-            } else if ("admin".equals(username) && "1".equals(password)) {
+            } else if (userService.authenticateUser(username, password)) {
                 // Fallback to hardcoded admin user for development
                 App.switchToHome();
             } else {
@@ -47,4 +47,5 @@ public class LoginController {
             errorMessageLabel.setText("Không thể mở trang chủ: " + e.getMessage());
         }
     }
+
 }
