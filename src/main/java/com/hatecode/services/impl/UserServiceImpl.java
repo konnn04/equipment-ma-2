@@ -143,6 +143,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    // https://res.cloudinary.com/dg66aou8q/image/upload/v1743086605/dysaruyl1ye7xejpakbp.png
     @Override
     public boolean authenticateUser(String username, String password) throws SQLException {
         String sql = "SELECT * FROM User WHERE username = ? AND password = ? AND is_active = 1";
