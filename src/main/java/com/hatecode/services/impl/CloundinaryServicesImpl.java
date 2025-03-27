@@ -23,9 +23,9 @@ import javafx.stage.Stage;
  */
 public class CloundinaryServicesImpl implements CloundinaryServices {
 
-    private static final String CLOUD_NAME = "dg66aou8q";
-    private static final String API_KEY = "531349977128123";
-    private static final String API_SECRET = "hzmzBu_hLqWFLjWbn3n2JNa2yHA";
+    private static final String CLOUD_NAME = "";
+    private static final String API_KEY = "";
+    private static final String API_SECRET = "";
 
     private final Cloudinary cloudinary;
 
