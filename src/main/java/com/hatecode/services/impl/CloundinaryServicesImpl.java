@@ -15,9 +15,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
 /**
  * @author ADMIN
  */
@@ -47,7 +44,8 @@ public class CloundinaryServicesImpl implements CloundinaryServices {
     @Override
     public String uploadImage(File imageFile) throws SQLException {
         try {
-            Map<?, ?> uploadResult = cloudinary.uploader().upload(imageFile, ObjectUtils.emptyMap());
+            Map<?, ?> uploadResult;
+            uploadResult = cloudinary.uploader().upload(imageFile, ObjectUtils.emptyMap());
             return uploadResult.get("secure_url").toString();
         } catch (IOException ex) {
             Logger.getLogger(CloundinaryServicesImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -61,10 +59,10 @@ public class CloundinaryServicesImpl implements CloundinaryServices {
             String extractID = this.extractPublicIdFromUrl(publicID);
             Map<?, ?> result = cloudinary.uploader().destroy(extractID, ObjectUtils.emptyMap());
             return "ok".equals(result.get("result"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+        } catch (IOException ex) {
+            Logger.getLogger(CloundinaryServicesImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return false;
     }
 
     // https://res.cloudinary.com/dg66aou8q/image/upload/v1743086605/dysaruyl1ye7xejpakbp.png

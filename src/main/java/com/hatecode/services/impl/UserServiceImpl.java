@@ -1,15 +1,21 @@
 package com.hatecode.services.impl;
 
+//import com.hatecode.pojo.Image;
+import javafx.scene.image.Image;
 import com.hatecode.pojo.JdbcUtils;
 import com.hatecode.pojo.User;
 import com.hatecode.services.UserService;
+import java.io.File;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
-
+    private final CloundinaryServicesImpl cloudiServices = new CloundinaryServicesImpl();
+    
     @Override
     public List<User> getUsers() throws SQLException {
         List<User> users = new ArrayList<>();
@@ -158,4 +164,37 @@ public class UserServiceImpl implements UserService {
             return rs.next();
         }
     }
+
+    @Override
+    public String getUserImage(User user) {
+        try {
+            String imgUrl = cloudiServices.getImageUrl(user.getAvatar());
+            return imgUrl;
+        } catch (SQLException ex) {
+            Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    @Override
+    public String uploadUserImage(File imageFile) {
+        try {
+            return cloudiServices.uploadImage(imageFile);
+        } catch (SQLException ex) {
+            Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean deleteUserImage(String publicId) {
+        try {
+            return cloudiServices.deleteImage(publicId);
+        } catch (SQLException ex) {
+            Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    
 }
