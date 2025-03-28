@@ -5,9 +5,6 @@
 package com.hatecode.services;
 
 import java.sql.SQLException;
-import javafx.stage.Stage;
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import java.io.File;
 
 /**

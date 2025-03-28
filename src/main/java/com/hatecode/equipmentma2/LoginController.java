@@ -2,7 +2,8 @@ package com.hatecode.equipmentma2;
 
 import com.hatecode.equipmentma2.App;
 import com.hatecode.services.UserService;
-import com.hatecode.services.impl.CloundinaryServicesImpl;
+//import com.hatecode.services.impl.CloundinaryServicesImpl;
+import com.hatecode.services.impl.MailServicesImpl;
 import com.hatecode.services.impl.UserServiceImpl;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,6 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -42,6 +45,7 @@ public class LoginController {
 
 
     private final UserService userService = new UserServiceImpl();
+    
 
     @FXML
     protected void onLoginButtonClick() {
@@ -68,4 +72,5 @@ public class LoginController {
             errorMessageLabel.setText("Không thể mở trang chủ: " + e.getMessage());
         }
     }
+
 }

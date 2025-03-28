@@ -9,6 +9,8 @@ module com.hatecode.equipmentma2 {
     
     requires junit;
     requires cloudinary.core;
+    requires jakarta.mail;
+    
 
 
     opens com.hatecode.equipmentma2 to javafx.fxml;
