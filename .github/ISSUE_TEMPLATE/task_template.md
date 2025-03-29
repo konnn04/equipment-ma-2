@@ -1,7 +1,7 @@
 ---
 name: Nhiệm Vụ Chung
 about: Mẫu để tạo nhiệm vụ với cấu trúc rõ ràng
-title: "[TASK] "
+title: ""
 labels: task
 assignees: ''
 
@@ -15,13 +15,15 @@ assignees: ''
 2. [Bước 2]
 3. [Bước 3]
 
-## Tiêu chí hoàn thành
+## Yêu cầu
 - [ ] [Tiêu chí 1]
 - [ ] [Tiêu chí 2]
 - [ ] [Tiêu chí 3]
 
 ## Thời hạn
 <!-- Đặt ngày cụ thể, ví dụ: 20/10/2023 -->
+
+## Đảm nhận
 
 ## Ghi chú thêm
 <!-- Thêm thông tin bổ sung nếu cần -->
