@@ -10,7 +10,7 @@
 Phần mềm Quản lý Thiết bị là ứng dụng desktop được phát triển bằng JavaFX, giúp quản lý danh mục thiết bị, lịch bảo trì và phân quyền người dùng.
 
 ## Tính năng
-- Đăng nhập bảo mậtƯ
+- Đăng nhập bảo mật
 - Quản lý thiết bị (thêm, sửa, xóa)
 - Phân loại thiết bị theo danh mục
 - Theo dõi trạng thái thiết bị
