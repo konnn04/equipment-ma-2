@@ -4,6 +4,8 @@ import com.hatecode.services.interfaces.UserService;
 import com.hatecode.services.impl.UserServiceImpl;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -13,6 +15,7 @@ import javafx.scene.input.KeyEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 public class LoginController {
+
     @FXML
     TextField usernameField;
 
@@ -22,7 +25,9 @@ public class LoginController {
     @FXML
     Label errorMessageLabel;
 
-    final UserService userService = new UserServiceImpl();
+
+    private final UserService userService = new UserServiceImpl();
+
 
     @FXML
     protected void handleLogin() {
