@@ -4,7 +4,10 @@
  */
 package com.hatecode.services;
 
+import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentImage;
+import com.hatecode.pojo.Image;
+import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -13,9 +16,9 @@ import java.util.List;
  * @author ADMIN
  */
 public interface EquipmentImageServices {
-    List<EquipmentImage> getEquipmentImage(int id) throws SQLException;
-    boolean addEquipmentImage(EquipmentImage cate) throws SQLException;
-    boolean updateEquipmentImage(EquipmentImage cate) throws SQLException;
+    List<Image> getEquipmentImage(int id) throws SQLException;
+    boolean addEquipmentImage(EquipmentImage e) throws SQLException;
+    boolean updateEquipmentImage(EquipmentImage e) throws SQLException;
     boolean deleteEquipmentImage(int id) throws SQLException;
     
 }
