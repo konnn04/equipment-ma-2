@@ -82,7 +82,7 @@
         </HBox>
     </top>
     <center>
-        <TabPane prefHeight="200.0" prefWidth="1433.0" style="-fx-background-color: transparent; -fx-tab-min-width: 120;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane prefHeight="632.0" prefWidth="1433.0" side="BOTTOM" style="-fx-background-color: transparent; -fx-tab-min-width: 120;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
          <Tab text="Equipment Status">
             <content>
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #FFFFFF;">
@@ -124,7 +124,7 @@
                                  </AnchorPane>
                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="623.0" prefWidth="0.0" style="-fx-background-color: white;">
                                     <children>
-                                       <VBox prefHeight="623.0" prefWidth="1001.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                       <VBox prefHeight="631.0" prefWidth="895.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                           <padding>
                                              <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                                           </padding>
@@ -241,7 +241,7 @@
                     <children>
                         <BorderPane prefHeight="648.0" prefWidth="1433.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <center>
-                        <SplitPane dividerPositions="0.30642907058001395" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                        <SplitPane dividerPositions="0.3424178895877009" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                            <items>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
                                  <children>
@@ -274,9 +274,9 @@
                                             </VBox>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="623.0" prefWidth="0.0" style="-fx-background-color: white;">
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="636.0" prefWidth="901.0" style="-fx-background-color: white;">
                                  <children>
-                                    <VBox prefHeight="340.0" prefWidth="1170.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                    <VBox prefHeight="592.0" prefWidth="960.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                        <padding>
                                           <Insets bottom="25.0" left="25.0" right="25.0" top="20.0" />
                                        </padding>
@@ -293,8 +293,8 @@
                                              <children>
                                                 <GridPane hgap="20.0" prefHeight="360.0" prefWidth="493.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                    <columnConstraints>
-                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.8333740234375" />
-                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="121.3333740234375" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="84.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="88.0" />
                                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="83.0" />
                                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="167.0" />
                                                    </columnConstraints>
@@ -400,9 +400,9 @@
                   <children>
                      <BorderPane layoutX="173.0" layoutY="125.0" style="-fx-background-color: #FFFFFF;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <center>
-                           <SplitPane dividerPositions="0.29797979797979796" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                           <SplitPane dividerPositions="0.33193570929419985" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                               <items>
-                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
+                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="636.0" prefWidth="1139.0" style="-fx-background-color: white;">
                                     <children>
                                        <VBox prefHeight="649.0" prefWidth="400.0" style="-fx-background-color: #F5F5F7; -fx-background-radius: 10;" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                           <padding>
@@ -482,7 +482,6 @@
                                              <TableView fx:id="repairHistoryTable111" prefHeight="645.0" prefWidth="440.0" styleClass="table-view" VBox.vgrow="ALWAYS">
                                                 <columns>
                                                    <TableColumn fx:id="repairIdColumn111" prefWidth="106.0" styleClass="table-column" text="Repair ID" />
-                                                   <TableColumn fx:id="repairEquipmentColumn111" prefWidth="184.0" styleClass="table-column" text="Equipment" />
                                                    <TableColumn fx:id="repairDateColumn111" prefWidth="166.0" styleClass="table-column" text="Date" />
                                                    <TableColumn fx:id="repairTechnicianColumn111" prefWidth="199.0" styleClass="table-column" text="Technician" />
                                                    <TableColumn fx:id="repairIssueColumn111" prefWidth="191.0" styleClass="table-column" text="Issue" />
@@ -496,7 +495,7 @@
                                  </AnchorPane>
                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
                                     <children>
-                                       <VBox prefHeight="340.0" prefWidth="1170.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                       <VBox prefHeight="529.0" prefWidth="905.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                           <padding>
                                              <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                                           </padding>
@@ -513,8 +512,8 @@
                                                 <children>
                                                    <GridPane hgap="20.0" prefHeight="486.0" prefWidth="500.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                       <columnConstraints>
-                                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.8333740234375" />
-                                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="121.3333740234375" />
+                                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="85.0" />
+                                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="95.0" />
                                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="83.0" />
                                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="167.0" />
                                                       </columnConstraints>
@@ -580,7 +579,7 @@
                                                       </children>
                                                    </GridPane>
                                                    <Region prefHeight="487.0" prefWidth="57.0" />
-                                                   <TableView prefHeight="548.0" prefWidth="450.0">
+                                                   <TableView prefHeight="424.0" prefWidth="417.0">
                                                       <columns>
                                                          <TableColumn prefWidth="90.8333740234375" text="E.Code" />
                                                          <TableColumn prefWidth="154.5" text="Name" />
@@ -649,9 +648,9 @@
                                  </VBox>
                               </children>
                            </AnchorPane>
-                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
+                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="603.0" prefWidth="977.0" style="-fx-background-color: white;">
                               <children>
-                                 <VBox prefHeight="340.0" prefWidth="1170.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                 <VBox prefHeight="609.0" prefWidth="972.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                     <padding>
                                        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                                     </padding>
@@ -668,8 +667,8 @@
                                           <children>
                                              <GridPane hgap="20.0" prefHeight="486.0" prefWidth="500.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                 <columnConstraints>
-                                                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.8333740234375" />
-                                                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="121.3333740234375" />
+                                                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.0" />
+                                                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="100.0" />
                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="83.0" />
                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="167.0" />
                                                 </columnConstraints>
@@ -704,7 +703,7 @@
                                                          <Font name="SF Pro Text Semibold" size="14.0" />
                                                       </font>
                                                    </Label>
-                                                   <TextArea fx:id="maintenanceDescriptionTextArea11121" prefHeight="79.0" prefWidth="738.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="5" />
+                                                   <TextArea fx:id="maintenanceDescriptionTextArea11121" prefHeight="106.0" prefWidth="365.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="5" />
                                                    <Label styleClass="" text="ID:" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
                                                       <font>
                                                          <Font name="SF Pro Text Semibold" size="14.0" />
@@ -770,7 +769,7 @@
         </TabPane>
     </center>
     <bottom>
-        <HBox alignment="CENTER_RIGHT" prefHeight="51.0" prefWidth="1433.0" BorderPane.alignment="CENTER">
+        <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="1279.0" BorderPane.alignment="CENTER">
             <children>
                 <ButtonBar prefHeight="51.0" prefWidth="240.0">
                     <buttons>
@@ -782,6 +781,9 @@
                     </HBox.margin>
                 </ButtonBar>
             </children>
+         <padding>
+            <Insets bottom="10.0" top="10.0" />
+         </padding>
         </HBox>
     </bottom>
 </BorderPane>
