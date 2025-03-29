@@ -5,8 +5,8 @@
 package com.hatecode.services.impl;
 
 import com.hatecode.pojo.EquipmentImage;
-import com.hatecode.pojo.JdbcUtils;
-import com.hatecode.services.EquipmentImageServices;
+import com.hatecode.utils.JdbcUtils;
+import com.hatecode.services.interfaces.EquipmentImageService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author ADMIN
  */
-public class EquipmentImageServicesImpl implements EquipmentImageServices{
+public class EquipmentImageServiceImpl implements EquipmentImageService {
 
     @Override
     public List<EquipmentImage> getEquipmentImage(int id) throws SQLException {

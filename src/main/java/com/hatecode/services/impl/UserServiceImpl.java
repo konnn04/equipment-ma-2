@@ -1,8 +1,8 @@
 package com.hatecode.services.impl;
 
-import com.hatecode.pojo.JdbcUtils;
+import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
-import com.hatecode.services.UserService;
+import com.hatecode.services.interfaces.UserService;
 
 import java.sql.*;
 import java.util.ArrayList;

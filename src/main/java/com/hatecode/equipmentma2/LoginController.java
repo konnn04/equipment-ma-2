@@ -1,29 +1,31 @@
-package com.hatecode.equipmentma2.Controllers;
+package com.hatecode.equipmentma2;
 
-import com.hatecode.equipmentma2.App;
-import com.hatecode.services.UserService;
+import com.hatecode.services.interfaces.UserService;
 import com.hatecode.services.impl.UserServiceImpl;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 import java.io.IOException;
 import java.sql.SQLException;
 public class LoginController {
     @FXML
-    private TextField usernameField;
+    TextField usernameField;
 
     @FXML
-    private PasswordField passwordField;
+     PasswordField passwordField;
 
     @FXML
-    private Label errorMessageLabel;
+    Label errorMessageLabel;
 
-    private final UserService userService = new UserServiceImpl();
+    final UserService userService = new UserServiceImpl();
 
     @FXML
-    protected void onLoginButtonClick() {
+    protected void handleLogin() {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
@@ -45,7 +47,20 @@ public class LoginController {
             errorMessageLabel.setText("Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
         } catch (IOException e) {
             errorMessageLabel.setText("Không thể mở trang chủ: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
+//    Khi enter vào trường đăng nhập
+    @FXML
+    protected void onEnterLogin(KeyEvent event) {
+        if (event.getCode().equals(KeyCode.ENTER)) {
+            handleLogin();
+        }
+    }
+//    Khi click vào nút đăng nhập
+    @FXML
+    protected void onClickLogin(ActionEvent event) {
+        handleLogin();
+    }
 }

@@ -15,13 +15,14 @@ public class Equipment {
     private String code;
     private String name;
     private Date importDate;
-    private int status;
+    private Status status;
     private int category;
+    private String statusName;
 
     public Equipment() {
     }
 
-    public Equipment(int id, String code, String name, Date importDate, int status, int category) {
+    public Equipment(int id, String code, String name, Date importDate, Status status, int category) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -30,20 +31,17 @@ public class Equipment {
         this.category = category;
     }
 
-    
-    
-
     /**
      * @return the status
      */
-    public int getStatus() {
+    public Status getStatus() {
         return status;
     }
 
     /**
      * @param status the status to set
      */
-    public void setStatus(int status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -117,7 +115,12 @@ public class Equipment {
     public void setImport_date(Date import_date) {
         this.importDate = import_date;
     }
-    
-    
-    
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
 }

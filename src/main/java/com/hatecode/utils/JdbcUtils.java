@@ -1,8 +1,9 @@
-package com.hatecode.pojo;
+package com.hatecode.utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import com.hatecode.config.DBConfig;
 
 public class JdbcUtils {
     static {
@@ -14,6 +15,10 @@ public class JdbcUtils {
     }
 
     public static Connection getConn() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://localhost/equipmentma2", "root", "123456");
+        return DriverManager.getConnection(
+                DBConfig.DB_URL,
+                DBConfig.USER,
+                DBConfig.PASS
+        );
     }
 }

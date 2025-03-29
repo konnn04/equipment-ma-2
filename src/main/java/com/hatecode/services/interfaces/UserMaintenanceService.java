@@ -1,4 +1,4 @@
-package com.hatecode.services;
+package com.hatecode.services.interfaces;
 
 import com.hatecode.pojo.User_Maintenance;
 import java.sql.SQLException;

@@ -1,22 +1,24 @@
 package com.hatecode.pojo;
 
+import java.util.Date;
+
 public class Maintenance {
     private int id;
     private String title;
     private String description;
-    private String startDate;
-    private String endDate;
+    private Date startDateTime;
+    private Date endDateTime;
     private int quantity;
 
     public Maintenance() {
         super();
     }
-    public Maintenance(int id, String title, String description, String startDatetime, String endDatetime, int quantity) {
+    public Maintenance(int id, String title, String description, Date startDatetime, Date endDatetime, int quantity) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.startDate = startDatetime;
-        this.endDate = endDatetime;
+        this.startDateTime = startDatetime;
+        this.endDateTime = endDatetime;
         this.quantity = quantity;
     }
 
@@ -28,12 +30,12 @@ public class Maintenance {
         return this.description;
     }
 
-    public String getStartDatetime() {
-        return this.startDate;
+    public Date getStartDatetime() {
+        return this.startDateTime;
     }
 
-    public String getEndDatetime() {
-        return this.endDate;
+    public Date getEndDatetime() {
+        return this.endDateTime;
     }
 
     public int getQuantity() {
