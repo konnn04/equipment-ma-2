@@ -78,12 +78,12 @@
             <scope>test</scope>
         </dependency>
         
-        <!-- https://mvnrepository.com/artifact/com.cloudinary/cloudinary-core -->
-<!--        <dependency>-->
-<!--            <groupId>com.cloudinary</groupId>-->
-<!--            <artifactId>cloudinary-core</artifactId>-->
-<!--            <version>2.2.0</version>-->
-<!--        </dependency>-->
+        <!--         https://mvnrepository.com/artifact/com.cloudinary/cloudinary-core 
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-core</artifactId>
+            <version>2.2.0</version>
+        </dependency>-->
         
         <!-- https://mvnrepository.com/artifact/com.cloudinary/cloudinary-http44 -->
         <dependency>
@@ -96,6 +96,13 @@
             <groupId>com.cloudinary</groupId>
             <artifactId>cloudinary-taglib</artifactId>
             <version>2.0.0</version>
+        </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.1</version>
         </dependency>
         
         
