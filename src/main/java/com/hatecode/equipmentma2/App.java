@@ -1,5 +1,6 @@
 package com.hatecode.equipmentma2;
 
+import com.hatecode.pojo.User;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +21,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("login-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Equipment Management System");
 

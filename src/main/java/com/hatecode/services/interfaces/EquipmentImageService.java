@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.hatecode.services;
+package com.hatecode.services.interfaces;
 
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentImage;
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author ADMIN
  */
-public interface EquipmentImageServices {
+public interface EquipmentImageService {
     List<Image> getEquipmentImage(int id) throws SQLException;
     boolean addEquipmentImage(EquipmentImage e) throws SQLException;
     boolean updateEquipmentImage(EquipmentImage e) throws SQLException;

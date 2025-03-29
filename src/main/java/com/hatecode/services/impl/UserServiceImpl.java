@@ -2,10 +2,10 @@ package com.hatecode.services.impl;
 
 //import com.hatecode.pojo.Image;
 import javafx.scene.image.Image;
-import com.hatecode.pojo.JdbcUtils;
+import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
-import com.hatecode.services.UserService;
 import java.io.File;
+import com.hatecode.services.interfaces.UserService;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
     private final CloundinaryServicesImpl cloudiServices = new CloundinaryServicesImpl();
-    
+
     @Override
     public List<User> getUsers() throws SQLException {
         List<User> users = new ArrayList<>();
@@ -195,6 +195,6 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
-    
-    
+
+
 }

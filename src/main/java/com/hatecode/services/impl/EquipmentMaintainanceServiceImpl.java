@@ -6,20 +6,18 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintainance;
-import com.hatecode.pojo.JdbcUtils;
-import com.hatecode.services.EquipmentMaintainanceServices;
+import com.hatecode.utils.JdbcUtils;
+import com.hatecode.services.interfaces.EquipmentMaintainanceService;
+import com.hatecode.services.interfaces.StatusService;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author ADMIN
  */
-public class EquipmentMaintainanceServicesImpl implements EquipmentMaintainanceServices {
+public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceService {
 
     @Override
     public List<EquipmentMaintainance> getEquipmentMaintainance() throws SQLException {
@@ -46,6 +44,7 @@ public class EquipmentMaintainanceServicesImpl implements EquipmentMaintainanceS
 
     @Override
     public Equipment getEquipmentByEMId(int id) throws SQLException {
+        StatusService statusService = new StatusServiceImpl();
         Equipment equipment = null;
         try (Connection conn = JdbcUtils.getConn()) {
             // Truy vấn để lấy thông tin thiết bị dựa trên id của bản ghi bảo trì
@@ -63,7 +62,7 @@ public class EquipmentMaintainanceServicesImpl implements EquipmentMaintainanceS
                         rs.getString("code"),
                         rs.getString("name"),
                         rs.getDate("import_date"),
-                        rs.getInt("category"),
+                        statusService.getStatusById(rs.getInt("status")),
                         rs.getInt("status")
                 );
             }

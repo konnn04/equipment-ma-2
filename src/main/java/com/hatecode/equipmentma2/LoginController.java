@@ -1,54 +1,36 @@
 package com.hatecode.equipmentma2;
 
-import com.hatecode.equipmentma2.App;
-import com.hatecode.services.UserService;
-//import com.hatecode.services.impl.CloundinaryServicesImpl;
-import com.hatecode.services.impl.MailServicesImpl;
+import com.hatecode.services.interfaces.UserService;
 import com.hatecode.services.impl.UserServiceImpl;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser;
-import javafx.scene.*;
-import javafx.stage.Stage;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-
 public class LoginController {
 
     @FXML
-    private TextField usernameField;
+    TextField usernameField;
 
     @FXML
-    private PasswordField passwordField;
+     PasswordField passwordField;
 
     @FXML
-    private Label errorMessageLabel;
+    Label errorMessageLabel;
 
 
     private final UserService userService = new UserServiceImpl();
-    
+
 
     @FXML
-    protected void onLoginButtonClick() {
+    protected void handleLogin() {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
@@ -70,7 +52,20 @@ public class LoginController {
             errorMessageLabel.setText("Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
         } catch (IOException e) {
             errorMessageLabel.setText("Không thể mở trang chủ: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
+//    Khi enter vào trường đăng nhập
+    @FXML
+    protected void onEnterLogin(KeyEvent event) {
+        if (event.getCode().equals(KeyCode.ENTER)) {
+            handleLogin();
+        }
+    }
+//    Khi click vào nút đăng nhập
+    @FXML
+    protected void onClickLogin(ActionEvent event) {
+        handleLogin();
+    }
 }

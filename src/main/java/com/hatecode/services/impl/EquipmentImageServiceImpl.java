@@ -3,13 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.hatecode.services.impl;
-
-import com.hatecode.pojo.Equipment;
-import com.hatecode.pojo.EquipmentImage;
 import com.hatecode.pojo.Image;
-import com.hatecode.pojo.JdbcUtils;
-import com.hatecode.services.EquipmentImageServices;
-import java.io.File;
+import com.hatecode.pojo.EquipmentImage;
+import com.hatecode.utils.JdbcUtils;
+import com.hatecode.services.interfaces.EquipmentImageService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,8 +18,8 @@ import java.util.List;
  *
  * @author ADMIN
  */
-public class EquipmentImageServicesImpl implements EquipmentImageServices{
-    
+public class EquipmentImageServiceImpl implements EquipmentImageService{
+
     @Override
     public List<Image> getEquipmentImage(int id) throws SQLException {
         List<Image> res = new ArrayList<>();

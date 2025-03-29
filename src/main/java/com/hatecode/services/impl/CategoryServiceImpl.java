@@ -6,8 +6,10 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
-import com.hatecode.pojo.JdbcUtils;
-import com.hatecode.services.CategoryServices;
+import com.hatecode.utils.JdbcUtils;
+import com.hatecode.services.interfaces.CategoryService;
+import com.hatecode.services.interfaces.StatusService;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,10 +21,10 @@ import java.util.List;
  *
  * @author ADMIN
  */
-public class CategoryServicesImpl implements CategoryServices {
+public class CategoryServiceImpl implements CategoryService {
 
     @Override
-    public List<Category> getCategory() throws SQLException {
+    public List<Category> getCategories() throws SQLException {
         List<Category> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "SELECT * FROM category";
@@ -39,6 +41,7 @@ public class CategoryServicesImpl implements CategoryServices {
 
     @Override
     public List<Equipment> getEquipmentByCategory(int id) throws SQLException {
+        StatusService statusService = new StatusServiceImpl();
         List<Equipment> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "SELECT * FROM equipment WHERE category = ?";
@@ -47,7 +50,13 @@ public class CategoryServicesImpl implements CategoryServices {
 
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
-                Equipment e = new Equipment(rs.getInt("id"), rs.getString("code"), rs.getString("name"), rs.getDate("import_date"), rs.getInt("status"), rs.getInt("category"));
+                Equipment e = new Equipment(
+                        rs.getInt("id"),
+                        rs.getString("code"),
+                        rs.getString("name"),
+                        rs.getDate("import_date"),
+                        statusService.getStatusById(rs.getInt("status")),
+                        rs.getInt("category"));
                 res.add(e);
             }
             return res;

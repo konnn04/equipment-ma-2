@@ -1,6 +1,6 @@
 package com.hatecode.test;
 
-import com.hatecode.services.UserService;
+import com.hatecode.services.interfaces.UserService;
 import com.hatecode.services.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

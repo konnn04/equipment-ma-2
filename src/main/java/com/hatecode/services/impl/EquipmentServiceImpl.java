@@ -3,8 +3,9 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintainance;
-import com.hatecode.pojo.JdbcUtils;
-import com.hatecode.services.EquipmentServices;
+import com.hatecode.utils.JdbcUtils;
+import com.hatecode.services.interfaces.EquipmentService;
+import com.hatecode.services.interfaces.StatusService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,13 +23,15 @@ import java.util.List;
  *
  * @author ADMIN
  */
-public class EquipmentServicesImpl implements EquipmentServices{
+public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public List<Equipment> getEquipments() throws SQLException {
+        StatusService statusService = new StatusServiceImpl();
         List<Equipment> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT * FROM equipment";
+            String sql = "SELECT e.*, s.name AS status_name FROM equipment e " +
+                    "LEFT JOIN Status s ON e.status = s.id";
             PreparedStatement stm = conn.prepareStatement(sql);
             ResultSet rs = stm.executeQuery();
 
@@ -38,9 +41,58 @@ public class EquipmentServicesImpl implements EquipmentServices{
                         rs.getString("code"),
                         rs.getString("name"),
                         rs.getDate("import_date"),
-                        rs.getInt("category"),
+                        statusService.getStatusById(rs.getInt("status")),
                         rs.getInt("status")
                 );
+                e.setStatusName(rs.getString("status_name"));
+                res.add(e);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<Equipment> getEquipments(String query, int page, int pageSize, String key, String value) throws SQLException {
+        /* Kiểm tra và xử lý các tham số đầu vào */
+        query = query.trim();
+        if (query == null || query.isEmpty()) query = "";
+        page = Math.max(1, page);
+        pageSize = Math.max(1, pageSize);
+        StatusService statusService = new StatusServiceImpl();
+        List<Equipment> res = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT e.*, s.name AS status_name FROM equipment e " +
+                    "LEFT JOIN Status s ON e.status = s.id WHERE (e.code LIKE CONCAT('%', ?, '%') " +
+                    "OR e.name LIKE CONCAT('%', ?, '%')) ";
+            boolean b = key != null && !key.isEmpty() && value != null && !value.isEmpty();
+            if (b) {
+                sql += "AND " + key + " = ?";
+            }
+            sql += " LIMIT ?, ?";
+            PreparedStatement stm = conn.prepareStatement(sql);
+            stm.setString(1, query);
+            stm.setString(2, query);
+            if (b) {
+                stm.setString(3, value);
+                stm.setInt(4, (page - 1) * pageSize);
+                stm.setInt(5, pageSize);
+            } else {
+                stm.setInt(3, (page - 1) * pageSize);
+                stm.setInt(4, pageSize);
+            }
+
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                Equipment e = new Equipment(
+                        rs.getInt("id"),
+                        rs.getString("code"),
+                        rs.getString("name"),
+                        rs.getDate("import_date"),
+                        statusService.getStatusById(rs.getInt("status")),
+                        rs.getInt("status")
+                );
+                e.setStatusName(rs.getString("status_name"));
                 res.add(e);
             }
         }
@@ -99,7 +151,7 @@ public class EquipmentServicesImpl implements EquipmentServices{
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setString(1, e.getCode());
             stm.setString(2, e.getName());
-            stm.setInt(3, e.getStatus());
+            stm.setInt(3, e.getStatus().getId());
             stm.setInt(4, e.getCategory());
             stm.setDate(5, new java.sql.Date(e.getImportDate().getTime()));
 
@@ -115,7 +167,7 @@ public class EquipmentServicesImpl implements EquipmentServices{
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setString(1, e.getCode());
             stm.setString(2, e.getName());
-            stm.setInt(3, e.getStatus());
+            stm.setInt(3, e.getStatus().getId());
             stm.setInt(4, e.getCategory());
             stm.setDate(5, new java.sql.Date(e.getImportDate().getTime()));
             stm.setInt(6, e.getId());
@@ -136,5 +188,4 @@ public class EquipmentServicesImpl implements EquipmentServices{
             return rowsAffected > 0; // Trả về true nếu có ít nhất một dòng được xóa
         }
     }
-    
 }

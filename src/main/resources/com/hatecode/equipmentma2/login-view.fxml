@@ -43,20 +43,20 @@
                      </rowConstraints>
                      <children>
                         <Label text="Tên đăng nhập:" />
-                        <TextField fx:id="usernameField" prefHeight="0.0" prefWidth="70.0" GridPane.columnIndex="1" />
+                        <TextField fx:id="usernameField" onKeyPressed="#onEnterLogin" prefHeight="0.0" prefWidth="70.0" GridPane.columnIndex="1" />
                         <Label text="Mật khẩu:" GridPane.rowIndex="1" />
-                        <PasswordField fx:id="passwordField" prefHeight="26.0" prefWidth="289.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <PasswordField fx:id="passwordField" onKeyPressed="#onEnterLogin" prefHeight="26.0" prefWidth="289.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                      </children>
                      <VBox.margin>
                         <Insets bottom="50.0" />
                      </VBox.margin>
                   </GridPane>
-                  <Button onAction="#onLoginButtonClick" prefHeight="26.0" prefWidth="119.0" text="Đăng nhập">
+                  <Button onMouseClicked="#onClickLogin" prefHeight="26.0" prefWidth="119.0" text="Đăng nhập">
                      <VBox.margin>
                         <Insets bottom="10.0" />
                      </VBox.margin>
                   </Button>
-<!--                  <ImageUploader />-->
+                  <Label fx:id="errorMessageLabel" textFill="RED" />
                   <Label text="Quên Mật Khẩu?" />
                </children>
             </VBox>
