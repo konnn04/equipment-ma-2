@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" spacing="10.0" stylesheets="@home-styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox prefHeight="40.0" prefWidth="780.0">
+         <children>
+            <Label prefHeight="85.0" prefWidth="780.0" text="Thêm thiết bị mới">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="392.0" prefWidth="762.0">
+         <children>
+            <GridPane alignment="CENTER" hgap="15.0" prefHeight="378.0" prefWidth="776.0" vgap="15.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="130.0" prefWidth="130.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="296.0" minWidth="10.0" prefWidth="192.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="106.0" minWidth="19.0" prefWidth="99.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="446.0" minWidth="10.0" prefWidth="310.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="155.0" minHeight="10.0" prefHeight="124.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="176.0" minHeight="2.0" prefHeight="33.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="83.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label styleClass="" text="Name:" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="SF Pro Text Semibold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label styleClass="" text="Status:" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="SF Pro Text Semibold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label styleClass="" text="Last Maintenance:" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="SF Pro Text Semibold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label styleClass="" text="Next Maintenance:" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="SF Pro Text Semibold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label styleClass="" text="Description:" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="SF Pro Text Semibold" size="14.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="statusEquipmentComboBox" prefHeight="31.0" prefWidth="707.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+                  <Label fx:id="lastMaintenanceLabel1" styleClass="" text="Never performed" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
+                  <Label fx:id="nextMaintenanceLabel1" styleClass="" text="Not scheduled" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
+                  <TextArea fx:id="equipmentDescriptionTextField" prefHeight="111.0" prefWidth="615.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
+                  <Label styleClass="" text="Code:" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="SF Pro Text Semibold" size="14.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="equipmentCodeTextField" disable="true" prefHeight="27.0" prefWidth="164.0" styleClass="text-field" GridPane.columnIndex="1" />
+                  <TextField fx:id="equipmentCodeTextField1" disable="true" prefHeight="27.0" prefWidth="164.0" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
+         </children>
+         <VBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </VBox.margin>
+      </HBox>
+      <HBox alignment="CENTER_RIGHT" prefHeight="49.0" prefWidth="780.0" spacing="10.0">
+         <children>
+            <Button fx:id="reportIssueButton1" mnemonicParsing="false" prefHeight="34.0" prefWidth="138.0" styleClass="warning-button" stylesheets="@home-styles.css" text="Cancel" />
+            <Button fx:id="saveButton12" mnemonicParsing="false" prefHeight="34.0" prefWidth="132.0" styleClass="primary-button" stylesheets="@home-styles.css" text="Save" />
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</VBox>

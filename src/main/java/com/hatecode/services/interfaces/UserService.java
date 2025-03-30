@@ -12,7 +12,7 @@ public interface UserService {
     boolean addUser(User user) throws SQLException;
     boolean updateUser(User user) throws SQLException;
     boolean deleteUser(int id) throws SQLException;
-    boolean authenticateUser(String username, String password) throws SQLException;
+    User authenticateUser(String username, String password) throws SQLException;
     String getUserImage(User user);
     String uploadUserImage(File imageFile);
     boolean deleteUserImage(String publicId);

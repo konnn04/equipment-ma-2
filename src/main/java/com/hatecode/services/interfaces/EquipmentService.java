@@ -23,4 +23,5 @@ public interface EquipmentService {
     boolean addEquipment(Equipment e) throws SQLException;
     boolean updateEquipment(Equipment e) throws SQLException;
     boolean deleteEquipment(int id) throws SQLException;
+    List<Object> getDistinctValues(String columnName) throws SQLException;
 }
