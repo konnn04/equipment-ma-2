@@ -1,6 +1,5 @@
-package com.hatecode.equipmentma2.Controllers;
+package com.hatecode.equipmentma2;
 
-import com.hatecode.equipmentma2.App;
 import com.hatecode.services.UserService;
 import com.hatecode.services.impl.UserServiceImpl;
 import javafx.fxml.FXML;
