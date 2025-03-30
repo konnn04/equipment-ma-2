@@ -11,11 +11,12 @@ public class User
     private String phone;
     private int role;
     private boolean isActive;
+    private String avatar;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String username, String password, String email, String phone, int role, boolean isActive) {
+    public User(String firstName, String lastName, String username, String password, String email, String phone, int role, boolean isActive, String avatar) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -24,9 +25,10 @@ public class User
         this.phone = phone;
         this.role = role;
         this.isActive = isActive;
+        this.avatar = avatar;
     }
 
-    public User(int id, String firstName, String lastName, String username, String password, String email, String phone, int role, boolean isActive) {
+    public User(int id, String firstName, String lastName, String username, String password, String email, String phone, int role, boolean isActive, String avatar) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -36,6 +38,7 @@ public class User
         this.phone = phone;
         this.role = role;
         this.isActive = isActive;
+        this.avatar = avatar;
     }
 
     // Getters and Setters
@@ -109,6 +112,14 @@ public class User
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     @Override
