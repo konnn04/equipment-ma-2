@@ -318,12 +318,13 @@
                                                                         </TableView>
                                                                     </children>
                                                                 </VBox>
+                                                <Button fx:id="openPopupButton" mnemonicParsing="false" onAction="#openPopup" styleClass="secondary-button" text="+" />
                                                                 <GridPane hgap="20.0" prefHeight="360.0" prefWidth="493.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                                     <columnConstraints>
-                                                                        <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="53.0" prefWidth="94.6505126953125" />
-                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="71.8494873046875" />
-                                                                        <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="45.8204345703125" />
-                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="185.1795654296875" />
+                                                                        <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="53.0" prefWidth="87.0" />
+                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="90.0" />
+                                                                        <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="42.0" />
+                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="136.5" />
                                                                     </columnConstraints>
                                                                     <rowConstraints>
                                                                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -362,7 +363,7 @@
                                                                             </font>
                                                                         </Label>
                                                                         <TextField fx:id="equipmentId21" disable="true" prefHeight="38.0" prefWidth="145.0" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
-                                                                        <Label styleClass="" text="Title:" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="LEFT">
+                                                                        <Label prefWidth="43.0" styleClass="" text="Title:" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="LEFT">
                                                                             <font>
                                                                                 <Font name="SF Pro Text Semibold" size="14.0" />
                                                                             </font>
@@ -661,7 +662,6 @@
                                                                     <TableColumn prefWidth="187.5" text="Quanity" />
                                                                 </columns>
                                                             </TableView>
-                                             <Button fx:id="openPopupButton" mnemonicParsing="false" onAction="#openPopup" styleClass="secondary-button" text="+" />
                                                             <GridPane hgap="20.0" prefHeight="486.0" prefWidth="500.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                                 <columnConstraints>
                                                                     <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="50.0" prefWidth="86.23541259765625" />

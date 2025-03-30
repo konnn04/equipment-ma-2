@@ -7,15 +7,21 @@ module com.hatecode.equipmentma2 {
     requires org.kordamp.bootstrapfx.core;
 
     requires junit;
+    requires cloudinary.core;
+    requires jakarta.mail;
+
+    requires java.desktop;
 
 
     opens com.hatecode.equipmentma2 to javafx.fxml;
     exports com.hatecode.equipmentma2;
 
-//    opens com.hatecode.equipmentma2.Controllers to javafx.fxml;
-//    exports com.hatecode.equipmentma2.Controllers;
+
+    opens com.hatecode.equipmentma2.components to javafx.fxml;
 
     exports com.hatecode.pojo;
-    exports com.hatecode.services;
+    exports com.hatecode.services.interfaces;
     exports com.hatecode.services.impl;
+
+    exports com.hatecode.utils;
 }

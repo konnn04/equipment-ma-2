@@ -3,10 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.hatecode.services.impl;
-
+import com.hatecode.pojo.Image;
 import com.hatecode.pojo.EquipmentImage;
-import com.hatecode.pojo.JdbcUtils;
-import com.hatecode.services.EquipmentImageServices;
+import com.hatecode.utils.JdbcUtils;
+import com.hatecode.services.interfaces.EquipmentImageService;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,19 +18,24 @@ import java.util.List;
  *
  * @author ADMIN
  */
-public class EquipmentImageServicesImpl implements EquipmentImageServices{
+public class EquipmentImageServiceImpl implements EquipmentImageService{
 
     @Override
-    public List<EquipmentImage> getEquipmentImage(int id) throws SQLException {
-        List<EquipmentImage> res = new ArrayList<>();
+    public List<Image> getEquipmentImage(int id) throws SQLException {
+        List<Image> res = new ArrayList<>();
         try(Connection conn = JdbcUtils.getConn()){
-            String sql = "SELECT * FROM equipment_image WHERE equipment_id = ?";
+            String sql = "SELECT i.* FROM image i JOIN equipment_image on i.id = ei.image_id WHERE ei.equipment_id = ?";
             PreparedStatement stm = conn.prepareCall(sql);
             stm.setInt(1, id);
             ResultSet rs = stm.executeQuery();
-//            public EquipmentImage(int id, int equipment_id, int image_id)
             while(rs.next()){
-                EquipmentImage ei = new EquipmentImage(rs.getInt("id"),rs.getInt("equipment_id"),rs.getInt("image_id"));
+                Image i = new Image(
+                        rs.getInt("id"),
+                        rs.getString("filename"),
+                        rs.getTimestamp("create_date").toLocalDateTime(),
+                        rs.getString("path")
+                );
+                res.add(i);
             }
             return res;
         }

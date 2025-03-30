@@ -1,6 +1,7 @@
-package com.hatecode.services;
+package com.hatecode.services.interfaces;
 
 import com.hatecode.pojo.User;
+import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -12,6 +13,9 @@ public interface UserService {
     boolean updateUser(User user) throws SQLException;
     boolean deleteUser(int id) throws SQLException;
     boolean authenticateUser(String username, String password) throws SQLException;
+    String getUserImage(User user);
+    String uploadUserImage(File imageFile);
+    boolean deleteUserImage(String publicId);
 //    Features
 //    Get
 }

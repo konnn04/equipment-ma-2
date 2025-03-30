@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: white;" stylesheets="@home-styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hatecode.equipmentma2.AddEquipmentController">
    <children>
       <SplitPane dividerPositions="0.5657276995305164" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="641.0" stylesheets="@home-styles.css">
@@ -50,8 +49,8 @@
       </SplitPane>
       <HBox alignment="CENTER_RIGHT" spacing="10.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#handleSave" styleClass="primary-button" text="Save" />
             <Button mnemonicParsing="false" onAction="#handleCancel" styleClass="warning-button" text="Cancel" />
+            <Button mnemonicParsing="false" onAction="#handleSave" styleClass="primary-button" text="Save" />
          </children>
          <VBox.margin>
             <Insets bottom="10.0" top="10.0" />
