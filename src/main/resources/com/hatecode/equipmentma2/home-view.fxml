@@ -69,7 +69,7 @@
                                 </Label>
                             </children>
                         </VBox>
-                        <Circle fill="DODGERBLUE" radius="22.0" stroke="BLACK" strokeType="INSIDE">
+                        <Circle fill="#dfe5eb" radius="22.0" stroke="BLACK" strokeType="INSIDE">
                             <HBox.margin>
                                 <Insets />
                             </HBox.margin>
@@ -83,7 +83,7 @@
         </HBox>
     </top>
     <center>
-        <TabPane prefHeight="200.0" prefWidth="1433.0" style="-fx-background-color: transparent; -fx-tab-min-width: 120;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane prefHeight="200.0" prefWidth="1433.0" side="BOTTOM" style="-fx-background-color: transparent; -fx-tab-min-width: 120;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <Tab text="Equipment Status">
                 <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #FFFFFF;">
@@ -105,16 +105,14 @@
                                                                 </font>
                                                             </Label>
                                                             <TextField fx:id="searchField3" promptText="Search equipment..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" />
-                                                            <HBox alignment="BOTTOM_LEFT" prefHeight="31.0" prefWidth="349.0">
+                                                            <HBox alignment="BOTTOM_LEFT" prefHeight="31.0" prefWidth="349.0" spacing="10.0">
                                                                 <children>
-                                                                    <Label prefHeight="31.0" prefWidth="144.0" styleClass="" text="Filter by" HBox.hgrow="NEVER">
+                                                                    <Label prefHeight="31.0" prefWidth="68.0" styleClass="" text="Filter by" HBox.hgrow="NEVER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="16.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <Region prefHeight="31.0" prefWidth="29.0" HBox.hgrow="NEVER" />
-                                                                    <ComboBox prefHeight="31.0" prefWidth="159.0" promptText="Select" style="-fx-background-color: rgb(232, 232, 237);" />
-                                                                    <Region prefHeight="31.0" prefWidth="242.0" HBox.hgrow="ALWAYS" />
+                                                                    <ComboBox prefHeight="31.0" prefWidth="159.0" promptText="Select" style="-fx-background-color: rgb(232, 232, 237);" HBox.hgrow="NEVER" />
                                                                 </children>
                                                             </HBox>
                                                             <ComboBox fx:id="statusFilter2" prefHeight="26.0" prefWidth="1246.0" promptText="All" style="-fx-background-color: rgb(232, 232, 237);" styleClass="combo-box" />
@@ -143,9 +141,9 @@
                                                             </Label>
                                                             <GridPane hgap="15.0" prefHeight="420.0" prefWidth="938.0" vgap="15.0" VBox.vgrow="ALWAYS">
                                                                 <columnConstraints>
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="146.6666259765625" minWidth="120.0" prefWidth="146.6666259765625" />
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="261.0" minWidth="10.0" prefWidth="258.3333740234375" />
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="265.666748046875" minWidth="9.83331298828125" prefWidth="55.00006103515625" />
+                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="146.6666259765625" minWidth="120.0" prefWidth="131.2645263671875" />
+                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="281.91265869140625" minWidth="10.0" prefWidth="275.7354736328125" />
+                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="265.666748046875" minWidth="9.83331298828125" prefWidth="55.00006103515625" />
                                                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="421.6666259765625" minWidth="10.0" prefWidth="353.99993896484375" />
                                                                 </columnConstraints>
                                                                 <rowConstraints>
@@ -225,8 +223,8 @@
                                                       <HBox alignment="CENTER_RIGHT" spacing="15.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                                                           <children>
                                                               <Button fx:id="saveButton12" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="primary-button" text="Save" />
+                                             <Button fx:id="saveButton121" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="primary-button" text="Update" />
                                                               <Button fx:id="reportIssueButton1" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="warning-button" text="Report Issue" />
-                                                              <Button fx:id="saveButton11" mnemonicParsing="false" prefHeight="40.0" prefWidth="180.0" styleClass="primary-button" text="Add To New Plan" />
                                                           </children>
                                                       </HBox>
                                                 </children>
@@ -322,10 +320,10 @@
                                                                 </VBox>
                                                                 <GridPane hgap="20.0" prefHeight="360.0" prefWidth="493.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                                     <columnConstraints>
-                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.8333740234375" />
-                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="121.3333740234375" />
-                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="83.0" />
-                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="167.0" />
+                                                                        <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="53.0" prefWidth="94.6505126953125" />
+                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="71.8494873046875" />
+                                                                        <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="45.8204345703125" />
+                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="185.1795654296875" />
                                                                     </columnConstraints>
                                                                     <rowConstraints>
                                                                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -401,7 +399,7 @@
                         <children>
                             <BorderPane layoutX="173.0" layoutY="125.0" style="-fx-background-color: #FFFFFF;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <center>
-                                    <SplitPane dividerPositions="0.38819007686932216" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                    <SplitPane dividerPositions="0.2952480782669462" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                         <items>
                                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
                                                 <children>
@@ -463,14 +461,14 @@
                                                                     </Label>
                                                                     <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
                                                                         <children>
-                                                                            <DatePicker fx:id="fromDatePicker211" promptText="From" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" HBox.hgrow="ALWAYS" />
-                                                                            <Label alignment="CENTER" prefHeight="19.0" prefWidth="47.0" text="to" HBox.hgrow="ALWAYS">
+                                                                            <DatePicker fx:id="fromDatePicker211" prefHeight="42.0" prefWidth="158.0" promptText="From" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" HBox.hgrow="ALWAYS" />
+                                                                            <Label alignment="CENTER" minWidth="20.0" prefHeight="19.0" prefWidth="45.0" text="to" HBox.hgrow="ALWAYS">
                                                                                 <font>
                                                                                     <Font name="SF Pro Text Semibold" size="15.0" />
                                                                                 </font>
                                                                             </Label>
-                                                                            <DatePicker fx:id="toDatePicker211" promptText="To" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" HBox.hgrow="ALWAYS" />
-                                                                            <Button fx:id="searchRepairButton111" mnemonicParsing="false" prefHeight="34.0" prefWidth="98.0" styleClass="secondary-button" text="Search" />
+                                                                            <DatePicker fx:id="toDatePicker211" prefHeight="42.0" prefWidth="153.0" promptText="To" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" HBox.hgrow="ALWAYS" />
+                                                                            <Button fx:id="searchRepairButton111" minWidth="99.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="99.0" styleClass="secondary-button" text="Search" />
                                                                         </children>
                                                                         <VBox.margin>
                                                                             <Insets bottom="10.0" />
@@ -515,10 +513,10 @@
                                                                     </TableView>
                                                                     <GridPane hgap="20.0" prefHeight="486.0" prefWidth="500.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                                         <columnConstraints>
-                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.8333740234375" />
-                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="121.3333740234375" />
-                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="83.0" />
-                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="167.0" />
+                                                                            <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="53.0" prefWidth="100.240234375" />
+                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="50.259765625" />
+                                                                            <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="46.1771240234375" />
+                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="163.3228759765625" />
                                                                         </columnConstraints>
                                                                         <rowConstraints>
                                                                             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -666,10 +664,10 @@
                                              <Button fx:id="openPopupButton" mnemonicParsing="false" onAction="#openPopup" styleClass="secondary-button" text="+" />
                                                             <GridPane hgap="20.0" prefHeight="486.0" prefWidth="500.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                                 <columnConstraints>
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.8333740234375" />
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="121.3333740234375" />
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="83.0" />
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="167.0" />
+                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="50.0" prefWidth="86.23541259765625" />
+                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="117.3543701171875" />
+                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="39.8834228515625" />
+                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="169.1165771484375" />
                                                                 </columnConstraints>
                                                                 <rowConstraints>
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -816,10 +814,10 @@
                                                                 <children>
                                                                     <GridPane hgap="20.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                                         <columnConstraints>
-                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="53.0" prefWidth="83.8333740234375" />
-                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="316.5" />
-                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="81.0" />
-                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="297.5" />
+                                                                            <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="53.0" prefWidth="79.0582275390625" />
+                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="365.4417724609375" />
+                                                                            <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="76.5291748046875" />
+                                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="333.4708251953125" />
                                                                         </columnConstraints>
                                                                         <rowConstraints>
                                                                             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -845,7 +843,6 @@
                                                                                     <Font name="SF Pro Text Semibold" size="14.0" />
                                                                                 </font>
                                                                             </Label>
-                                                                            <ComboBox fx:id="maintenanceTimeComboBox111111" styleClass="combo-box" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
                                                                             <Label styleClass="" text="Password:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                                                                                 <font>
                                                                                     <Font name="SF Pro Text Semibold" size="14.0" />
@@ -883,11 +880,12 @@
                                                          <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.rowSpan="2">
                                                             <children>
                                                                <ImageView fitHeight="150.0" fitWidth="226.0" pickOnBounds="true" preserveRatio="true" />
-                                                               <Button mnemonicParsing="false" text="Change" />
+                                                               <Button mnemonicParsing="false" styleClass="secondary-button" text="Change" />
                                                             </children>
                                                          </HBox>
                                                          <CheckBox mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                                          <TextField fx:id="equipmentId2113112" disable="true" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                         <TextField fx:id="equipmentId21131111" disable="true" styleClass="text-field-disabled" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                                                                         </children>
                                                                     </GridPane>
                                                                 </children>
