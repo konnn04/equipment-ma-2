@@ -14,53 +14,52 @@
 <?import javafx.scene.text.Font?>
 
 <BorderPane prefHeight="472.0" prefWidth="915.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hatecode.equipmentma2.LoginController">
-   <left>
-      <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </left>
-   <right>
-      <Pane prefHeight="472.0" prefWidth="366.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
-         <children>
-            <VBox alignment="CENTER" prefHeight="472.0" prefWidth="366.0">
-               <children>
-                  <Label prefHeight="29.0" prefWidth="264.0" style="-fx-font-weight: bold;" text="Hệ thống Quản lý Thiết bị">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="50.0" />
-                     </VBox.margin>
-                  </Label>
-                  <GridPane alignment="CENTER" hgap="10" prefHeight="101.0" prefWidth="296.0" vgap="10">
-                     <columnConstraints>
-                        <ColumnConstraints maxWidth="252.0" minWidth="86.0" prefWidth="88.0" />
-                        <ColumnConstraints maxWidth="364.0" minWidth="10.0" prefWidth="171.0" />
-                        <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="56.0" minHeight="10.0" prefHeight="28.0" />
-                        <RowConstraints maxHeight="32.0" minHeight="0.0" prefHeight="28.0" />
-                        <RowConstraints />
-                     </rowConstraints>
-                     <children>
-                        <Label text="Tên đăng nhập:" />
-                        <TextField fx:id="usernameField" onKeyPressed="#onEnterLogin" prefHeight="0.0" prefWidth="70.0" GridPane.columnIndex="1" />
-                        <Label text="Mật khẩu:" GridPane.rowIndex="1" />
-                        <PasswordField fx:id="passwordField" onKeyPressed="#onEnterLogin" prefHeight="26.0" prefWidth="289.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="50.0" />
-                     </VBox.margin>
-                  </GridPane>
-                  <Button onMouseClicked="#onClickLogin" prefHeight="26.0" prefWidth="119.0" text="Đăng nhập">
-                     <VBox.margin>
-                        <Insets bottom="10.0" />
-                     </VBox.margin>
-                  </Button>
-                  <Label fx:id="errorMessageLabel" textFill="RED" />
-                  <Label text="Quên Mật Khẩu?" />
-               </children>
-            </VBox>
-         </children>
-      </Pane>
-   </right>
+    <left>
+        <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+    </left>
+    <right>
+        <Pane prefHeight="472.0" prefWidth="366.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+            <children>
+                <VBox alignment="CENTER" prefHeight="472.0" prefWidth="366.0">
+                    <children>
+                        <Label prefHeight="29.0" prefWidth="264.0" style="-fx-font-weight: bold;" text="Hệ thống Quản lý Thiết bị">
+                            <font>
+                                <Font size="24.0" />
+                            </font>
+                            <VBox.margin>
+                                <Insets bottom="50.0" />
+                            </VBox.margin>
+                        </Label>
+                        <GridPane alignment="CENTER" hgap="10" prefHeight="101.0" prefWidth="296.0" vgap="10">
+                            <columnConstraints>
+                                <ColumnConstraints maxWidth="252.0" minWidth="86.0" prefWidth="88.0" />
+                                <ColumnConstraints maxWidth="364.0" minWidth="10.0" prefWidth="171.0" />
+                                <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints maxHeight="56.0" minHeight="10.0" prefHeight="28.0" />
+                                <RowConstraints maxHeight="32.0" minHeight="0.0" prefHeight="28.0" />
+                                <RowConstraints />
+                            </rowConstraints>
+                            <children>
+                                <Label text="Tên đăng nhập:" />
+                                <TextField fx:id="usernameField" prefHeight="0.0" prefWidth="70.0" GridPane.columnIndex="1" />
+                                <Label text="Mật khẩu:" GridPane.rowIndex="1" />
+                                <PasswordField fx:id="passwordField" prefHeight="26.0" prefWidth="289.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                            </children>
+                            <VBox.margin>
+                                <Insets bottom="50.0" />
+                            </VBox.margin>
+                        </GridPane>
+                        <Button onAction="#onClickLogin" prefHeight="26.0" prefWidth="119.0" text="Đăng nhập">
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Button>
+                        <Label text="Quên Mật Khẩu?" />
+                    </children>
+                </VBox>
+            </children>
+        </Pane>
+    </right>
 </BorderPane>
