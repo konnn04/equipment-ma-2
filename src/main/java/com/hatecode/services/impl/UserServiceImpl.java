@@ -1,6 +1,7 @@
 package com.hatecode.services.impl;
 
 //import com.hatecode.pojo.Image;
+import com.hatecode.pojo.Role;
 import javafx.scene.image.Image;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
@@ -22,7 +23,11 @@ public class UserServiceImpl implements UserService {
 
         try (Connection conn = JdbcUtils.getConn()) {
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM User");
+            ResultSet rs = stm.executeQuery(
+                    "SELECT u.*,r.name as role_name,r.description as role_description\n" +
+                    "FROM user u\n" +
+                    "JOIN role r\n" +
+                    "ON u.role = r.id");
 
             while (rs.next()) {
                 User user = new User(
@@ -33,10 +38,15 @@ public class UserServiceImpl implements UserService {
                         rs.getString("password"),
                         rs.getString("email"),
                         rs.getString("phone"),
-                        rs.getInt("role"),
+                        new Role(
+                                rs.getInt("role"),
+                                rs.getString("role_name"),
+                                rs.getString("role_description")
+                        ),
                         rs.getBoolean("is_active"),
                         rs.getString("avatar")
                 );
+                user.setRoleName(rs.getString("role_name"));
                 users.add(user);
             }
         }
@@ -47,7 +57,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(int id) throws SQLException {
         User user = null;
-        String sql = "SELECT * FROM User WHERE id = ?";
+        String sql ="SELECT u.*,r.name as role_name,r.description as role_description\n" +
+                    "FROM user u\n" +
+                    "JOIN role r\n" +
+                    "ON u.role = r.id\n" +
+                    "WHERE u.id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -71,7 +85,11 @@ public class UserServiceImpl implements UserService {
                     rs.getString("password"),
                     rs.getString("email"),
                     rs.getString("phone"),
-                    rs.getInt("role"),
+                    new Role(
+                            rs.getInt("role"),
+                            rs.getString("role_name"),
+                            rs.getString("role_description")
+                    ),
                     rs.getBoolean("is_active"),
                     rs.getString("avatar")
             );
@@ -82,7 +100,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByUsername(String username) throws SQLException {
         User user = null;
-        String sql = "SELECT * FROM User WHERE username = ?";
+        String sql ="SELECT u.*,r.name as role_name,r.description as role_description\n" +
+                    "FROM user u\n" +
+                    "JOIN role r\n" +
+                    "ON u.role = r.id\n" +
+                    "WHERE u.username = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -108,7 +130,7 @@ public class UserServiceImpl implements UserService {
             pstmt.setString(4, user.getPassword());
             pstmt.setString(5, user.getEmail());
             pstmt.setString(6, user.getPhone());
-            pstmt.setInt(7, user.getRole());
+            pstmt.setInt(7, user.getRole().getId());
             pstmt.setBoolean(8, user.isActive());
 
             return pstmt.executeUpdate() > 0;
@@ -128,7 +150,7 @@ public class UserServiceImpl implements UserService {
             pstmt.setString(3, user.getPassword());
             pstmt.setString(4, user.getEmail());
             pstmt.setString(5, user.getPhone());
-            pstmt.setInt(6, user.getRole());
+            pstmt.setInt(6, user.getRole().getId());
             pstmt.setBoolean(7, user.isActive());
             pstmt.setInt(8, user.getId());
 

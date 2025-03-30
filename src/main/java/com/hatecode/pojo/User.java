@@ -9,14 +9,15 @@ public class User
     private String password;
     private String email;
     private String phone;
-    private int role;
+    private Role role;
     private boolean isActive;
     private String avatar;
+    private String roleName;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String username, String password, String email, String phone, int role, boolean isActive, String avatar) {
+    public User(String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, String avatar) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -28,7 +29,7 @@ public class User
         this.avatar = avatar;
     }
 
-    public User(int id, String firstName, String lastName, String username, String password, String email, String phone, int role, boolean isActive, String avatar) {
+    public User(int id, String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, String avatar) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -98,11 +99,11 @@ public class User
         this.phone = phone;
     }
 
-    public int getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(int role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
@@ -125,5 +126,13 @@ public class User
     @Override
     public String toString() {
         return firstName + " " + lastName;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 }

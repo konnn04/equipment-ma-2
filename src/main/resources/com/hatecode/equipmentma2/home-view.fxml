@@ -29,7 +29,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="795.0" prefWidth="1433.0" styleClass="root" stylesheets="@home-styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hatecode.equipmentma2.Controller">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="795.0" prefWidth="1433.0" styleClass="root" stylesheets="@home-styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hatecode.equipmentma2.UserController">
     <top>
         <HBox alignment="CENTER" prefHeight="35.0" prefWidth="1433.0" style="-fx-background-color: FFFFFFFF;" BorderPane.alignment="CENTER_RIGHT">
             <children>
@@ -318,7 +318,7 @@
                                                                         </TableView>
                                                                     </children>
                                                                 </VBox>
-                                                <Button fx:id="openPopupButton" mnemonicParsing="false" onAction="#openPopup" styleClass="secondary-button" text="+" />
+                                                <Button mnemonicParsing="false" styleClass="secondary-button" text="+" />
                                                                 <GridPane hgap="20.0" prefHeight="360.0" prefWidth="493.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                                     <columnConstraints>
                                                                         <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="53.0" prefWidth="87.0" />
@@ -784,7 +784,7 @@
                                                                 </children>
                                                             </HBox>
                                                             <ComboBox fx:id="statusFilter11111" prefHeight="26.0" prefWidth="1246.0" promptText="All Roles" style="-fx-background-color: rgb(232, 232, 237);" styleClass="combo-box" />
-                                                            <TableView prefHeight="478.0" prefWidth="388.0" VBox.vgrow="ALWAYS">
+                                                            <TableView fx:id="users" prefHeight="478.0" prefWidth="388.0" VBox.vgrow="ALWAYS">
                                                                 <columns>
                                                                     <TableColumn prefWidth="113.0" text="User ID" />
                                                                     <TableColumn prefWidth="118.0" text="Name" />
