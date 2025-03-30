@@ -16,19 +16,21 @@ public class Equipment {
     private String name;
     private Date importDate;
     private Status status;
-    private int category;
+    private Category category;
     private String statusName;
+    private String description;
 
     public Equipment() {
     }
 
-    public Equipment(int id, String code, String name, Date importDate, Status status, int category) {
+    public Equipment(int id, String code, String name, Date importDate, Status status, Category category, String description) {
         this.id = id;
         this.code = code;
         this.name = name;
         this.importDate = importDate;
         this.status = status;
         this.category = category;
+        this.description = description;
     }
 
     /**
@@ -48,70 +50,42 @@ public class Equipment {
     /**
      * @return the category
      */
-    public int getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    /**
-     * @param category the category to set
-     */
-    public void setCategory(int category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
-    
-    
-    /**
-     * @return the id
-     */
+
     public int getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(int id) {
         this.id = id;
     }
 
-    /**
-     * @return the code
-     */
     public String getCode() {
         return code;
     }
 
-    /**
-     * @param code the code to set
-     */
     public void setCode(String code) {
         this.code = code;
     }
 
-    /**
-     * @return the name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the import_date
-     */
     public Date getImportDate() {
         return importDate;
     }
 
-    /**
-     * @param import_date the import_date to set
-     */
     public void setImport_date(Date import_date) {
         this.importDate = import_date;
     }
@@ -122,5 +96,13 @@ public class Equipment {
 
     public void setStatusName(String statusName) {
         this.statusName = statusName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -1,6 +1,7 @@
 package com.hatecode.services.impl;
 
 //import com.hatecode.pojo.Image;
+import com.hatecode.pojo.Role;
 import javafx.scene.image.Image;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
@@ -22,7 +23,9 @@ public class UserServiceImpl implements UserService {
 
         try (Connection conn = JdbcUtils.getConn()) {
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM User");
+            ResultSet rs = stm.executeQuery("SELECT *, r.id AS role_id, r.name AS role_name, r.description AS role_description " +
+                    "FROM User u " +
+                    "LEFT JOIN Role r ON u.role = r.id");
 
             while (rs.next()) {
                 User user = new User(
@@ -33,7 +36,10 @@ public class UserServiceImpl implements UserService {
                         rs.getString("password"),
                         rs.getString("email"),
                         rs.getString("phone"),
-                        rs.getInt("role"),
+                        new Role(
+                                rs.getInt("role_id"),
+                                rs.getString("role_name"),
+                                rs.getString("role_description")),
                         rs.getBoolean("is_active"),
                         rs.getString("avatar")
                 );
@@ -71,7 +77,10 @@ public class UserServiceImpl implements UserService {
                     rs.getString("password"),
                     rs.getString("email"),
                     rs.getString("phone"),
-                    rs.getInt("role"),
+                    new Role(
+                            rs.getInt("role"),
+                            rs.getString("role_name"),
+                            rs.getString("role_description")),
                     rs.getBoolean("is_active"),
                     rs.getString("avatar")
             );
@@ -108,7 +117,7 @@ public class UserServiceImpl implements UserService {
             pstmt.setString(4, user.getPassword());
             pstmt.setString(5, user.getEmail());
             pstmt.setString(6, user.getPhone());
-            pstmt.setInt(7, user.getRole());
+            pstmt.setInt(7, user.getRole().getId());
             pstmt.setBoolean(8, user.isActive());
 
             return pstmt.executeUpdate() > 0;
@@ -128,7 +137,7 @@ public class UserServiceImpl implements UserService {
             pstmt.setString(3, user.getPassword());
             pstmt.setString(4, user.getEmail());
             pstmt.setString(5, user.getPhone());
-            pstmt.setInt(6, user.getRole());
+            pstmt.setInt(6, user.getRole().getId());
             pstmt.setBoolean(7, user.isActive());
             pstmt.setInt(8, user.getId());
 
@@ -151,8 +160,11 @@ public class UserServiceImpl implements UserService {
 
     // https://res.cloudinary.com/dg66aou8q/image/upload/v1743086605/dysaruyl1ye7xejpakbp.png
     @Override
-    public boolean authenticateUser(String username, String password) throws SQLException {
-        String sql = "SELECT * FROM User WHERE username = ? AND password = ? AND is_active = 1";
+    public User authenticateUser(String username, String password) throws SQLException {
+        String sql = "SELECT *, r.id AS role, r.name AS role_name, r.description AS role_description " +
+                "FROM User u " +
+                "LEFT JOIN Role r ON u.role = r.id " +
+                "WHERE username = ? AND password = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -160,9 +172,27 @@ public class UserServiceImpl implements UserService {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             ResultSet rs = pstmt.executeQuery();
-
-            return rs.next();
+            if (rs.next()) {
+                return new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        new Role(
+                                rs.getInt("role"),
+                                rs.getString("role_name"),
+                                rs.getString("role_description")),
+                        rs.getBoolean("is_active"),
+                        rs.getString("avatar")
+                );
+            }
+        } catch (SQLException ex) {
+            return null;
         }
+        return null;
     }
 
     @Override

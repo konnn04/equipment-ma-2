@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public class App extends Application {
 
+    private static User currentUser;
     private static Stage primaryStage;
 
     @Override
@@ -58,5 +59,21 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(User user) {
+        currentUser = user;
+    }
+
+    public static boolean isLogin() {
+        return currentUser != null;
+    }
+
+    public static boolean isAdmin() {
+        return currentUser != null && currentUser.getRole().getName().equals("Admin");
     }
 }

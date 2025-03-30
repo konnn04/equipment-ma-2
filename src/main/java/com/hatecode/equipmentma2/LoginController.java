@@ -1,5 +1,6 @@
 package com.hatecode.equipmentma2;
 
+import com.hatecode.pojo.User;
 import com.hatecode.services.interfaces.UserService;
 import com.hatecode.services.impl.UserServiceImpl;
 import javafx.event.ActionEvent;
@@ -40,17 +41,17 @@ public class LoginController {
         }
 
         try {
-            if ("admin".equals(username) && "1".equals(password)) {
-                App.switchToHome();
-            } else if (userService.authenticateUser(username, password)) {
-                // Fallback to hardcoded admin user for development
+            User user = userService.authenticateUser(username, password);
+            if (user != null) {
+                App.setCurrentUser(user);
                 App.switchToHome();
             } else {
                 errorMessageLabel.setText("Tên đăng nhập hoặc mật khẩu không đúng!");
             }
         } catch (SQLException e) {
             errorMessageLabel.setText("Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             errorMessageLabel.setText("Không thể mở trang chủ: " + e.getMessage());
             System.out.println(e.getMessage());
         }

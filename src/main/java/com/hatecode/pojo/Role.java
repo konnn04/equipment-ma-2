@@ -1,39 +1,19 @@
 package com.hatecode.pojo;
 
-public class Role {
-    private int id;
-    private String name;
+public class Role extends BaseObject{
     private String description;
 
     public Role() {
     }
 
     public Role(String name, String description) {
-        this.name = name;
+        super(name);
         this.description = description;
     }
 
     public Role(int id, String name, String description) {
-        this.id = id;
-        this.name = name;
+        super(id, name);
         this.description = description;
-    }
-
-    // Getters and Setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
@@ -44,8 +24,4 @@ public class Role {
         this.description = description;
     }
 
-    @Override
-    public String toString() {
-        return name;
-    }
 }
