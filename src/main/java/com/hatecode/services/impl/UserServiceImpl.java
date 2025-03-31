@@ -1,11 +1,14 @@
 package com.hatecode.services.impl;
 
 //import com.hatecode.pojo.Image;
+
 import com.hatecode.pojo.Role;
 import javafx.scene.image.Image;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
+
 import java.io.File;
+
 import com.hatecode.services.interfaces.UserService;
 
 import java.sql.*;
@@ -18,50 +21,155 @@ public class UserServiceImpl implements UserService {
     private final CloundinaryServicesImpl cloudiServices = new CloundinaryServicesImpl();
 
     @Override
-    public List<User> getUsers() throws SQLException {
+    public List<User> getUsers(String kw, int roleId) throws SQLException {
+//        List<User> users = new ArrayList<>();
+//
+//        try (Connection conn = JdbcUtils.getConn()) {
+//            PreparedStatement stm = null;
+//            String sql = "";
+//
+//            if (roleId == 0) {
+//                if (kw == null) {
+//                    kw = "";
+//                }
+//                sql = "SELECT u.*,r.name as role_name,r.description as role_description\n" +
+//                        "FROM user u\n" +
+//                        "JOIN role r\n" +
+//                        "ON u.role = r.id\n" +
+//                        "WHERE (u.username like concat('%',?,'%') OR COALESCE(u.id, 0) = ?)\n";
+//                stm = conn.prepareCall(sql);
+//                stm.setString(1,kw);
+//                stm.setString(2,kw);
+//            }
+//            else {
+//                if (kw == null) {
+//                    kw = "";
+//                    sql = "SELECT u.*,r.name as role_name,r.description as role_description\n" +
+//                            "FROM user u\n" +
+//                            "JOIN role r\n" +
+//                            "ON u.role = r.id\n" +
+//                            "WHERE u.role = ?";
+//                } else {
+//                    sql = "SELECT u.*,r.name as role_name,r.description as role_description\n" +
+//                            "FROM user u\n" +
+//                            "JOIN role r\n" +
+//                            "ON u.role = r.id\n" +
+//                            "WHERE (u.username like concat('%',?,'%') OR COALESCE(u.id, 0) = ?)\n" +
+//                            "AND u.role = ?\n";
+//                }
+//                stm = conn.prepareCall(sql);
+//                stm.setString(1,kw);
+//                stm.setString(2,kw);
+//                stm.setInt(3,roleId);
+//            }
+//            System.out.println(sql);
+//
+//
+//            ResultSet rs = stm.executeQuery();
+//
+//            while (rs.next()) {
+//                User user = new User(
+//                        rs.getInt("id"),
+//                        rs.getString("first_name"),
+//                        rs.getString("last_name"),
+//                        rs.getString("username"),
+//                        rs.getString("password"),
+//                        rs.getString("email"),
+//                        rs.getString("phone"),
+//                        new Role(
+//                                rs.getInt("role"),
+//                                rs.getString("role_name"),
+//                                rs.getString("role_description")
+//                        ),
+//                        rs.getBoolean("is_active"),
+//                        rs.getString("avatar")
+//                );
+//                user.setRoleName(rs.getString("role_name"));
+//                users.add(user);
+//            }
+//        }
+//
+//        return users;
+
         List<User> users = new ArrayList<>();
 
-        try (Connection conn = JdbcUtils.getConn()) {
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery(
-                    "SELECT u.*,r.name as role_name,r.description as role_description\n" +
-                    "FROM user u\n" +
-                    "JOIN role r\n" +
-                    "ON u.role = r.id");
+        if (kw == null) kw = "";
 
-            while (rs.next()) {
-                User user = new User(
-                        rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("email"),
-                        rs.getString("phone"),
-                        new Role(
-                                rs.getInt("role"),
-                                rs.getString("role_name"),
-                                rs.getString("role_description")
-                        ),
-                        rs.getBoolean("is_active"),
-                        rs.getString("avatar")
-                );
-                user.setRoleName(rs.getString("role_name"));
-                users.add(user);
+        String sql = "SELECT u.*, r.name as role_name, r.description as role_description " +
+                "FROM user u JOIN role r ON u.role = r.id " +
+                "WHERE 1=1 "; // Điều kiện luôn đúng để dễ thêm AND
+
+        // Thêm điều kiện tìm kiếm
+        if (!kw.isEmpty()) {
+            sql += "AND (u.username LIKE CONCAT('%', ?, '%') ";
+
+            try {
+                Integer.parseInt(kw); // Kiểm tra nếu kw là số
+                sql += "OR u.id = ? ";
+            } catch (NumberFormatException e) {
+                sql += "OR FALSE "; // Không tìm theo ID nếu kw không phải số
             }
+            sql += ") ";
         }
 
+        // Thêm điều kiện role
+        if (roleId != 0) {
+            sql += "AND u.role = ? ";
+        }
+
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stm = conn.prepareStatement(sql)) {
+
+            int paramIndex = 1;
+
+            if (!kw.isEmpty()) {
+                stm.setString(paramIndex++, kw);
+                try {
+                    Integer.parseInt(kw);
+                    stm.setInt(paramIndex++, Integer.parseInt(kw));
+                } catch (NumberFormatException ignored) {
+                    // Bỏ qua nếu kw không phải số
+                }
+            }
+
+            if (roleId != 0) {
+                stm.setInt(paramIndex, roleId);
+            }
+
+            try (ResultSet rs = stm.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User(
+                            rs.getInt("id"),
+                            rs.getString("first_name"),
+                            rs.getString("last_name"),
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            new Role(
+                                    rs.getInt("role"),
+                                    rs.getString("role_name"),
+                                    rs.getString("role_description")
+                            ),
+                            rs.getBoolean("is_active"),
+                            rs.getString("avatar")
+                    );
+                    user.setRoleName(rs.getString("role_name"));
+                    users.add(user);
+                }
+            }
+        }
         return users;
     }
 
     @Override
     public User getUserById(int id) throws SQLException {
         User user = null;
-        String sql ="SELECT u.*,r.name as role_name,r.description as role_description\n" +
-                    "FROM user u\n" +
-                    "JOIN role r\n" +
-                    "ON u.role = r.id\n" +
-                    "WHERE u.id = ?";
+        String sql = "SELECT u.*,r.name as role_name,r.description as role_description\n" +
+                "FROM user u\n" +
+                "JOIN role r\n" +
+                "ON u.role = r.id " +
+                "WHERE u.id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -100,11 +208,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByUsername(String username) throws SQLException {
         User user = null;
-        String sql ="SELECT u.*,r.name as role_name,r.description as role_description\n" +
-                    "FROM user u\n" +
-                    "JOIN role r\n" +
-                    "ON u.role = r.id\n" +
-                    "WHERE u.username = ?";
+        String sql = "SELECT u.*,r.name as role_name,r.description as role_description\n" +
+                "FROM user u\n" +
+                "JOIN role r\n" +
+                "ON u.role = r.id\n" +
+                "WHERE u.username = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

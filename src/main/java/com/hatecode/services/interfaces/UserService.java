@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface UserService {
-    List<User> getUsers() throws SQLException;
+    List<User> getUsers(String kw,int roleId) throws SQLException;
     User getUserById(int id) throws SQLException;
     User getUserByUsername(String username) throws SQLException;
     boolean addUser(User user) throws SQLException;

@@ -27,7 +27,6 @@ public class RoleServiceImpl implements RoleService {
                 roles.add(role);
             }
         }
-
         return roles;
     }
 
