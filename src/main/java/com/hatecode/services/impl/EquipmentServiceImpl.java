@@ -1,6 +1,5 @@
 package com.hatecode.services.impl;
 
-
 import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintainance;
@@ -59,7 +58,6 @@ public class EquipmentServiceImpl implements EquipmentService {
                         ),
                         rs.getString("description")
                 );
-                e.setStatusName(rs.getString("status_name"));
                 res.add(e);
             }
         }
@@ -119,7 +117,6 @@ public class EquipmentServiceImpl implements EquipmentService {
                         ),
                         rs.getString("description")
                 );
-                e.setStatusName(rs.getString("status_name"));
                 res.add(e);
             }
         }

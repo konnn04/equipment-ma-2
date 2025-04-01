@@ -17,7 +17,6 @@ public class Equipment {
     private Date importDate;
     private Status status;
     private Category category;
-    private String statusName;
     private String description;
 
     public Equipment() {
@@ -88,14 +87,6 @@ public class Equipment {
 
     public void setImport_date(Date import_date) {
         this.importDate = import_date;
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
     }
 
     public String getDescription() {
