@@ -2,8 +2,8 @@ package com.hatecode.services.impl;
 
 //import com.hatecode.pojo.Image;
 
+import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Role;
-import javafx.scene.image.Image;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
 
@@ -22,81 +22,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUsers(String kw, int roleId) throws SQLException {
-//        List<User> users = new ArrayList<>();
-//
-//        try (Connection conn = JdbcUtils.getConn()) {
-//            PreparedStatement stm = null;
-//            String sql = "";
-//
-//            if (roleId == 0) {
-//                if (kw == null) {
-//                    kw = "";
-//                }
-//                sql = "SELECT u.*,r.name as role_name,r.description as role_description\n" +
-//                        "FROM user u\n" +
-//                        "JOIN role r\n" +
-//                        "ON u.role = r.id\n" +
-//                        "WHERE (u.username like concat('%',?,'%') OR COALESCE(u.id, 0) = ?)\n";
-//                stm = conn.prepareCall(sql);
-//                stm.setString(1,kw);
-//                stm.setString(2,kw);
-//            }
-//            else {
-//                if (kw == null) {
-//                    kw = "";
-//                    sql = "SELECT u.*,r.name as role_name,r.description as role_description\n" +
-//                            "FROM user u\n" +
-//                            "JOIN role r\n" +
-//                            "ON u.role = r.id\n" +
-//                            "WHERE u.role = ?";
-//                } else {
-//                    sql = "SELECT u.*,r.name as role_name,r.description as role_description\n" +
-//                            "FROM user u\n" +
-//                            "JOIN role r\n" +
-//                            "ON u.role = r.id\n" +
-//                            "WHERE (u.username like concat('%',?,'%') OR COALESCE(u.id, 0) = ?)\n" +
-//                            "AND u.role = ?\n";
-//                }
-//                stm = conn.prepareCall(sql);
-//                stm.setString(1,kw);
-//                stm.setString(2,kw);
-//                stm.setInt(3,roleId);
-//            }
-//            System.out.println(sql);
-//
-//
-//            ResultSet rs = stm.executeQuery();
-//
-//            while (rs.next()) {
-//                User user = new User(
-//                        rs.getInt("id"),
-//                        rs.getString("first_name"),
-//                        rs.getString("last_name"),
-//                        rs.getString("username"),
-//                        rs.getString("password"),
-//                        rs.getString("email"),
-//                        rs.getString("phone"),
-//                        new Role(
-//                                rs.getInt("role"),
-//                                rs.getString("role_name"),
-//                                rs.getString("role_description")
-//                        ),
-//                        rs.getBoolean("is_active"),
-//                        rs.getString("avatar")
-//                );
-//                user.setRoleName(rs.getString("role_name"));
-//                users.add(user);
-//            }
-//        }
-//
-//        return users;
-
         List<User> users = new ArrayList<>();
 
         if (kw == null) kw = "";
 
-        String sql = "SELECT u.*, r.name as role_name, r.description as role_description " +
-                "FROM user u JOIN role r ON u.role = r.id " +
+        String sql = "SELECT u.*, i.*, r.name as role_name, r.description as role_description " +
+                "FROM user u JOIN image i ON u.avatar = i.id JOIN role r ON u.role = r.id " +
                 "WHERE 1=1 "; // Điều kiện luôn đúng để dễ thêm AND
 
         // Thêm điều kiện tìm kiếm
@@ -152,7 +83,11 @@ public class UserServiceImpl implements UserService {
                                     rs.getString("role_description")
                             ),
                             rs.getBoolean("is_active"),
-                            rs.getString("avatar")
+                            new Image(
+                                    rs.getString("filename"),
+                                    rs.getDate("create_date").toLocalDate().atStartOfDay(),
+                                    rs.getString("path")
+                            )
                     );
                     user.setRoleName(rs.getString("role_name"));
                     users.add(user);
@@ -165,8 +100,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(int id) throws SQLException {
         User user = null;
-        String sql = "SELECT u.*,r.name as role_name,r.description as role_description\n" +
+        String sql = "SELECT u.*, i.*, r.name as role_name,r.description as role_description\n" +
                 "FROM user u\n" +
+                "JOIN image i\n"+
+                "ON u.avatar = i.id\n"+
                 "JOIN role r\n" +
                 "ON u.role = r.id " +
                 "WHERE u.id = ?";
@@ -199,7 +136,11 @@ public class UserServiceImpl implements UserService {
                             rs.getString("role_description")
                     ),
                     rs.getBoolean("is_active"),
-                    rs.getString("avatar")
+                    new Image(
+                            rs.getString("filename"),
+                            rs.getDate("create_date").toLocalDate().atStartOfDay(),
+                            rs.getString("path")
+                    )
             );
         }
         return user;
@@ -226,22 +167,60 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean addUser(User user) throws SQLException {
-        String sql = "INSERT INTO User (first_name, last_name, username, password, email, phone, role, is_active) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        Connection conn = null;
+        try {
+            conn = JdbcUtils.getConn();
+            conn.setAutoCommit(false); // Bắt đầu transaction
 
-        try (Connection conn = JdbcUtils.getConn();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            // 1. Thêm Image trước
+            if (user.getAvatar() != null) {
+                String sqlImage = "INSERT INTO image (filename, create_date, path) VALUES (?, ?, ?)";
+                try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
+                    pstmt.setString(1, user.getAvatar().getFilename());
+                    pstmt.setTimestamp(2, Timestamp.valueOf(user.getAvatar().getCreateDate()));
+                    pstmt.setString(3, user.getAvatar().getPath());
 
-            pstmt.setString(1, user.getFirstName());
-            pstmt.setString(2, user.getLastName());
-            pstmt.setString(3, user.getUsername());
-            pstmt.setString(4, user.getPassword());
-            pstmt.setString(5, user.getEmail());
-            pstmt.setString(6, user.getPhone());
-            pstmt.setInt(7, user.getRole().getId());
-            pstmt.setBoolean(8, user.isActive());
+                    pstmt.executeUpdate();
 
-            return pstmt.executeUpdate() > 0;
+                    // Lấy ID vừa tạo
+                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            user.getAvatar().setId(rs.getInt(1));
+                        }
+                    }
+                }
+            }
+
+            // 2. Thêm User
+            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
+                pstmt.setString(1, user.getFirstName());
+                pstmt.setString(2, user.getLastName());
+                pstmt.setString(3, user.getUsername());
+                pstmt.setString(4, user.getPassword());
+                pstmt.setString(5, user.getEmail());
+                pstmt.setString(6, user.getPhone());
+                pstmt.setInt(7, user.getRole().getId());
+                pstmt.setBoolean(8, user.isActive());
+
+                // Set image_id hoặc null
+                if (user.getAvatar() != null) {
+                    pstmt.setInt(9, user.getAvatar().getId());
+                } else {
+                    pstmt.setNull(9, 1);
+                }
+
+                pstmt.executeUpdate();
+            }
+
+            conn.commit(); // Commit transaction
+            return true;
+        } catch (SQLException e) {
+            if (conn != null) conn.rollback(); // Rollback nếu có lỗi
+            throw e;
+        } finally {
+            if (conn != null) conn.setAutoCommit(true);
         }
     }
 
@@ -298,7 +277,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getUserImage(User user) {
         try {
-            String imgUrl = cloudiServices.getImageUrl(user.getAvatar());
+            String imgUrl = cloudiServices.getImageUrl(user.getAvatar().getPath());
             return imgUrl;
         } catch (SQLException ex) {
             Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
