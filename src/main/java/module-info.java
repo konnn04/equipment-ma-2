@@ -12,6 +12,8 @@ module com.hatecode.equipmentma2 {
 
     requires java.desktop;
 
+    requires dotenv.java;
+
 
     opens com.hatecode.equipmentma2 to javafx.fxml;
     exports com.hatecode.equipmentma2;

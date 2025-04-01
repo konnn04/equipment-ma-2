@@ -2,8 +2,10 @@ package com.hatecode.equipmentma2;
 
 import com.hatecode.pojo.Role;
 import com.hatecode.pojo.User;
+import com.hatecode.services.impl.ImageServiceImpl;
 import com.hatecode.services.impl.RoleServiceImpl;
 import com.hatecode.services.impl.UserServiceImpl;
+import com.hatecode.services.interfaces.ImageService;
 import com.hatecode.services.interfaces.RoleService;
 import com.hatecode.services.interfaces.UserService;
 import com.hatecode.utils.ExtractImageIdUtils;
@@ -39,30 +41,44 @@ public class UserController implements Initializable {
     private TextField txtSearchUser;
 
     // Các control cho phần chi tiết
-    @FXML private TextField userIdField;
-    @FXML private TextField firstNameField;
-    @FXML private TextField lastNameField;
-    @FXML private TextField usernameField;
-    @FXML private TextField passwordField;
-    @FXML private TextField emailField;
-    @FXML private TextField phoneField;
-    @FXML private ComboBox<Role> roleComboBox;
-    @FXML private CheckBox isActiveCheckBox;
-    @FXML private ImageView avatarImageView;
-    @FXML private Button changeAvatarButton;
-    @FXML private Button saveButton;
-    @FXML private Button newUserButton;
+    @FXML
+    private TextField userIdField;
+    @FXML
+    private TextField firstNameField;
+    @FXML
+    private TextField lastNameField;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private TextField passwordField;
+    @FXML
+    private TextField emailField;
+    @FXML
+    private TextField phoneField;
+    @FXML
+    private ComboBox<Role> roleComboBox;
+    @FXML
+    private CheckBox isActiveCheckBox;
+    @FXML
+    private ImageView avatarImageView;
+    @FXML
+    private Button changeAvatarButton;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button newUserButton;
+    @FXML
+    private Button deleteUserButton;
 
     private File selectedAvatarFile;
     private User currentUser;
-
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             loadColumn();
-            loadUsers(null,0);
+            loadUsers(null, 0);
             loadRole();
             setupHandler();
             setupDetailForm();
@@ -73,7 +89,7 @@ public class UserController implements Initializable {
     }
 
     // Load danh sách các cột chỉ định
-    public void loadColumn(){
+    public void loadColumn() {
         TableColumn colId = users.getColumns().get(0);
         colId.setCellValueFactory(new PropertyValueFactory("id"));
 
@@ -84,10 +100,10 @@ public class UserController implements Initializable {
         colRole.setCellValueFactory(new PropertyValueFactory("roleName"));
     }
 
-    public void loadUsers(String kw,int roleId){
+    public void loadUsers(String kw, int roleId) {
         UserService services = new UserServiceImpl();
         try {
-            List<User> res = services.getUsers(kw,roleId);
+            List<User> res = services.getUsers(kw, roleId);
             this.users.setItems(FXCollections.observableList(res));
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -103,10 +119,10 @@ public class UserController implements Initializable {
         roleComboBox.setItems(roleObList);
     }
 
-    private void setupHandler(){
+    private void setupHandler() {
         // Tìm kiếm
         this.txtSearchUser.textProperty().addListener(e -> {
-            if(roles.getSelectionModel().getSelectedItem() == null) {
+            if (roles.getSelectionModel().getSelectedItem() == null) {
                 loadUsers(this.txtSearchUser.getText(), 0);
             } else {
                 loadUsers(this.txtSearchUser.getText(), roles.getSelectionModel().getSelectedItem().getId());
@@ -141,14 +157,30 @@ public class UserController implements Initializable {
         });
 
         // Nút lưu
-        saveButton.setOnAction(e -> saveUser());
+        saveButton.setOnAction(e -> {
+            try {
+                saveUser();
+            } catch (SQLException | NoSuchAlgorithmException | InvalidKeySpecException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         // Nút đổi avatar
         changeAvatarButton.setOnAction(e -> changeAvatar());
+
+        // Nút xóa
+        deleteUserButton.setOnAction(e -> {
+            try {
+                deleteUser();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
 
     private void showUserDetails(User user) {
         this.currentUser = user;
+        System.out.println(user.getAvatar().getId());
 
         // Hiển thị thông tin user lên form
         userIdField.setText(String.valueOf(user.getId()));
@@ -195,43 +227,44 @@ public class UserController implements Initializable {
     }
 
     private void createNewUser() throws NoSuchAlgorithmException, InvalidKeySpecException, SQLException {
-//        if(this.currentUser != null){
-//            clearForm();
-//        }
-        String salt = PasswordUtils.generateSalt();
-        String hashedPassword = PasswordUtils.hashPassword(passwordField.getText(),salt);
-        Role selectedRole = roleComboBox.getSelectionModel().getSelectedItem();
-        UserService services = new UserServiceImpl();
-        com.hatecode.pojo.Image avatar = null;
-        if(selectedAvatarFile != null){
-            String imgUrl = services.uploadUserImage(selectedAvatarFile);
-            String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
-            avatar = new com.hatecode.pojo.Image(
-                    fileName,
-                    LocalDateTime.now(),
-                    imgUrl
-            );
-        }
+        try {
+            String salt = PasswordUtils.generateSalt();
+            String hashedPassword = PasswordUtils.hashPassword(passwordField.getText(), salt);
+            Role selectedRole = roleComboBox.getSelectionModel().getSelectedItem();
+            UserService services = new UserServiceImpl();
+            com.hatecode.pojo.Image avatar = null;
+            if (selectedAvatarFile != null) {
+                String imgUrl = services.uploadUserImage(selectedAvatarFile);
+                String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
+                avatar = new com.hatecode.pojo.Image(
+                        fileName,
+                        LocalDateTime.now(),
+                        imgUrl
+                );
+            }
 
-        this.currentUser = new User(
-                firstNameField.getText(),
-                lastNameField.getText(),
-                usernameField.getText(),
-                hashedPassword,
-                emailField.getText(),
-                phoneField.getText(),
-                selectedRole,
-                isActiveCheckBox.isSelected(),
-                avatar
-        );
-        if(services.addUser(currentUser)){
-            showInfoAlert("Succesfully","Add new user Successfully");
-            loadUsers(null,0);
+            this.currentUser = new User(
+                    firstNameField.getText(),
+                    lastNameField.getText(),
+                    usernameField.getText(),
+                    hashedPassword,
+                    emailField.getText(),
+                    phoneField.getText(),
+                    selectedRole,
+                    isActiveCheckBox.isSelected(),
+                    avatar
+            );
+            if (services.addUser(currentUser)) {
+                showInfoAlert("Succesfully", "Add new user Successfully");
+                loadUsers(null, 0);
+            } else {
+                showErrorAlert("Failed", "Error", "Failed to add new user");
+            }
+            clearForm();
+        } catch (Exception e) {
+            showErrorAlert("Error", "Error", "Failed when add user");
+            throw e;
         }
-        else{
-            showErrorAlert("Failed","Error","Failed to add new user");
-        }
-        clearForm();
     }
 
     private void clearForm() {
@@ -263,32 +296,53 @@ public class UserController implements Initializable {
         }
     }
 
-    private void saveUser() {
+    private void saveUser() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
         try {
             UserService userService = new UserServiceImpl();
 
             // Cập nhật thông tin từ form vào đối tượng user
             currentUser.setFirstName(firstNameField.getText());
             currentUser.setLastName(lastNameField.getText());
-            currentUser.setPassword(passwordField.getText());
+            if (passwordField.getText().isEmpty() || passwordField.getText() == null) { // Không thay đổi mật khẩu
+                currentUser.setPassword(currentUser.getPassword());
+            } else { // Thay đổi mật khẩu
+                String salt = PasswordUtils.generateSalt();
+                String hashedPassword = PasswordUtils.hashPassword(passwordField.getText(), salt);
+                currentUser.setPassword(hashedPassword);
+            }
             currentUser.setUsername(usernameField.getText());
             currentUser.setEmail(emailField.getText());
             currentUser.setPhone(phoneField.getText());
-            currentUser.setRole(roleComboBox.getValue());
+            currentUser.setRole(roleComboBox.getSelectionModel().getSelectedItem());
             currentUser.setActive(isActiveCheckBox.isSelected());
 
-//            if (selectedAvatarFile != null) {
-//                currentUser.setAvatar(selectedAvatarFile.getAbsolutePath());
-//            }
 
             if (currentUser.getId() == 0) {
                 // Thêm mới
                 userService.addUser(currentUser);
                 showInfoAlert("Thành công", "Thêm người dùng thành công");
             } else {
-                // Cập nhật
-                userService.updateUser(currentUser);
-                showInfoAlert("Thành công", "Cập nhật người dùng thành công");
+                com.hatecode.pojo.Image currUserImg = null;
+                if (selectedAvatarFile != null) {
+                    UserService services = new UserServiceImpl();
+                    String imgUrl = services.uploadUserImage(selectedAvatarFile);
+                    ImageService imgServices = new ImageServiceImpl();
+                    String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
+                    // Nếu là hình mặc định thì tạo mới
+                    if (currentUser.getAvatar().getId() == 1) {
+                        currUserImg = new com.hatecode.pojo.Image();
+                        currUserImg.setId(0);
+                    } else {
+                        currUserImg = imgServices.getImageById(currentUser.getAvatar().getId());
+                    }
+                    currUserImg.setFilename(fileName);
+                    currUserImg.setPath(imgUrl);
+                    currUserImg.setCreateDate(LocalDateTime.now());
+                }
+                if (userService.updateUser(currentUser, currUserImg)) {
+                    showInfoAlert("Thành công", "Cập nhật người dùng thành công");
+                    loadUsers(null, 0);
+                }
             }
 
             // Làm mới danh sách
@@ -298,25 +352,11 @@ public class UserController implements Initializable {
 
         } catch (SQLException e) {
             showErrorAlert("Lỗi", "Không thể lưu người dùng", e.getMessage());
+            throw e;
         } catch (Exception e) {
             showErrorAlert("Lỗi", "Dữ liệu không hợp lệ", e.getMessage());
+            throw e;
         }
-    }
-
-    private void showErrorAlert(String title, String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    private void showInfoAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 
     private void setupDetailForm() {
@@ -345,4 +385,50 @@ public class UserController implements Initializable {
         });
     }
 
+    private void deleteUser() throws SQLException {
+        if (currentUser == null || currentUser.getId() == 0) {
+            showErrorAlert("Error", "No User Selected", "Please select a user to delete.");
+            return;
+        }
+
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Confirm Deletion");
+        confirmation.setHeaderText("Delete User");
+        confirmation.setContentText("Are you sure you want to delete user: " + currentUser.getUsername() + "?");
+
+        confirmation.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    UserService userService = new UserServiceImpl();
+                    if (userService.deleteUser(currentUser.getId())) {
+                        showInfoAlert("Success", "User deleted successfully");
+                        loadUsers(txtSearchUser.getText(),
+                                roles.getSelectionModel().getSelectedItem() != null ?
+                                        roles.getSelectionModel().getSelectedItem().getId() : 0);
+                        clearForm();
+                    } else {
+                        showErrorAlert("Error", "Deletion Failed", "Failed to delete user");
+                    }
+                } catch (SQLException e) {
+                    showErrorAlert("Error", "Database Error", e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void showErrorAlert(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void showInfoAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 }

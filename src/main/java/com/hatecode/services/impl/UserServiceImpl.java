@@ -4,6 +4,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Role;
+import com.hatecode.utils.ExtractImageIdUtils;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
 
@@ -26,9 +27,9 @@ public class UserServiceImpl implements UserService {
 
         if (kw == null) kw = "";
 
-        String sql = "SELECT u.*, i.*, r.name as role_name, r.description as role_description " +
+        String sql = "SELECT u.*, i.id as avatar_id,i.filename,i.create_date,i.path, r.name as role_name, r.description as role_description " +
                 "FROM user u JOIN image i ON u.avatar = i.id JOIN role r ON u.role = r.id " +
-                "WHERE 1=1 "; // Điều kiện luôn đúng để dễ thêm AND
+                "WHERE 1=1 ";
 
         // Thêm điều kiện tìm kiếm
         if (!kw.isEmpty()) {
@@ -84,6 +85,7 @@ public class UserServiceImpl implements UserService {
                             ),
                             rs.getBoolean("is_active"),
                             new Image(
+                                    rs.getInt("avatar_id"),
                                     rs.getString("filename"),
                                     rs.getDate("create_date").toLocalDate().atStartOfDay(),
                                     rs.getString("path")
@@ -102,8 +104,8 @@ public class UserServiceImpl implements UserService {
         User user = null;
         String sql = "SELECT u.*, i.*, r.name as role_name,r.description as role_description\n" +
                 "FROM user u\n" +
-                "JOIN image i\n"+
-                "ON u.avatar = i.id\n"+
+                "JOIN image i\n" +
+                "ON u.avatar = i.id\n" +
                 "JOIN role r\n" +
                 "ON u.role = r.id " +
                 "WHERE u.id = ?";
@@ -208,7 +210,7 @@ public class UserServiceImpl implements UserService {
                 if (user.getAvatar() != null) {
                     pstmt.setInt(9, user.getAvatar().getId());
                 } else {
-                    pstmt.setNull(9, 1);
+                    pstmt.setInt(9, 1);
                 }
 
                 pstmt.executeUpdate();
@@ -246,15 +248,76 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean updateUser(User user, Image newImage) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = JdbcUtils.getConn();
+            conn.setAutoCommit(false); // Bắt đầu transaction
+            int newImgId = 1;
+            if (newImage != null) {
+                String sqlImage = "";
+                if (newImage.getId() != 0) {
+                    sqlImage = "UPDATE image SET filename = ?, create_date = ?, path = ? WHERE id = ?";
+                    this.deleteUserImage(user.getAvatar().getPath());
+                } else {
+                    sqlImage = "INSERT INTO image (filename, create_date, path) VALUES (?, ?, ?)";
+                }
+
+                try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
+                    pstmt.setString(1, newImage.getFilename());
+                    pstmt.setTimestamp(2, Timestamp.valueOf(newImage.getCreateDate()));
+                    pstmt.setString(3, newImage.getPath());
+                    if (newImage.getId() != 0) {
+                        pstmt.setInt(4, newImage.getId());
+                    }
+                    pstmt.executeUpdate();
+
+                    if (newImage.getId() == 0)
+                        try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                            if (rs.next()) {
+                                newImgId = rs.getInt(1);
+                            }
+                        }
+                    else
+                        newImgId = user.getAvatar().getId();
+                }
+            }
+            String sql = "UPDATE User SET first_name = ?, last_name = ?,username = ?, password = ?, " +
+                    "email = ?, phone = ?, role = ?, is_active = ?, avatar = ? WHERE id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, user.getFirstName());
+                pstmt.setString(2, user.getLastName());
+                pstmt.setString(3, user.getUsername());
+                pstmt.setString(4, user.getPassword());
+                pstmt.setString(5, user.getEmail());
+                pstmt.setString(6, user.getPhone());
+                pstmt.setInt(7, user.getRole().getId());
+                pstmt.setBoolean(8, user.isActive());
+                pstmt.setInt(9, newImgId);
+                pstmt.setInt(10, user.getId());
+                pstmt.executeUpdate();
+            }
+
+            conn.commit(); // Commit transaction
+            return true;
+        } catch (SQLException e) {
+            if (conn != null) conn.rollback(); // Rollback nếu có lỗi
+            throw e;
+        } finally {
+            if (conn != null) conn.setAutoCommit(true);
+        }
+    }
+
+    @Override
     public boolean deleteUser(int id) throws SQLException {
         String sql = "DELETE FROM User WHERE id = ?";
+        User u = getUserById(id);
+        boolean b = deleteUserImage(u.getAvatar().getPath());
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, id);
-
-            return pstmt.executeUpdate() > 0;
+            return (pstmt.executeUpdate() > 0 && b);
         }
     }
 
