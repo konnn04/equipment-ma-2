@@ -6,6 +6,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
+import com.hatecode.pojo.Status;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.CategoryService;
 import com.hatecode.services.interfaces.StatusService;
@@ -44,7 +45,13 @@ public class CategoryServiceImpl implements CategoryService {
         StatusService statusService = new StatusServiceImpl();
         List<Equipment> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT * FROM equipment WHERE category = ?";
+            String sql = "SELECT e.*, s.id AS status_id, s.name AS status_name, s.description AS status_description, " +
+                    "c.id AS category_id, c.name AS category_name "+
+                    "FROM equipment e " +
+                    "LEFT JOIN Status s ON e.status = s.id " +
+                    "LEFT JOIN Category c ON e.category = c.id " +
+                    "WHERE c.id = ?";
+            // Truy vấn để lấy thông tin thiết bị dựa trên id của bản ghi bảo trì
             PreparedStatement stm = conn.prepareCall(sql);
             stm.setInt(1, id);
 
@@ -55,8 +62,17 @@ public class CategoryServiceImpl implements CategoryService {
                         rs.getString("code"),
                         rs.getString("name"),
                         rs.getDate("import_date"),
-                        statusService.getStatusById(rs.getInt("status")),
-                        rs.getInt("category"));
+                        new Status(
+                                rs.getInt("status_id"),
+                                rs.getString("status_name"),
+                                rs.getString("status_description")
+                        ),
+                        new Category(
+                                rs.getInt("category_id"),
+                                rs.getString("category_name")
+                        ),
+                        rs.getString("description")
+                );
                 res.add(e);
             }
             return res;

@@ -1,8 +1,10 @@
 package com.hatecode.services.impl;
 
 
+import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintainance;
+import com.hatecode.pojo.Status;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.EquipmentService;
 import com.hatecode.services.interfaces.StatusService;
@@ -12,7 +14,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -27,11 +31,14 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public List<Equipment> getEquipments() throws SQLException {
-        StatusService statusService = new StatusServiceImpl();
         List<Equipment> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT e.*, s.name AS status_name FROM equipment e " +
-                    "LEFT JOIN Status s ON e.status = s.id";
+            String sql = "SELECT e.*, s.id AS status_id, s.name AS status_name, s.description AS status_description, " +
+                    "c.id AS category_id, c.name AS category_name " +
+                    "FROM equipment e " +
+                    "LEFT JOIN Status s ON e.status = s.id " +
+                    "LEFT JOIN Category c ON e.category = c.id";
+
             PreparedStatement stm = conn.prepareStatement(sql);
             ResultSet rs = stm.executeQuery();
 
@@ -41,8 +48,16 @@ public class EquipmentServiceImpl implements EquipmentService {
                         rs.getString("code"),
                         rs.getString("name"),
                         rs.getDate("import_date"),
-                        statusService.getStatusById(rs.getInt("status")),
-                        rs.getInt("status")
+                        new Status(
+                                rs.getInt("status_id"),
+                                rs.getString("status_name"),
+                                rs.getString("status_description")
+                        ),
+                        new Category(
+                                rs.getInt("category_id"),
+                                rs.getString("category_name")
+                        ),
+                        rs.getString("description")
                 );
                 e.setStatusName(rs.getString("status_name"));
                 res.add(e);
@@ -60,18 +75,22 @@ public class EquipmentServiceImpl implements EquipmentService {
         pageSize = Math.max(1, pageSize);
         StatusService statusService = new StatusServiceImpl();
         List<Equipment> res = new ArrayList<>();
+        System.out.println(key+ " == " + value);
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT e.*, s.name AS status_name FROM equipment e " +
-                    "LEFT JOIN Status s ON e.status = s.id WHERE (e.code LIKE CONCAT('%', ?, '%') " +
-                    "OR e.name LIKE CONCAT('%', ?, '%')) ";
+            String sql = "SELECT e.*, s.id AS status_id, s.name AS status_name, s.description AS status_description, " +
+                    "c.id AS category_id, c.name AS category_name " +
+                    "FROM equipment e " +
+                    "LEFT JOIN Status s ON e.status = s.id " +
+                    "LEFT JOIN Category c ON e.category = c.id " +
+                    "WHERE (e.code LIKE ? OR e.name LIKE ?) ";
             boolean b = key != null && !key.isEmpty() && value != null && !value.isEmpty();
             if (b) {
-                sql += "AND " + key + " = ?";
+                sql += "AND (" + key.toLowerCase() + " = ?)";
             }
             sql += " LIMIT ?, ?";
             PreparedStatement stm = conn.prepareStatement(sql);
-            stm.setString(1, query);
-            stm.setString(2, query);
+            stm.setString(1, "%" + query + "%");
+            stm.setString(2, "%" + query + "%");
             if (b) {
                 stm.setString(3, value);
                 stm.setInt(4, (page - 1) * pageSize);
@@ -89,8 +108,16 @@ public class EquipmentServiceImpl implements EquipmentService {
                         rs.getString("code"),
                         rs.getString("name"),
                         rs.getDate("import_date"),
-                        statusService.getStatusById(rs.getInt("status")),
-                        rs.getInt("status")
+                        new Status(
+                                rs.getInt("status_id"),
+                                rs.getString("status_name"),
+                                rs.getString("status_description")
+                        ),
+                        new Category(
+                                rs.getInt("category_id"),
+                                rs.getString("category_name")
+                        ),
+                        rs.getString("description")
                 );
                 e.setStatusName(rs.getString("status_name"));
                 res.add(e);
@@ -152,7 +179,7 @@ public class EquipmentServiceImpl implements EquipmentService {
             stm.setString(1, e.getCode());
             stm.setString(2, e.getName());
             stm.setInt(3, e.getStatus().getId());
-            stm.setInt(4, e.getCategory());
+            stm.setInt(4, e.getCategory().getId());
             stm.setDate(5, new java.sql.Date(e.getImportDate().getTime()));
 
             int rowsAffected = stm.executeUpdate();
@@ -168,7 +195,7 @@ public class EquipmentServiceImpl implements EquipmentService {
             stm.setString(1, e.getCode());
             stm.setString(2, e.getName());
             stm.setInt(3, e.getStatus().getId());
-            stm.setInt(4, e.getCategory());
+            stm.setInt(4, e.getCategory().getId());
             stm.setDate(5, new java.sql.Date(e.getImportDate().getTime()));
             stm.setInt(6, e.getId());
 
@@ -187,5 +214,25 @@ public class EquipmentServiceImpl implements EquipmentService {
             int rowsAffected = stm.executeUpdate();
             return rowsAffected > 0; // Trả về true nếu có ít nhất một dòng được xóa
         }
+    }
+
+    @Override
+    public List<Object> getDistinctValues(String columnName) throws SQLException {
+        List<Object> distinctValues = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT DISTINCT " + columnName + " FROM equipment";
+            PreparedStatement stm = conn.prepareStatement(sql);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                if (columnName.equals("status")) {
+                    distinctValues.add(rs.getInt(columnName));
+                } else if (columnName.equals("category")) {
+                    distinctValues.add(rs.getInt(columnName));
+                } else {
+                    distinctValues.add(rs.getString(columnName));
+                }
+            }
+        }
+        return distinctValues;
     }
 }

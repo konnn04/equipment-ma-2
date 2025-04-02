@@ -23,28 +23,4 @@ public class Controller {
         welcomeText.setText("Welcome to JavaFX Application!");
     }
 
-    @FXML
-    private void openPopup() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("addEquipment-view.fxml"));
-            VBox root = loader.load();
-
-            Stage popupStage = new Stage();
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.setTitle("Popup Window");
-            popupStage.setScene(new Scene(root));
-
-            AddEquipmentController addEquipmentController = loader.getController();
-            addEquipmentController.setStage(popupStage);
-
-            popupStage.showAndWait();
-
-            ObservableList<Equipment> result = addEquipmentController.getResult();
-            if (result != null) {
-                System.out.println(result.size());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

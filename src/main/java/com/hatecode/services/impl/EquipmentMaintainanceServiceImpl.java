@@ -4,8 +4,10 @@
  */
 package com.hatecode.services.impl;
 
+import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintainance;
+import com.hatecode.pojo.Status;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.EquipmentMaintainanceService;
 import com.hatecode.services.interfaces.StatusService;
@@ -48,9 +50,10 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
         Equipment equipment = null;
         try (Connection conn = JdbcUtils.getConn()) {
             // Truy vấn để lấy thông tin thiết bị dựa trên id của bản ghi bảo trì
-            String sql = "SELECT e.* FROM equipment e "
-                    + "JOIN equipment_maintenance em ON e.id = em.equipment_id "
-                    + "WHERE em.id = ?";
+            String sql = "SELECT e.*, s.id AS status_id, s.name AS status_name, s.description AS status_description "+
+                    "c.id AS category_id, c.name AS category_name"+
+                    "JOIN equipment_maintenance em ON e.id = em.equipment_id "+
+                    "WHERE em.id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setInt(1, id); // Thiết lập giá trị tham số cho id của bản ghi bảo trì
             ResultSet rs = stm.executeQuery();
@@ -62,8 +65,16 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
                         rs.getString("code"),
                         rs.getString("name"),
                         rs.getDate("import_date"),
-                        statusService.getStatusById(rs.getInt("status")),
-                        rs.getInt("status")
+                        new Status(
+                                rs.getInt("status_id"),
+                                rs.getString("status_name"),
+                                rs.getString("status_description")
+                        ),
+                        new Category(
+                                rs.getInt("category_id"),
+                                rs.getString("category_name")
+                        ),
+                        rs.getString("description")
                 );
             }
         }

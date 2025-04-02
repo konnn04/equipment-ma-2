@@ -323,8 +323,11 @@ public class UserServiceImpl implements UserService {
 
     // https://res.cloudinary.com/dg66aou8q/image/upload/v1743086605/dysaruyl1ye7xejpakbp.png
     @Override
-    public boolean authenticateUser(String username, String password) throws SQLException {
-        String sql = "SELECT * FROM User WHERE username = ? AND password = ? AND is_active = 1";
+    public User authenticateUser(String username, String password) throws SQLException {
+        String sql = "SELECT *, r.id AS role, r.name AS role_name, r.description AS role_description " +
+                "FROM User u " +
+                "LEFT JOIN Role r ON u.role = r.id " +
+                "WHERE username = ? AND password = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -332,9 +335,27 @@ public class UserServiceImpl implements UserService {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             ResultSet rs = pstmt.executeQuery();
-
-            return rs.next();
+            if (rs.next()) {
+                return new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        new Role(
+                                rs.getInt("role"),
+                                rs.getString("role_name"),
+                                rs.getString("role_description")),
+                        rs.getBoolean("is_active"),
+                        rs.getString("avatar")
+                );
+            }
+        } catch (SQLException ex) {
+            return null;
         }
+        return null;
     }
 
     @Override
