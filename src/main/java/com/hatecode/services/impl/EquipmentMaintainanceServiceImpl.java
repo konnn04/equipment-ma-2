@@ -111,11 +111,11 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
                 stm.setInt(3, pageSize);
             }
 
-//            System.out.println(stm.toString());
+            System.out.println(stm.toString());
             ResultSet rs = stm.executeQuery();
 
             // Nếu có kết quả, tạo đối tượng Equipment từ dữ liệu trả về
-            if (rs.next()) {
+            while (rs.next()) {
                 EquipmentMaintainance maintainanceEquipment = new EquipmentMaintainance(
                            rs.getInt("id"),
                             es.getEquipmentById(rs.getInt("equipment_id")),
@@ -128,6 +128,7 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
                 maintainanceEquipments.add(maintainanceEquipment);
             }
         }
+        System.out.println("E size:"+maintainanceEquipments.size());
         return maintainanceEquipments;
     }
 

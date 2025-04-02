@@ -171,6 +171,7 @@ public class MaintenanceHistory {
             equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(kw, id, 1, PAGE_SIZE);
         else
             equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(null, id, 1, PAGE_SIZE);
+
         this.equipmentsTableViewTable.setItems(FXCollections.observableList(equipments));
     }
 

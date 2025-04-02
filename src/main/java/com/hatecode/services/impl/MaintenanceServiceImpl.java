@@ -111,7 +111,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             stmt.setInt(index++, (page - 1) * pageSize);
             stmt.setInt(index++, pageSize);
 
-//            System.out.println(stmt.toString());
+            System.out.println(stmt.toString());
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
