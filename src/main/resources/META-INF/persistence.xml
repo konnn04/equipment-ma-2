@@ -13,6 +13,17 @@
     <class>com.hatecode.pojo2.Image</class>
     <class>com.hatecode.pojo2.EquipmentMaintenance</class>
     <class>com.hatecode.pojo2.Equipment</class>
+    <class>com.hatecode.pojo.Category</class>
+    <class>com.hatecode.pojo.Role</class>
+    <class>com.hatecode.pojo.MaintenanceType</class>
+    <class>com.hatecode.pojo.Maintenance</class>
+    <class>com.hatecode.pojo.Image</class>
+    <class>com.hatecode.pojo.User</class>
+    <class>com.hatecode.pojo.Status</class>
+    <class>com.hatecode.pojo.EquipmentMaintenanceStatus</class>
+    <class>com.hatecode.pojo.EquipmentImage</class>
+    <class>com.hatecode.pojo.EquipmentMaintenance</class>
+    <class>com.hatecode.pojo.Equipment</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/equipmentma2?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="javax.persistence.jdbc.user" value="root"/>

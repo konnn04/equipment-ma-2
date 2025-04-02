@@ -1,10 +1,10 @@
 package com.hatecode.equipmentma2.controllers;
 
 import com.hatecode.equipmentma2.MainController;
-import com.hatecode.pojo.BaseObject;
-import com.hatecode.pojo.Category;
-import com.hatecode.pojo.Equipment;
-import com.hatecode.pojo.Status;
+import com.hatecode.models.BaseObject;
+import com.hatecode.models.Category;
+import com.hatecode.models.Equipment;
+import com.hatecode.models.Status;
 import com.hatecode.services.impl.CategoryServiceImpl;
 import com.hatecode.services.impl.EquipmentServiceImpl;
 import com.hatecode.services.impl.StatusServiceImpl;
@@ -15,6 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -38,6 +39,15 @@ public class EquipmentManager {
     private TextArea equipmentDescriptionTextField;
 
     private Button addEquipmentButton;
+    private Button updateEquipmentButton;
+    private Button saveEquipmentButton;
+    private Button cancelEquipmentButton;
+    private ComboBox<String> modeComboBox;
+    private Label modeLabel;
+    private Text lastMaintenanceDateTextField;
+    private DatePicker nextMaintenanceDatePicker;
+
+//    private boolean isCreateEquipment = false;
 
     public EquipmentManager(
             TableView<Equipment> equipmentTable,
@@ -48,8 +58,15 @@ public class EquipmentManager {
             TextField equipmentCodeTextField,
             TextField equipmentNameTextField,
             ComboBox<Status> statusEquipmentComboBox,
+            Text lastMaintenanceDateTextField,
+            DatePicker nextMaintenanceDatePicker,
             TextArea equipmentDescriptionTextField,
-            Button addEquipmentButton
+            Button addEquipmentButton,
+            Button saveEquipmentButton,
+            Button cancelEquipmentButton,
+            Button updateEquipmentButton,
+            ComboBox<String> modeComboBox,
+            Label modeLabel
     ) {
         this.equipmentTable = equipmentTable;
         this.equipmentQueryTextField = equipmentQueryTextField;
@@ -59,8 +76,16 @@ public class EquipmentManager {
         this.equipmentCodeTextField = equipmentCodeTextField;
         this.equipmentNameTextField = equipmentNameTextField;
         this.statusEquipmentComboBox = statusEquipmentComboBox;
+        this.nextMaintenanceDatePicker = nextMaintenanceDatePicker;
+        this.lastMaintenanceDateTextField = lastMaintenanceDateTextField;
         this.equipmentDescriptionTextField = equipmentDescriptionTextField;
         this.addEquipmentButton = addEquipmentButton;
+        this.updateEquipmentButton = updateEquipmentButton;
+        this.saveEquipmentButton = saveEquipmentButton;
+        this.cancelEquipmentButton = cancelEquipmentButton;
+        this.modeComboBox = modeComboBox;
+        this.modeLabel = modeLabel;
+
     }
 
     public void loadColumnEquipmentTableView() throws SQLException {
@@ -74,9 +99,22 @@ public class EquipmentManager {
 
         TableColumn<Equipment, String> equipmentTypeColumn = new TableColumn<>("Status");
         equipmentTypeColumn.setPrefWidth(200);
-        equipmentTypeColumn.setCellValueFactory(new PropertyValueFactory<>("statusName"));
+        equipmentTypeColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        this.equipmentTable.getColumns().addAll(equipmentIDColumn, equipmentNameColumn, equipmentTypeColumn);
+        TableColumn<Equipment, String> equipmentCategoryColumn = new TableColumn<>("Category");
+        equipmentCategoryColumn.setPrefWidth(300);
+        equipmentTypeColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+
+        TableColumn<Equipment, String> importDateColumn = new TableColumn<>("Import Date");
+        importDateColumn.setPrefWidth(200);
+        importDateColumn.setCellValueFactory(new PropertyValueFactory<>("importDate"));
+
+        this.equipmentTable.getColumns().addAll(
+                equipmentIDColumn,
+                equipmentNameColumn,
+                equipmentTypeColumn,
+                equipmentCategoryColumn,
+                importDateColumn);
     }
 
     /* Khởi tạo danh sách lọc trong bảng Equipment */
@@ -160,9 +198,76 @@ public class EquipmentManager {
             }
         });
 
+        updateEquipmentButton.setVisible(false);
+        saveEquipmentButton.setVisible(false);
+        modeComboBox.getItems().addAll("Viewing", "Editing");
+        modeComboBox.getSelectionModel().select(0);
+        saveEquipmentButton.setVisible(false);
+        cancelEquipmentButton.setVisible(false);
+        switchMode(true);
+
+        modeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                if (newSelection.equals("Editing")) {
+                    switchMode(false);
+                } else {
+                    switchMode(true);
+                }
+            }
+        });
+
         /* Bắt sự kiện khi click vào nút thêm thiết bị */
-//        public void setupAddEquipmentButton() {
-//
-//        }
+        addEquipmentButton.setOnAction(event -> {
+            addEquipmentButton.setDisable(true);
+            cancelEquipmentButton.setVisible(true);
+            saveEquipmentButton.setVisible(true);
+            modeComboBox.setVisible(false);
+
+            modeLabel.setText("Adding ");
+            equipmentCodeTextField.clear();
+            equipmentCodeTextField.setDisable(false);
+            equipmentNameTextField.clear();
+            equipmentNameTextField.setDisable(false);
+            statusEquipmentComboBox.getSelectionModel().select(0);
+            statusEquipmentComboBox.setDisable(false);
+            equipmentDescriptionTextField.clear();
+            equipmentDescriptionTextField.setDisable(false);
+        });
+
+        /* Bắt sự kiện huỷ  thêm thiết bị */
+        cancelEquipmentButton.setOnAction(event -> {
+            addEquipmentButton.setDisable(false);
+            cancelEquipmentButton.setVisible(false);
+            saveEquipmentButton.setVisible(false);
+            modeComboBox.setVisible(true);
+
+            equipmentCodeTextField.clear();
+            equipmentNameTextField.clear();
+            statusEquipmentComboBox.getSelectionModel().select(0);
+            equipmentDescriptionTextField.clear();
+            switchMode(true);
+        });
+
+    }
+
+    private void switchMode(Boolean isViewing) {
+        if (isViewing) {
+            modeLabel.setText("Viewing");
+            updateEquipmentButton.setVisible(false);
+            addEquipmentButton.setDisable(false);
+            equipmentCodeTextField.setDisable(true);
+            equipmentNameTextField.setDisable(true);
+            statusEquipmentComboBox.setDisable(true);
+            equipmentDescriptionTextField.setDisable(true);
+        } else {
+            modeLabel.setText("Editing");
+            updateEquipmentButton.setVisible(true);
+            addEquipmentButton.setDisable(true);
+            equipmentCodeTextField.setDisable(false);
+            equipmentNameTextField.setDisable(false);
+            statusEquipmentComboBox.setDisable(false);
+            equipmentDescriptionTextField.setDisable(false);
+
+        }
     }
 }

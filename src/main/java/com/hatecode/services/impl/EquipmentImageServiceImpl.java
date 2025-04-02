@@ -3,8 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.hatecode.services.impl;
-import com.hatecode.pojo.Image;
-import com.hatecode.pojo.EquipmentImage;
+import com.hatecode.models.Image;
+import com.hatecode.models.EquipmentImage;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.EquipmentImageService;
 import java.sql.Connection;

@@ -1,7 +1,7 @@
 package com.hatecode.services.impl;
 
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.pojo.MaintenanceType;
+import com.hatecode.models.MaintenanceType;
 import com.hatecode.services.interfaces.MaintenanceTypeService;
 
 import java.sql.*;

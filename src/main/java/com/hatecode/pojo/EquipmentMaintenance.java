@@ -2,9 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.hatecode.pojo2;
+package com.hatecode.pojo;
 
+import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +19,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
@@ -27,9 +31,11 @@ import javax.persistence.Table;
 @NamedQueries({
     @NamedQuery(name = "EquipmentMaintenance.findAll", query = "SELECT e FROM EquipmentMaintenance e"),
     @NamedQuery(name = "EquipmentMaintenance.findById", query = "SELECT e FROM EquipmentMaintenance e WHERE e.id = :id"),
-    @NamedQuery(name = "EquipmentMaintenance.findByPrice", query = "SELECT e FROM EquipmentMaintenance e WHERE e.price = :price")})
+    @NamedQuery(name = "EquipmentMaintenance.findByPrice", query = "SELECT e FROM EquipmentMaintenance e WHERE e.price = :price"),
+    @NamedQuery(name = "EquipmentMaintenance.findByInspectionDate", query = "SELECT e FROM EquipmentMaintenance e WHERE e.inspectionDate = :inspectionDate")})
 public class EquipmentMaintenance implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,15 +49,24 @@ public class EquipmentMaintenance implements Serializable {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "price")
     private Float price;
+    @Column(name = "inspection_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date inspectionDate;
     @JoinColumn(name = "equipment_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Equipment equipmentId;
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
+    @ManyToOne
+    private EquipmentMaintenanceStatus statusId;
     @JoinColumn(name = "maintenance_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Maintenance maintenanceId;
     @JoinColumn(name = "maintenance_type_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne
     private MaintenanceType maintenanceTypeId;
+    @JoinColumn(name = "technician_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private User technicianId;
 
     public EquipmentMaintenance() {
     }
@@ -89,12 +104,28 @@ public class EquipmentMaintenance implements Serializable {
         this.price = price;
     }
 
+    public Date getInspectionDate() {
+        return inspectionDate;
+    }
+
+    public void setInspectionDate(Date inspectionDate) {
+        this.inspectionDate = inspectionDate;
+    }
+
     public Equipment getEquipmentId() {
         return equipmentId;
     }
 
     public void setEquipmentId(Equipment equipmentId) {
         this.equipmentId = equipmentId;
+    }
+
+    public EquipmentMaintenanceStatus getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(EquipmentMaintenanceStatus statusId) {
+        this.statusId = statusId;
     }
 
     public Maintenance getMaintenanceId() {
@@ -111,6 +142,14 @@ public class EquipmentMaintenance implements Serializable {
 
     public void setMaintenanceTypeId(MaintenanceType maintenanceTypeId) {
         this.maintenanceTypeId = maintenanceTypeId;
+    }
+
+    public User getTechnicianId() {
+        return technicianId;
+    }
+
+    public void setTechnicianId(User technicianId) {
+        this.technicianId = technicianId;
     }
 
     @Override
@@ -135,7 +174,7 @@ public class EquipmentMaintenance implements Serializable {
 
     @Override
     public String toString() {
-        return "com.hatecode.pojo2.EquipmentMaintenance[ id=" + id + " ]";
+        return "com.hatecode.pojo.EquipmentMaintenance[ id=" + id + " ]";
     }
     
 }

@@ -1,6 +1,6 @@
 package com.hatecode.equipmentma2;
 
-import com.hatecode.pojo.Equipment;
+import com.hatecode.models.Equipment;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

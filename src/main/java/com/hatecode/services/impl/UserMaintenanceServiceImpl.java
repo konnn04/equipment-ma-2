@@ -1,7 +1,7 @@
 package com.hatecode.services.impl;
 
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.pojo.User_Maintenance;
+import com.hatecode.models.UserMaintenance;
 import com.hatecode.services.interfaces.UserMaintenanceService;
 
 import java.sql.*;
@@ -11,15 +11,15 @@ import java.util.List;
 public class UserMaintenanceServiceImpl implements UserMaintenanceService {
 
     @Override
-    public List<User_Maintenance> getUserMaintenances() throws SQLException {
-        List<User_Maintenance> userMaintenances = new ArrayList<>();
+    public List<UserMaintenance> getUserMaintenances() throws SQLException {
+        List<UserMaintenance> userMaintenances = new ArrayList<>();
 
         try (Connection conn = JdbcUtils.getConn()) {
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT * FROM User_Maintenance");
 
             while (rs.next()) {
-                User_Maintenance userMaintenance = new User_Maintenance(
+                UserMaintenance userMaintenance = new UserMaintenance(
                         rs.getInt("id"),
                         rs.getInt("user_id"),
                         rs.getInt("maintenance_id")
@@ -32,8 +32,8 @@ public class UserMaintenanceServiceImpl implements UserMaintenanceService {
     }
 
     @Override
-    public User_Maintenance getUserMaintenanceById(int id) throws SQLException {
-        User_Maintenance userMaintenance = null;
+    public UserMaintenance getUserMaintenanceById(int id) throws SQLException {
+        UserMaintenance userMaintenance = null;
         String sql = "SELECT * FROM User_Maintenance WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
@@ -43,7 +43,7 @@ public class UserMaintenanceServiceImpl implements UserMaintenanceService {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                userMaintenance = new User_Maintenance(
+                userMaintenance = new UserMaintenance(
                         rs.getInt("id"),
                         rs.getInt("user_id"),
                         rs.getInt("maintenance_id")
@@ -55,7 +55,7 @@ public class UserMaintenanceServiceImpl implements UserMaintenanceService {
     }
 
     @Override
-    public boolean addUserMaintenance(User_Maintenance userMaintenance) throws SQLException {
+    public boolean addUserMaintenance(UserMaintenance userMaintenance) throws SQLException {
         String sql = "INSERT INTO User_Maintenance (user_id, maintenance_id) VALUES (?, ?)";
 
         try (Connection conn = JdbcUtils.getConn();
@@ -69,7 +69,7 @@ public class UserMaintenanceServiceImpl implements UserMaintenanceService {
     }
 
     @Override
-    public boolean updateUserMaintenance(User_Maintenance userMaintenance) throws SQLException {
+    public boolean updateUserMaintenance(UserMaintenance userMaintenance) throws SQLException {
         String sql = "UPDATE User_Maintenance SET user_id = ?, maintenance_id = ? WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();

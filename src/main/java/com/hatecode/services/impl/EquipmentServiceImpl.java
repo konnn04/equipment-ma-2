@@ -1,9 +1,9 @@
 package com.hatecode.services.impl;
 
-import com.hatecode.pojo.Category;
-import com.hatecode.pojo.Equipment;
-import com.hatecode.pojo.EquipmentMaintainance;
-import com.hatecode.pojo.Status;
+import com.hatecode.models.Category;
+import com.hatecode.models.Equipment;
+import com.hatecode.models.EquipmentMaintainance;
+import com.hatecode.models.Status;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.EquipmentService;
 import com.hatecode.services.interfaces.StatusService;
@@ -47,6 +47,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                         rs.getString("code"),
                         rs.getString("name"),
                         rs.getDate("import_date"),
+                        rs.getDate("regular_maintenance_time"),
                         new Status(
                                 rs.getInt("status_id"),
                                 rs.getString("status_name"),
@@ -106,6 +107,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                         rs.getString("code"),
                         rs.getString("name"),
                         rs.getDate("import_date"),
+                        rs.getDate("regular_maintenance_time"),
                         new Status(
                                 rs.getInt("status_id"),
                                 rs.getString("status_name"),

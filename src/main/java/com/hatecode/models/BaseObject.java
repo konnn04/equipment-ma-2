@@ -1,4 +1,4 @@
-package com.hatecode.pojo;
+package com.hatecode.models;
 
 public class BaseObject {
     protected int id;

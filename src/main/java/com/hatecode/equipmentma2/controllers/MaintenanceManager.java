@@ -1,6 +1,6 @@
 package com.hatecode.equipmentma2.controllers;
 
-import com.hatecode.pojo.Maintenance;
+import com.hatecode.models.Maintenance;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
 import com.hatecode.services.interfaces.MaintenanceService;
 import javafx.beans.property.SimpleStringProperty;

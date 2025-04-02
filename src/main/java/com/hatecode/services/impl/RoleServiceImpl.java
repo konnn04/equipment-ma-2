@@ -1,7 +1,7 @@
 package com.hatecode.services.impl;
 
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.pojo.Role;
+import com.hatecode.models.Role;
 import com.hatecode.services.interfaces.RoleService;
 
 import java.sql.*;

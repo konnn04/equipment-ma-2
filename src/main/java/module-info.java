@@ -11,12 +11,13 @@ module com.hatecode.equipmentma2 {
     requires jakarta.mail;
 
     requires java.desktop;
+    requires java.persistence;
 
 
     opens com.hatecode.equipmentma2 to javafx.fxml;
     exports com.hatecode.equipmentma2;
 
-    exports com.hatecode.pojo;
+    exports com.hatecode.models;
     exports com.hatecode.services.interfaces;
     exports com.hatecode.services.impl;
 

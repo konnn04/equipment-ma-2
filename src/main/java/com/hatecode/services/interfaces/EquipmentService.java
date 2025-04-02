@@ -4,8 +4,8 @@
  */
 package com.hatecode.services.interfaces;
 
-import com.hatecode.pojo.Equipment;
-import com.hatecode.pojo.EquipmentMaintainance;
+import com.hatecode.models.Equipment;
+import com.hatecode.models.EquipmentMaintainance;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.hatecode.equipmentma2;
 
-import com.hatecode.pojo.User;
+import com.hatecode.models.User;
 import com.hatecode.services.interfaces.UserService;
 import com.hatecode.services.impl.UserServiceImpl;
 import javafx.event.ActionEvent;

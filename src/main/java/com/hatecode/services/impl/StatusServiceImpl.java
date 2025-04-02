@@ -1,7 +1,7 @@
 package com.hatecode.services.impl;
 
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.pojo.Status;
+import com.hatecode.models.Status;
 import com.hatecode.services.interfaces.StatusService;
 
 import java.sql.*;

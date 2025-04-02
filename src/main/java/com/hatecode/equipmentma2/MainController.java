@@ -1,8 +1,12 @@
 package com.hatecode.equipmentma2;
 
+import com.hatecode.models.Status;
+import com.hatecode.models.User;
+import com.hatecode.models.Maintenance;
+import com.hatecode.models.Equipment;
+import com.hatecode.models.BaseObject;
 import com.hatecode.equipmentma2.controllers.EquipmentManager;
 import com.hatecode.equipmentma2.controllers.MaintenanceManager;
-import com.hatecode.pojo.*;
 import com.hatecode.services.interfaces.MaintenanceService;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -61,12 +66,34 @@ public class MainController  implements Initializable {
     @FXML
     Button addEquipmentButton;
 
+    @FXML
+    Button saveEquipmentButton;
+
+    @FXML
+    Button cancelEquipmentButton;
+
+    @FXML
+    Button updateEquipmentButton;
+
+    @FXML
+    ComboBox<String> modeComboBox;
+
+    @FXML
+    Label modeLabel;
+
     /* Tab Maintenance */
     @FXML
     TableView<Maintenance> maintenanceTable;
 
     @FXML
     TextField maintenanceQueryTextField;
+
+    @FXML
+    Text lastMaintenanceDateTextField;
+
+    @FXML
+    DatePicker nextMaintenanceDatePicker;
+
 
     private void initUI() {
         User currentUser = App.getCurrentUser();
@@ -91,8 +118,16 @@ public class MainController  implements Initializable {
                 equipmentCodeTextField,
                 equipmentNameTextField,
                 statusEquipmentComboBox,
+                lastMaintenanceDateTextField,
+                nextMaintenanceDatePicker,
                 equipmentDescriptionTextField,
-                addEquipmentButton
+                addEquipmentButton,
+                saveEquipmentButton,
+                cancelEquipmentButton,
+                updateEquipmentButton,
+                modeComboBox,
+                modeLabel
+
         );
 
         MaintenanceManager maintenanceManager = new MaintenanceManager(

@@ -1,10 +1,10 @@
 package com.hatecode.services.impl;
 
 //import com.hatecode.pojo.Image;
-import com.hatecode.pojo.Role;
+import com.hatecode.models.Role;
 import javafx.scene.image.Image;
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.pojo.User;
+import com.hatecode.models.User;
 import java.io.File;
 import com.hatecode.services.interfaces.UserService;
 

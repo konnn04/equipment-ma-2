@@ -2,17 +2,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.hatecode.pojo2;
+package com.hatecode.pojo;
 
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -23,12 +23,12 @@ import javax.persistence.Table;
  * @author trieu
  */
 @Entity
-@Table(name = "category")
+@Table(name = "equipment_maintenance_status")
 @NamedQueries({
-    @NamedQuery(name = "Category.findAll", query = "SELECT c FROM Category c"),
-    @NamedQuery(name = "Category.findById", query = "SELECT c FROM Category c WHERE c.id = :id"),
-    @NamedQuery(name = "Category.findByName", query = "SELECT c FROM Category c WHERE c.name = :name")})
-public class Category implements Serializable {
+    @NamedQuery(name = "EquipmentMaintenanceStatus.findAll", query = "SELECT e FROM EquipmentMaintenanceStatus e"),
+    @NamedQuery(name = "EquipmentMaintenanceStatus.findById", query = "SELECT e FROM EquipmentMaintenanceStatus e WHERE e.id = :id"),
+    @NamedQuery(name = "EquipmentMaintenanceStatus.findByName", query = "SELECT e FROM EquipmentMaintenanceStatus e WHERE e.name = :name")})
+public class EquipmentMaintenanceStatus implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -39,17 +39,20 @@ public class Category implements Serializable {
     @Basic(optional = false)
     @Column(name = "name")
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
-    private Set<Equipment> equipmentSet;
+    @Lob
+    @Column(name = "desciption")
+    private String desciption;
+    @OneToMany(mappedBy = "statusId")
+    private Set<EquipmentMaintenance> equipmentMaintenanceSet;
 
-    public Category() {
+    public EquipmentMaintenanceStatus() {
     }
 
-    public Category(Integer id) {
+    public EquipmentMaintenanceStatus(Integer id) {
         this.id = id;
     }
 
-    public Category(Integer id, String name) {
+    public EquipmentMaintenanceStatus(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -70,12 +73,20 @@ public class Category implements Serializable {
         this.name = name;
     }
 
-    public Set<Equipment> getEquipmentSet() {
-        return equipmentSet;
+    public String getDesciption() {
+        return desciption;
     }
 
-    public void setEquipmentSet(Set<Equipment> equipmentSet) {
-        this.equipmentSet = equipmentSet;
+    public void setDesciption(String desciption) {
+        this.desciption = desciption;
+    }
+
+    public Set<EquipmentMaintenance> getEquipmentMaintenanceSet() {
+        return equipmentMaintenanceSet;
+    }
+
+    public void setEquipmentMaintenanceSet(Set<EquipmentMaintenance> equipmentMaintenanceSet) {
+        this.equipmentMaintenanceSet = equipmentMaintenanceSet;
     }
 
     @Override
@@ -88,10 +99,10 @@ public class Category implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Category)) {
+        if (!(object instanceof EquipmentMaintenanceStatus)) {
             return false;
         }
-        Category other = (Category) object;
+        EquipmentMaintenanceStatus other = (EquipmentMaintenanceStatus) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -100,7 +111,7 @@ public class Category implements Serializable {
 
     @Override
     public String toString() {
-        return "com.hatecode.pojo2.Category[ id=" + id + " ]";
+        return "com.hatecode.pojo.EquipmentMaintenanceStatus[ id=" + id + " ]";
     }
     
 }

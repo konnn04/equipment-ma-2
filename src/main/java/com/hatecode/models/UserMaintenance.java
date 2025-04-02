@@ -1,19 +1,19 @@
-package com.hatecode.pojo;
+package com.hatecode.models;
 
-public class User_Maintenance {
+public class UserMaintenance {
     private int id;
     private int userId;
     private int maintenanceId;
 
-    public User_Maintenance() {
+    public UserMaintenance() {
     }
 
-    public User_Maintenance(int userId, int maintenanceId) {
+    public UserMaintenance(int userId, int maintenanceId) {
         this.userId = userId;
         this.maintenanceId = maintenanceId;
     }
 
-    public User_Maintenance(int id, int userId, int maintenanceId) {
+    public UserMaintenance(int id, int userId, int maintenanceId) {
         this.id = id;
         this.userId = userId;
         this.maintenanceId = maintenanceId;

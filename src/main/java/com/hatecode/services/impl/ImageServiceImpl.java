@@ -1,6 +1,6 @@
 package com.hatecode.services.impl;
 
-import com.hatecode.pojo.Image;
+import com.hatecode.models.Image;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.ImageService;
 

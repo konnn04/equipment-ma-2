@@ -1,13 +1,13 @@
 package com.hatecode.services.interfaces;
 
-import com.hatecode.pojo.User_Maintenance;
+import com.hatecode.models.UserMaintenance;
 import java.sql.SQLException;
 import java.util.List;
 
 public interface UserMaintenanceService {
-    List<User_Maintenance> getUserMaintenances() throws SQLException;
-    User_Maintenance getUserMaintenanceById(int id) throws SQLException;
-    boolean addUserMaintenance(User_Maintenance userMaintenance) throws SQLException;
-    boolean updateUserMaintenance(User_Maintenance userMaintenance) throws SQLException;
+    List<UserMaintenance> getUserMaintenances() throws SQLException;
+    UserMaintenance getUserMaintenanceById(int id) throws SQLException;
+    boolean addUserMaintenance(UserMaintenance userMaintenance) throws SQLException;
+    boolean updateUserMaintenance(UserMaintenance userMaintenance) throws SQLException;
     boolean deleteUserMaintenance(int id) throws SQLException;
 }
