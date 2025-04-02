@@ -8,6 +8,7 @@ import com.hatecode.services.interfaces.MaintenanceService;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MaintenanceServiceImpl implements MaintenanceService {
@@ -53,6 +54,64 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             stmt.setInt(3, (page - 1) * pageSize);
             stmt.setInt(4, pageSize);
 
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Maintenance maintenance = new Maintenance(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getDate("start_datetime"),
+                        rs.getDate("end_datetime"),
+                        rs.getInt("quantity")
+                );
+                maintenance.setTechnician(us.getUserById(rs.getInt("user_id")));
+                res.add(maintenance);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<Maintenance> getMaintenances(String kw, Date fromDate, Date toDate, int page, int pageSize) throws SQLException {
+        /* Kiểm tra và xử lý các tham số đầu vào */
+        if (kw == null || kw.isEmpty())
+            kw = "";
+        page = Math.max(1, page);
+        pageSize = Math.max(1, pageSize);
+
+        List<Maintenance> res = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * FROM maintenance JOIN user_maintenance ON maintenance.id = user_maintenance.maintenance_id";
+
+            boolean hasKw = kw != null && !kw.isEmpty();
+            boolean hasDate = fromDate != null && toDate != null;
+
+            if (hasKw)
+                sql += " WHERE title LIKE ? OR description LIKE ?";
+
+            if (hasDate) {
+                sql += " AND start_datetime >= ? AND end_datetime <= ?";
+            }
+
+            sql += " LIMIT ?, ?";
+
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            int index = 1;
+            if (hasKw) {
+                stmt.setString(index++, "%" + kw + "%");
+                stmt.setString(index++, "%" + kw + "%");
+            }
+
+            if (hasDate) {
+                stmt.setDate(index++, new java.sql.Date(fromDate.getTime()));
+                stmt.setDate(index++, new java.sql.Date(toDate.getTime()));
+            }
+
+            stmt.setInt(index++, (page - 1) * pageSize);
+            stmt.setInt(index++, pageSize);
+
+//            System.out.println(stmt.toString());
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {

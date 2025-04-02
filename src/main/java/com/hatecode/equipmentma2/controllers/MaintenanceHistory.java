@@ -13,6 +13,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import static com.hatecode.config.AppConfig.PAGE_SIZE;
@@ -120,16 +122,40 @@ public class MaintenanceHistory {
             pause.playFromStart(); // Reset thời gian mỗi khi có sự kiện mới
         });
 
+        // Init date picker
+        this.startDateTextField.setText(LocalDate.now().toString());
+        this.endDateTextField.setText(LocalDate.now().toString());
+
+        this.fromDatePicker.setOnAction(keyEvent -> {
+            pause.setOnFinished(e -> {
+                fetchMaintenanceHistory(searchMaintenanceTextField.getText());
+                System.out.println("Search: " + searchMaintenanceTextField.getText());
+            });
+            pause.playFromStart(); // Reset thời gian mỗi khi có sự kiện mới
+        });
+
+        this.toDatePicker.setOnAction(keyEvent -> {
+            pause.setOnFinished(e -> {
+                fetchMaintenanceHistory(searchMaintenanceTextField.getText());
+                System.out.println("Search: " + searchMaintenanceTextField.getText());
+            });
+            pause.playFromStart(); // Reset thời gian mỗi khi có sự kiện mới
+        });
+
     };
 
     public void fetchMaintenanceHistory(String kw) {
         try {
             List<Maintenance> maintenances;
+            kw = kw == null ? "" : kw.trim();
+            Date fromDate = this.fromDatePicker.getValue() != null ? java.sql.Date.valueOf(this.fromDatePicker.getValue()) : null;
+            Date toDate = this.toDatePicker.getValue() != null ? java.sql.Date.valueOf(this.toDatePicker.getValue().plusDays(1)) : null;
 
-            if (kw != null && !kw.isEmpty())
-                maintenances = this.maintenanceService.getMaintenances(kw, 1, PAGE_SIZE, null, null);
-            else
-                maintenances = this.maintenanceService.getMaintenances("", 1, PAGE_SIZE, null, null);
+            if (fromDate != null && toDate == null ) {
+                toDate = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
+            }
+
+            maintenances = this.maintenanceService.getMaintenances(kw, fromDate, toDate, 1, PAGE_SIZE);
 
             this.maintenancesTableViewTable.setItems(FXCollections.observableList(maintenances));
 

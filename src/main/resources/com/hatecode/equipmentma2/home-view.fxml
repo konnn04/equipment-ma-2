@@ -441,7 +441,7 @@
                                                                                     <Font name="SF Pro Text Semibold" size="15.0" />
                                                                                 </font>
                                                                             </Label>
-                                                                            <DatePicker fx:id="toDatePicker211" prefHeight="42.0" prefWidth="153.0" promptText="To" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" HBox.hgrow="ALWAYS" />
+                                                                            <DatePicker fx:id="toDatePicker" prefHeight="42.0" prefWidth="153.0" promptText="To" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" HBox.hgrow="ALWAYS" />
                                                                             <Button fx:id="searchRepairButton111" minWidth="99.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="99.0" styleClass="secondary-button" text="Search" />
                                                                         </children>
                                                                         <VBox.margin>
