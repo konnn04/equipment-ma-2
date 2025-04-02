@@ -10,20 +10,20 @@ package com.hatecode.pojo;
  */
 public class EquipmentMaintainance {
     private int id;
-    private int equipmentId;
+    private Equipment equipment;
     private String description;
-    private int maintainanceTypeId;
+    private MaintenanceType maintenanceType;
     private float price;
     private int maintainanceId;
 
     public EquipmentMaintainance() {
     }
 
-    public EquipmentMaintainance(int id, int equipmentId, String description, int maintainanceTypeId, float price, int maintainanceId) {
+    public EquipmentMaintainance(int id, Equipment equipment, String description, MaintenanceType maintenanceType, float price, int maintainanceId) {
         this.id = id;
-        this.equipmentId = equipmentId;
+        this.equipment = equipment;
         this.description = description;
-        this.maintainanceTypeId = maintainanceTypeId;
+        this.maintenanceType = maintenanceType;
         this.price = price;
         this.maintainanceId = maintainanceId;
     }
@@ -46,15 +46,15 @@ public class EquipmentMaintainance {
     /**
      * @return the equipmentId
      */
-    public int getEquipmentId() {
-        return equipmentId;
+    public Equipment getEquipment() {
+        return equipment;
     }
 
     /**
-     * @param equipmentId the equipmentId to set
+     * @param equipment the equipmentId to set
      */
-    public void setEquipmentId(int equipmentId) {
-        this.equipmentId = equipmentId;
+    public void setEquipment(Equipment equipment) {
+        this.equipment = equipment;
     }
 
     /**
@@ -72,17 +72,17 @@ public class EquipmentMaintainance {
     }
 
     /**
-     * @return the maintainanceTypeId
+     * @return the maintainanceType
      */
-    public int getMaintainanceTypeId() {
-        return maintainanceTypeId;
+    public MaintenanceType getMaintenanceType() {
+        return maintenanceType;
     }
 
     /**
-     * @param maintainanceTypeId the maintainanceTypeId to set
+     * @param maintenanceType the maintainanceType to set
      */
-    public void setMaintainanceTypeId(int maintainanceTypeId) {
-        this.maintainanceTypeId = maintainanceTypeId;
+    public void setMaintenanceType(MaintenanceType maintenanceType) {
+        this.maintenanceType = maintenanceType;
     }
 
     /**

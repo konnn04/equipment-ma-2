@@ -5,6 +5,8 @@ import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintainance;
 import com.hatecode.pojo.Status;
+import com.hatecode.services.interfaces.MaintenanceTypeService;
+import com.hatecode.services.interfaces.UserService;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.EquipmentService;
 import com.hatecode.services.interfaces.StatusService;
@@ -28,6 +30,43 @@ import java.util.Map;
  * @author ADMIN
  */
 public class EquipmentServiceImpl implements EquipmentService {
+    MaintenanceTypeService mts = new MaintenanceTypeServiceImpl();
+
+    @Override
+    public Equipment getEquipmentById(int id) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT e.*, s.id AS status_id, s.name AS status_name, s.description AS status_description, " +
+                    "c.id AS category_id, c.name AS category_name FROM equipment e " +
+                    "LEFT JOIN Status s ON e.status = s.id " +
+                    "LEFT JOIN Category c ON e.category = c.id " +
+                    "WHERE e.id = ?";
+
+            PreparedStatement stm = conn.prepareStatement(sql);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                Equipment e = new Equipment(
+                        rs.getInt("id"),
+                        rs.getString("code"),
+                        rs.getString("name"),
+                        rs.getDate("import_date"),
+                        new Status(
+                                rs.getInt("status"),
+                                rs.getString("status_name"),
+                                rs.getString("status_description")
+                        ),
+                        new Category(
+                                rs.getInt("category"),
+                                rs.getString("category_name")
+                        ),
+                        rs.getString("description")
+                );
+                e.setStatusName(rs.getString("status_name"));
+                return e;
+            }
+            return null;
+        }
+    }
 
     @Override
     public List<Equipment> getEquipments() throws SQLException {
@@ -73,7 +112,6 @@ public class EquipmentServiceImpl implements EquipmentService {
         if (query == null || query.isEmpty()) query = "";
         page = Math.max(1, page);
         pageSize = Math.max(1, pageSize);
-        StatusService statusService = new StatusServiceImpl();
         List<Equipment> res = new ArrayList<>();
         System.out.println(key+ " == " + value);
         try (Connection conn = JdbcUtils.getConn()) {
@@ -159,9 +197,9 @@ public class EquipmentServiceImpl implements EquipmentService {
             while (rs.next()) {
                 EquipmentMaintainance em = new EquipmentMaintainance(
                         rs.getInt("id"),
-                        rs.getInt("equipment_id"),
+                        this.getEquipmentById(rs.getInt("equipment_id")),
                         rs.getString("description"),
-                        rs.getInt("maintenance_type_id"),
+                        mts.getMaintenanceTypeById(rs.getInt("maintenance_type_id")),
                         rs.getFloat("price"),
                         rs.getInt("maintenance_id")
                 );

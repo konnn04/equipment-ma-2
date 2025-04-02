@@ -4,22 +4,26 @@
  */
 package com.hatecode.services.impl;
 
-import com.hatecode.pojo.Category;
-import com.hatecode.pojo.Equipment;
-import com.hatecode.pojo.EquipmentMaintainance;
-import com.hatecode.pojo.Status;
+import com.hatecode.pojo.*;
+import com.hatecode.services.interfaces.*;
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.services.interfaces.EquipmentMaintainanceService;
-import com.hatecode.services.interfaces.StatusService;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.hatecode.config.AppConfig.PAGE_SIZE;
+
 /**
  * @author ADMIN
  */
 public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceService {
+
+    UserService us = new UserServiceImpl();
+    EquipmentService es = new EquipmentServiceImpl();
+    MaintenanceTypeService mts = new MaintenanceTypeServiceImpl();
+    StatusService statusService = new StatusServiceImpl();
+
 
     @Override
     public List<EquipmentMaintainance> getEquipmentMaintainance() throws SQLException {
@@ -32,9 +36,9 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
             while (rs.next()) {
                 EquipmentMaintainance em = new EquipmentMaintainance(
                         rs.getInt("id"),
-                        rs.getInt("equipment_id"),
+                        es.getEquipmentById(rs.getInt("equipment_id")),
                         rs.getString("description"),
-                        rs.getInt("maintenance_type_id"),
+                        mts.getMaintenanceTypeById(rs.getInt("maintenance_type_id")),
                         rs.getFloat("price"),
                         rs.getInt("maintenance_id")
                 );
@@ -46,7 +50,6 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
 
     @Override
     public Equipment getEquipmentByEMId(int id) throws SQLException {
-        StatusService statusService = new StatusServiceImpl();
         Equipment equipment = null;
         try (Connection conn = JdbcUtils.getConn()) {
             // Truy vấn để lấy thông tin thiết bị dựa trên id của bản ghi bảo trì
@@ -82,13 +85,60 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
     }
 
     @Override
+    public List<EquipmentMaintainance> getEquipmentsMaintenanceByEMId(String kw, int maintenanceId, int page, int pageSize) throws SQLException {
+        if (page < 1)
+            page = 1;
+
+
+        List<EquipmentMaintainance> maintainanceEquipments = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            // Truy vấn để lấy thông tin thiết bị dựa trên id của bản ghi bảo trì
+            String sql = "SELECT em.* FROM equipment_maintenance em JOIN equipment e ON em.equipment_id = e.id WHERE em.maintenance_id = ?";
+
+            if (kw != null && !kw.isEmpty()) {
+                sql += " AND (e.name LIKE ?)";
+            }
+            sql +=  " LIMIT ?, ?";
+
+            PreparedStatement stm = conn.prepareStatement(sql);
+            stm.setInt(1, maintenanceId);
+            if (kw != null && !kw.isEmpty()) {
+                stm.setString(2, "%" + kw + "%");
+                stm.setInt(3, (page - 1) * pageSize);
+                stm.setInt(4, pageSize);
+            } else {
+                stm.setInt(2, (page - 1) * pageSize);
+                stm.setInt(3, pageSize);
+            }
+
+//            System.out.println(stm.toString());
+            ResultSet rs = stm.executeQuery();
+
+            // Nếu có kết quả, tạo đối tượng Equipment từ dữ liệu trả về
+            if (rs.next()) {
+                EquipmentMaintainance maintainanceEquipment = new EquipmentMaintainance(
+                           rs.getInt("id"),
+                            es.getEquipmentById(rs.getInt("equipment_id")),
+                            rs.getString("description"),
+                            mts.getMaintenanceTypeById(rs.getInt("maintenance_type_id")),
+                            rs.getFloat("price"),
+                            rs.getInt("maintenance_id")
+                );
+
+                maintainanceEquipments.add(maintainanceEquipment);
+            }
+        }
+        return maintainanceEquipments;
+    }
+
+    @Override
     public boolean addEquipmentMaintainance(EquipmentMaintainance em) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "INSERT INTO equipment_maintenance (equipment_id, description, maintenance_type_id, price, maintenance_id) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement stm = conn.prepareStatement(sql);
-            stm.setInt(1, em.getEquipmentId());
+            stm.setInt(1, em.getEquipment().getId());
             stm.setString(2, em.getDescription());
-            stm.setInt(3, em.getMaintainanceTypeId());
+            stm.setInt(3, em.getMaintenanceType().getId());
             stm.setFloat(4, em.getPrice());
             stm.setInt(5, em.getMaintainanceId());
 
@@ -102,9 +152,9 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "UPDATE equipment_maintenance SET equipment_id = ?, description = ?, maintenance_type_id = ?, price = ?, maintenance_id = ? WHERE id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
-            stm.setInt(1, em.getEquipmentId());
+            stm.setInt(1, em.getEquipment().getId());
             stm.setString(2, em.getDescription());
-            stm.setInt(3, em.getMaintainanceTypeId());
+            stm.setInt(3, em.getMaintenanceType().getId());
             stm.setFloat(4, em.getPrice());
             stm.setInt(5, em.getMaintainanceId());
             stm.setInt(6, em.getId());

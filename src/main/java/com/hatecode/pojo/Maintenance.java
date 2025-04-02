@@ -10,6 +10,8 @@ public class Maintenance {
     private Date endDateTime;
     private int quantity;
 
+    private User technician;
+
     public Maintenance() {
         super();
     }
@@ -44,5 +46,13 @@ public class Maintenance {
 
     public int getId() {
         return this.id;
+    }
+
+    public User getTechnician() {
+        return technician;
+    }
+
+    public void setTechnician(User technician) {
+        this.technician = technician;
     }
 }

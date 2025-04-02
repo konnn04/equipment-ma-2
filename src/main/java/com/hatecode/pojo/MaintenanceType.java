@@ -22,6 +22,11 @@ public class MaintenanceType {
         this.suggestPrice = suggestPrice;
     }
 
+    @Override
+    public String toString() {
+        return this.name;
+    }
+
     // Getters and Setters
     public int getId() {
         return id;

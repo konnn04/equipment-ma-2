@@ -20,7 +20,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsers() throws SQLException {
         List<User> users = new ArrayList<>();
-
         try (Connection conn = JdbcUtils.getConn()) {
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT *, r.id AS role_id, r.name AS role_name, r.description AS role_description " +
@@ -53,7 +52,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(int id) throws SQLException {
         User user = null;
-        String sql = "SELECT * FROM User WHERE id = ?";
+        String sql = "SELECT *, r.id AS role_id, r.name AS role_name, r.description AS role_description " +
+                "FROM User u " +
+                "LEFT JOIN Role r ON u.role = r.id WHERE u.id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

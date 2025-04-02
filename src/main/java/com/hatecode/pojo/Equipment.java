@@ -105,4 +105,8 @@ public class Equipment {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public void setImportDate(Date importDate) {
+        this.importDate = importDate;
+    }
 }

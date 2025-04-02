@@ -1,5 +1,7 @@
 package com.hatecode.services.impl;
 
+import com.hatecode.services.interfaces.UserMaintenanceService;
+import com.hatecode.services.interfaces.UserService;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.services.interfaces.MaintenanceService;
@@ -9,13 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MaintenanceServiceImpl implements MaintenanceService {
+    UserService us = new UserServiceImpl();
+
     @Override
     public List<Maintenance> getMaintenances() throws SQLException {
         List<Maintenance> maintenances = new ArrayList<>();
-
         try (Connection conn = JdbcUtils.getConn()) {
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM maintenance");
+            ResultSet rs = stm.executeQuery("SELECT * FROM maintenance JOIN user_maintenance ON maintenance.id = user_maintenance.maintenance_id");
 
             while (rs.next()) {
                 Maintenance maintenance = new Maintenance(
@@ -26,10 +29,10 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getDate("end_datetime"),
                         rs.getInt("quantity")
                 );
+                maintenance.setTechnician(us.getUserById(rs.getInt("user_id")));
                 maintenances.add(maintenance);
             }
         }
-
         return maintenances;
     }
 
@@ -43,7 +46,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         List<Maintenance> res = new ArrayList<>();
 
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT * FROM maintenance WHERE title LIKE ? OR description LIKE ? LIMIT ?, ?";
+            String sql = "SELECT * FROM maintenance JOIN user_maintenance ON maintenance.id = user_maintenance.maintenance_id WHERE title LIKE ? OR description LIKE ? LIMIT ?, ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, "%" + query + "%");
             stmt.setString(2, "%" + query + "%");
@@ -61,6 +64,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getDate("end_datetime"),
                         rs.getInt("quantity")
                 );
+                maintenance.setTechnician(us.getUserById(rs.getInt("user_id")));
                 res.add(maintenance);
             }
         }

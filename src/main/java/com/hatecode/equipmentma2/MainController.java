@@ -1,19 +1,15 @@
 package com.hatecode.equipmentma2;
 
 import com.hatecode.equipmentma2.controllers.EquipmentManager;
+import com.hatecode.equipmentma2.controllers.MaintenanceHistory;
 import com.hatecode.equipmentma2.controllers.MaintenanceManager;
 import com.hatecode.pojo.*;
-import com.hatecode.services.interfaces.MaintenanceService;
-import com.hatecode.services.impl.MaintenanceServiceImpl;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -133,5 +129,56 @@ public class MainController  implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    TableView<Maintenance> maintenancesTableViewTable;
+
+    @FXML
+    TableView<EquipmentMaintainance> equipmentsTableViewTable;
+
+    @FXML
+    TextField equipmentIdTextField;
+    @FXML
+    TextField historyEquipmentNameTextField;
+    @FXML
+    TextField equipmentTechnicianTextField;
+    @FXML
+    TextField startDateTextField;
+    @FXML
+    TextField endDateTextField;
+    @FXML
+    TextArea descriptionTextArea;
+    @FXML
+    TextField priceTextField;
+    @FXML
+    TextField maintenanceTypeTextField;
+    @FXML
+    TextField searchMaintenanceTextField;
+    @FXML
+    DatePicker fromDatePicker;
+    @FXML
+    DatePicker toDatePicker;
+    @FXML
+    TextField searchEquipmentTextField;
+
+    public void openMaintenanceHistoryHandler() {
+        MaintenanceHistory maintenanceHistory = new MaintenanceHistory(
+                maintenancesTableViewTable,
+                equipmentsTableViewTable,
+                equipmentIdTextField,
+                historyEquipmentNameTextField,
+                equipmentTechnicianTextField,
+                startDateTextField,
+                endDateTextField,
+                descriptionTextArea,
+                priceTextField,
+                maintenanceTypeTextField,
+                searchMaintenanceTextField,
+                fromDatePicker,
+                toDatePicker,
+                searchEquipmentTextField
+        );
+        maintenanceHistory.initMaintenanceHistory();
     }
 }
