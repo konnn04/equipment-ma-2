@@ -312,7 +312,7 @@ public class UserServiceImpl implements UserService {
     public boolean deleteUser(int id) throws SQLException {
         String sql = "DELETE FROM User WHERE id = ?";
         User u = getUserById(id);
-        boolean b = deleteUserImage(u.getAvatar().getPath());
+        boolean b = (u.getAvatar().getId() == 1 ? true : deleteUserImage(u.getAvatar().getPath()));
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -324,10 +324,11 @@ public class UserServiceImpl implements UserService {
     // https://res.cloudinary.com/dg66aou8q/image/upload/v1743086605/dysaruyl1ye7xejpakbp.png
     @Override
     public User authenticateUser(String username, String password) throws SQLException {
-        String sql = "SELECT *, r.id AS role, r.name AS role_name, r.description AS role_description " +
-                "FROM User u " +
-                "LEFT JOIN Role r ON u.role = r.id " +
-                "WHERE username = ? AND password = ?";
+        String sql ="SELECT u.*, i.id as avatarId, i.filename, i.create_date, i.path, r.id AS role, r.name AS role_name, r.description AS role_description\n" +
+                    "FROM User u\n" +
+                    "LEFT JOIN image i ON u.avatar = i.id\n" +
+                    "LEFT JOIN Role r ON u.role = r.id\n"+
+                    "WHERE username = ? and password = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -349,7 +350,12 @@ public class UserServiceImpl implements UserService {
                                 rs.getString("role_name"),
                                 rs.getString("role_description")),
                         rs.getBoolean("is_active"),
-                        rs.getString("avatar")
+                        new Image(
+                                rs.getInt("avatar_id"),
+                                rs.getString("filename"),
+                                rs.getDate("create_date").toLocalDate().atStartOfDay(),
+                                rs.getString("path")
+                        )
                 );
             }
         } catch (SQLException ex) {

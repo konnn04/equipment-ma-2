@@ -16,6 +16,11 @@ public class User
 
     public User() {
     }
+    
+    public User(int id,String username){
+        this.id = id;
+        this.username = username;
+    }
 
     public User(String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, Image avatar) {
         this.firstName = firstName;

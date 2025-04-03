@@ -1,5 +1,7 @@
 package com.hatecode.services.impl;
 
+import com.hatecode.pojo.Equipment;
+import com.hatecode.pojo.EquipmentMaintainance;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.services.interfaces.MaintenanceService;
@@ -66,6 +68,64 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         }
         return res;
     }
+
+    @Override
+    public List<Maintenance> getMaintenances(String query) throws SQLException {
+        List<Maintenance> res = new ArrayList<>();
+
+        if (query == null) {
+            query = "";
+        }
+
+        String sql = "SELECT * FROM maintenance WHERE 1=1";
+
+        if (!query.isEmpty()) {
+            sql += " AND (title LIKE CONCAT('%',?,'%') OR description LIKE CONCAT('%',?,'%')";
+
+            try {
+                Integer.parseInt(query);
+                sql += " OR id = ?";
+            } catch (NumberFormatException e) {
+                // Không làm gì nếu query không phải số
+            }
+            sql += ")";
+        }
+
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stm = conn.prepareStatement(sql)) {
+
+            int paramIndex = 1;
+
+            if (!query.isEmpty()) {
+                stm.setString(paramIndex++, query);
+                stm.setString(paramIndex++, query);
+
+                try {
+                    int id = Integer.parseInt(query);
+                    stm.setInt(paramIndex++, id);
+                } catch (NumberFormatException e) {
+                    // Bỏ qua nếu query không phải số
+                }
+            }
+
+            try (ResultSet rs = stm.executeQuery()) {
+                while (rs.next()) {
+                    Maintenance m = new Maintenance(
+                            rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getTimestamp("start_datetime"), // Sử dụng Timestamp thay vì Date
+                            rs.getTimestamp("end_datetime"),   // Sử dụng Timestamp thay vì Date
+                            rs.getInt("quantity")
+                    );
+                    res.add(m);
+                }
+            }
+        }
+        return res;
+    }
+
+
 
     @Override
     public Maintenance getMantenanceById(int id) throws SQLException {

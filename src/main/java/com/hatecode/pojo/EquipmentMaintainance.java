@@ -4,6 +4,8 @@
  */
 package com.hatecode.pojo;
 
+import java.util.Date;
+
 /**
  *
  * @author ADMIN
@@ -15,20 +17,62 @@ public class EquipmentMaintainance {
     private int maintainanceTypeId;
     private float price;
     private int maintainanceId;
+    private User technician;
+    private EquipmentMaintenanceStatus equipmentMaintenanceStatus;
+    private Date inspectionDate;
 
     public EquipmentMaintainance() {
     }
 
-    public EquipmentMaintainance(int id, int equipmentId, String description, int maintainanceTypeId, float price, int maintainanceId) {
+    public EquipmentMaintainance(int id, int equipmentId, String description, int maintainanceTypeId, float price, int maintainanceId, User technician, EquipmentMaintenanceStatus equipmentMaintenanceStatus, Date inspectionDate) {
         this.id = id;
         this.equipmentId = equipmentId;
         this.description = description;
         this.maintainanceTypeId = maintainanceTypeId;
         this.price = price;
         this.maintainanceId = maintainanceId;
+        this.technician = technician;
+        this.equipmentMaintenanceStatus = equipmentMaintenanceStatus;
+        this.inspectionDate = inspectionDate;
+    }
+
+    public Date getInspectionDate(){
+        return this.inspectionDate;
+    }
+
+    public void setInspectionDate(Date inspectionDate){
+        this.inspectionDate = inspectionDate;
+    }
+
+    /**
+     * @return the technician
+     */
+    public User getTechnician() {
+        return technician;
+    }
+
+    /**
+     * @param technician the technician to set
+     */
+    public void setTechnician(User technician) {
+        this.technician = technician;
+    }
+
+    /**
+     * @return the equipmentMaintenanceStatus
+     */
+    public EquipmentMaintenanceStatus getEquipmentMaintenanceStatus() {
+        return equipmentMaintenanceStatus;
+    }
+
+    /**
+     * @param equipmentMaintenanceStatus the equipmentMaintenanceStatus to set
+     */
+    public void setEquipmentMaintenanceStatus(EquipmentMaintenanceStatus equipmentMaintenanceStatus) {
+        this.equipmentMaintenanceStatus = equipmentMaintenanceStatus;
     }
     
-    
+
     /**
      * @return the id
      */

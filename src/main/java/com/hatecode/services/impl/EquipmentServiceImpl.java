@@ -1,10 +1,7 @@
 package com.hatecode.services.impl;
 
 
-import com.hatecode.pojo.Category;
-import com.hatecode.pojo.Equipment;
-import com.hatecode.pojo.EquipmentMaintainance;
-import com.hatecode.pojo.Status;
+import com.hatecode.pojo.*;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.EquipmentService;
 import com.hatecode.services.interfaces.StatusService;
@@ -117,7 +114,8 @@ public class EquipmentServiceImpl implements EquipmentService {
                                 rs.getInt("category_id"),
                                 rs.getString("category_name")
                         ),
-                        rs.getString("description")
+                        ""
+//                        rs.getString("description")
                 );
                 e.setStatusName(rs.getString("status_name"));
                 res.add(e);
@@ -151,7 +149,11 @@ public class EquipmentServiceImpl implements EquipmentService {
     public List<EquipmentMaintainance> getEquipmentMaintainances(int id) throws SQLException {
         List<EquipmentMaintainance> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT * FROM equipment_maintenance WHERE equipment_id = ?";
+            String sql = "SELECT em.*, ems.name, ems.description as ems_description\n" +
+                    "FROM equipmentma2test.equipment_maintenance em\n" +
+                    "JOIN equipmentma2test.equipment_maintenance_status ems\n" +
+                    "ON em.status_id = ems.id\n" +
+                    "WHERE equipment_id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setInt(1, id);
             ResultSet rs = stm.executeQuery();
@@ -163,7 +165,17 @@ public class EquipmentServiceImpl implements EquipmentService {
                         rs.getString("description"),
                         rs.getInt("maintenance_type_id"),
                         rs.getFloat("price"),
-                        rs.getInt("maintenance_id")
+                        rs.getInt("maintenance_id"),
+                        new User(
+                                rs.getInt("userId"),
+                                rs.getString("username")
+                        ),
+                        new EquipmentMaintenanceStatus(
+                                rs.getInt("status_id"),
+                                rs.getString("name"),
+                                rs.getString("ems_description")
+                        ),
+                        rs.getDate("inspection_date")
                 );
                 res.add(em);
             }
