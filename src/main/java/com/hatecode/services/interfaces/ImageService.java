@@ -1,6 +1,6 @@
 package com.hatecode.services.interfaces;
 
-import com.hatecode.models.Image;
+import com.hatecode.pojo.Image;
 import java.sql.SQLException;
 import java.util.List;
 

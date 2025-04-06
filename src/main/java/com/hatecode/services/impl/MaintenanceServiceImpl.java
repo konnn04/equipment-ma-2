@@ -1,7 +1,7 @@
 package com.hatecode.services.impl;
 
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.models.Maintenance;
+import com.hatecode.pojo.Maintenance;
 import com.hatecode.services.interfaces.MaintenanceService;
 
 import java.sql.*;
@@ -22,8 +22,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getInt("id"),
                         rs.getString("title"),
                         rs.getString("description"),
-                        rs.getDate("start_datetime"),
-                        rs.getDate("end_datetime")
+                        rs.getTimestamp("start_datetime").toLocalDateTime(),
+                        rs.getTimestamp("end_datetime").toLocalDateTime(),
+                        rs.getTimestamp("created_date").toLocalDateTime()
                 );
                 maintenances.add(maintenance);
             }
@@ -56,8 +57,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getInt("id"),
                         rs.getString("title"),
                         rs.getString("description"),
-                        rs.getDate("start_datetime"),
-                        rs.getDate("end_datetime")
+                        rs.getTimestamp("start_datetime").toLocalDateTime(),
+                        rs.getTimestamp("end_datetime").toLocalDateTime(),
+                        rs.getTimestamp("created_datetime").toLocalDateTime()
                 );
                 res.add(maintenance);
             }
@@ -81,8 +83,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getInt("id"),
                         rs.getString("title"),
                         rs.getString("description"),
-                        rs.getDate("start_datetime"),
-                        rs.getDate("end_datetime")
+                        rs.getTimestamp("start_datetime").toLocalDateTime(),
+                        rs.getTimestamp("end_datetime").toLocalDateTime(),
+                        rs.getTimestamp("created_datetime").toLocalDateTime()
                 );
             }
         }
@@ -97,8 +100,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
-            stmt.setDate(3, new java.sql.Date(maintenance.getStartDatetime().getTime()));
-            stmt.setDate(4, new java.sql.Date(maintenance.getEndDatetime().getTime()));
+            stmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
+            stmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
             return stmt.executeUpdate() > 0;
         }
     }
@@ -112,8 +115,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
-            stmt.setDate(3, new java.sql.Date(maintenance.getStartDatetime().getTime()));
-            stmt.setDate(4, new java.sql.Date(maintenance.getEndDatetime().getTime()));
+            stmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
+            stmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
             stmt.setInt(5, maintenance.getId());
 
             return stmt.executeUpdate() > 0;

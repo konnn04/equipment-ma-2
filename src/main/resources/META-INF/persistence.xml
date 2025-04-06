@@ -15,7 +15,7 @@
     <class>com.hatecode.pojo2.Equipment</class>
     <class>com.hatecode.pojo.Category</class>
     <class>com.hatecode.pojo.Role</class>
-    <class>com.hatecode.pojo.MaintenanceType</class>
+    <class>com.hatecode.pojo.MaintenanceRepairSuggestion</class>
     <class>com.hatecode.pojo.Maintenance</class>
     <class>com.hatecode.pojo.Image</class>
     <class>com.hatecode.pojo.User</class>

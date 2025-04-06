@@ -1,6 +1,6 @@
 package com.hatecode.equipmentma2;
 
-import com.hatecode.models.User;
+import com.hatecode.pojo.User;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -50,7 +50,7 @@ public class App extends Application {
     }
 
     public static void switchToHome() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("login-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         primaryStage.setScene(scene);
 

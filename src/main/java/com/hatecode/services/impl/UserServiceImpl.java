@@ -1,112 +1,90 @@
 package com.hatecode.services.impl;
 
-//import com.hatecode.pojo.Image;
-import com.hatecode.models.Role;
-import javafx.scene.image.Image;
+import com.hatecode.pojo.Image;
+import com.hatecode.pojo.Role;
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.models.User;
-import java.io.File;
+import com.hatecode.pojo.User;
 import com.hatecode.services.interfaces.UserService;
 
+import java.io.File;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
-    private final CloundinaryServicesImpl cloudiServices = new CloundinaryServicesImpl();
+    private static final Logger LOGGER = Logger.getLogger(UserServiceImpl.class.getName());
+    private final CloundinaryServicesImpl cloudinaryService = new CloundinaryServicesImpl();
 
     @Override
     public List<User> getUsers() throws SQLException {
         List<User> users = new ArrayList<>();
+        String sql = "SELECT u.*, " +
+                "i.id AS avatar_id, i.filename AS avatar_filename, i.created_date AS avatar_created_date, i.path AS avatar_path " +
+                "FROM User u " +
+                "LEFT JOIN Image i ON u.avatar = i.id";
 
-        try (Connection conn = JdbcUtils.getConn()) {
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT *, r.id AS role_id, r.name AS role_name, r.description AS role_description " +
-                    "FROM User u " +
-                    "LEFT JOIN Role r ON u.role = r.id");
+        try (Connection conn = JdbcUtils.getConn();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                User user = new User(
-                        rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("email"),
-                        rs.getString("phone"),
-                        new Role(
-                                rs.getInt("role_id"),
-                                rs.getString("role_name"),
-                                rs.getString("role_description")),
-                        rs.getBoolean("is_active"),
-                        rs.getString("avatar")
-                );
-                users.add(user);
+                users.add(extractUserFromResultSet(rs));
             }
         }
-
         return users;
     }
 
     @Override
     public User getUserById(int id) throws SQLException {
-        User user = null;
-        String sql = "SELECT * FROM User WHERE id = ?";
+        String sql = "SELECT u.*, " +
+                "i.id AS avatar_id, i.filename AS avatar_filename, i.created_date AS avatar_created_date, i.path AS avatar_path " +
+                "FROM User u " +
+                "LEFT JOIN Image i ON u.avatar = i.id " +
+                "WHERE u.id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+            
             pstmt.setInt(1, id);
-            user = getUser(user, pstmt);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return extractUserFromResultSet(rs);
+                }
+            }
         }
-
-        return user;
-    }
-
-    private User getUser(User user, PreparedStatement pstmt) throws SQLException {
-        ResultSet rs = pstmt.executeQuery();
-
-        if (rs.next()) {
-            user = new User(
-                    rs.getInt("id"),
-                    rs.getString("first_name"),
-                    rs.getString("last_name"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getString("email"),
-                    rs.getString("phone"),
-                    new Role(
-                            rs.getInt("role"),
-                            rs.getString("role_name"),
-                            rs.getString("role_description")),
-                    rs.getBoolean("is_active"),
-                    rs.getString("avatar")
-            );
-        }
-        return user;
+        return null;
     }
 
     @Override
     public User getUserByUsername(String username) throws SQLException {
-        User user = null;
-        String sql = "SELECT * FROM User WHERE username = ?";
+        String sql = "SELECT u.*, " +
+                "i.id AS avatar_id, i.filename AS avatar_filename, i.created_date AS avatar_created_date, i.path AS avatar_path " +
+                "FROM User u " +
+                "LEFT JOIN Image i ON u.avatar = i.id " +
+                "WHERE u.username = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+            
             pstmt.setString(1, username);
-            user = getUser(user, pstmt);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return extractUserFromResultSet(rs);
+                }
+            }
         }
-
-        return user;
+        return null;
     }
 
     @Override
     public boolean addUser(User user) throws SQLException {
-        String sql = "INSERT INTO User (first_name, last_name, username, password, email, phone, role, is_active) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO User (first_name, last_name, username, password, email, phone, role, is_active, avatar) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -119,6 +97,13 @@ public class UserServiceImpl implements UserService {
             pstmt.setString(6, user.getPhone());
             pstmt.setInt(7, user.getRole().getId());
             pstmt.setBoolean(8, user.isActive());
+            
+            // Set avatar if exists
+            if (user.getAvatar() != null) {
+                pstmt.setInt(9, user.getAvatar().getId());
+            } else {
+                pstmt.setNull(9, Types.INTEGER);
+            }
 
             return pstmt.executeUpdate() > 0;
         }
@@ -127,7 +112,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateUser(User user) throws SQLException {
         String sql = "UPDATE User SET first_name = ?, last_name = ?, password = ?, " +
-                "email = ?, phone = ?, role = ?, is_active = ? WHERE id = ?";
+                "email = ?, phone = ?, role = ?, is_active = ?, avatar = ? WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -139,7 +124,15 @@ public class UserServiceImpl implements UserService {
             pstmt.setString(5, user.getPhone());
             pstmt.setInt(6, user.getRole().getId());
             pstmt.setBoolean(7, user.isActive());
-            pstmt.setInt(8, user.getId());
+            
+            // Set avatar if exists
+            if (user.getAvatar() != null) {
+                pstmt.setInt(8, user.getAvatar().getId());
+            } else {
+                pstmt.setNull(8, Types.INTEGER);
+            }
+            
+            pstmt.setInt(9, user.getId());
 
             return pstmt.executeUpdate() > 0;
         }
@@ -153,78 +146,104 @@ public class UserServiceImpl implements UserService {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
-
             return pstmt.executeUpdate() > 0;
         }
     }
 
-    // https://res.cloudinary.com/dg66aou8q/image/upload/v1743086605/dysaruyl1ye7xejpakbp.png
     @Override
     public User authenticateUser(String username, String password) throws SQLException {
-        String sql = "SELECT *, r.id AS role, r.name AS role_name, r.description AS role_description " +
+        String sql = "SELECT u.*, " +
+                "i.id AS avatar_id, i.filename AS avatar_filename, i.created_date AS avatar_created_date, i.path AS avatar_path " +
                 "FROM User u " +
-                "LEFT JOIN Role r ON u.role = r.id " +
-                "WHERE username = ? AND password = ?";
+                "LEFT JOIN Image i ON u.avatar = i.id " +
+                "WHERE u.username = ? AND u.password = ? AND u.is_active = TRUE";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, username);
             pstmt.setString(2, password);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return new User(
-                        rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("email"),
-                        rs.getString("phone"),
-                        new Role(
-                                rs.getInt("role"),
-                                rs.getString("role_name"),
-                                rs.getString("role_description")),
-                        rs.getBoolean("is_active"),
-                        rs.getString("avatar")
-                );
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return extractUserFromResultSet(rs);
+                }
             }
-        } catch (SQLException ex) {
-            return null;
         }
         return null;
     }
 
     @Override
     public String getUserImage(User user) {
-        try {
-            String imgUrl = cloudiServices.getImageUrl(user.getAvatar());
-            return imgUrl;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        if (user.getAvatar() == null || user.getAvatar().getPath() == null) {
+            return null;
         }
-        return null;
+        
+        try {
+            return cloudinaryService.getImageUrl(user.getAvatar().getPath());
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Error getting user image", ex);
+            return null;
+        }
     }
 
     @Override
     public String uploadUserImage(File imageFile) {
         try {
-            return cloudiServices.uploadImage(imageFile);
+            return cloudinaryService.uploadImage(imageFile);
         } catch (SQLException ex) {
-            Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error uploading user image", ex);
+            return null;
         }
-        return null;
     }
 
     @Override
     public boolean deleteUserImage(String publicId) {
         try {
-            return cloudiServices.deleteImage(publicId);
+            return cloudinaryService.deleteImage(publicId);
         } catch (SQLException ex) {
-            Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error deleting user image", ex);
+            return false;
         }
-        return false;
     }
 
+    /**
+     * Helper method to extract User object from ResultSet
+     */
+    private User extractUserFromResultSet(ResultSet rs) throws SQLException {
+        // Lấy thông tin role
+        Role role = Role.fromId(rs.getInt("role"));
 
+        // Lấy thông tin avatar nếu có
+        Image avatar = null;
+        int avatarId = rs.getInt("avatar_id");
+        if (!rs.wasNull()) {
+            avatar = new Image(
+                    avatarId,
+                    rs.getString("avatar_filename"),
+                    rs.getTimestamp("avatar_created_date") != null ? 
+                        rs.getTimestamp("avatar_created_date").toLocalDateTime() : null,
+                    rs.getString("avatar_path")
+            );
+        }
+
+        // Lấy created_date
+        LocalDateTime createdDate = rs.getTimestamp("created_date") != null ? 
+                rs.getTimestamp("created_date").toLocalDateTime() : null;
+
+        // Tạo và trả về đối tượng User
+        return new User(
+                rs.getInt("id"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getString("username"),
+                rs.getString("password"),
+                rs.getString("email"),
+                rs.getString("phone"),
+                role,
+                rs.getBoolean("is_active"),
+                avatar,
+                createdDate
+        );
+    }
 }

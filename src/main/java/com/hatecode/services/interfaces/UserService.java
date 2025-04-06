@@ -1,6 +1,6 @@
 package com.hatecode.services.interfaces;
 
-import com.hatecode.models.User;
+import com.hatecode.pojo.User;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
@@ -16,6 +16,4 @@ public interface UserService {
     String getUserImage(User user);
     String uploadUserImage(File imageFile);
     boolean deleteUserImage(String publicId);
-//    Features
-//    Get
 }

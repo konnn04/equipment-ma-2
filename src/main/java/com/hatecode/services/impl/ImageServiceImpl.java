@@ -1,6 +1,6 @@
 package com.hatecode.services.impl;
 
-import com.hatecode.models.Image;
+import com.hatecode.pojo.Image;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.ImageService;
 
@@ -47,7 +47,7 @@ public class ImageServiceImpl implements ImageService {
                 image = new Image(
                         rs.getInt("id"),
                         rs.getString("filename"),
-                        rs.getTimestamp("create_date").toLocalDateTime(),
+                        rs.getTimestamp("created_date").toLocalDateTime(),
                         rs.getString("path")
                 );
             }
@@ -58,7 +58,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean addImage(Image image) throws SQLException {
-        String sql = "INSERT INTO Image (filename, create_date, path) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Image (filename, created_date, path) VALUES (?, ?, ?)";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -73,7 +73,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean updateImage(Image image) throws SQLException {
-        String sql = "UPDATE Image SET filename = ?, create_date = ?, path = ? WHERE id = ?";
+        String sql = "UPDATE Image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

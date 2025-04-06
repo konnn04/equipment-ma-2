@@ -1,85 +1,38 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.hatecode.pojo;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Set;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import java.time.LocalDateTime;
 
-/**
- *
- * @author trieu
- */
-@Entity
-@Table(name = "maintenance")
-@NamedQueries({
-    @NamedQuery(name = "Maintenance.findAll", query = "SELECT m FROM Maintenance m"),
-    @NamedQuery(name = "Maintenance.findById", query = "SELECT m FROM Maintenance m WHERE m.id = :id"),
-    @NamedQuery(name = "Maintenance.findByTitle", query = "SELECT m FROM Maintenance m WHERE m.title = :title"),
-    @NamedQuery(name = "Maintenance.findByStartDatetime", query = "SELECT m FROM Maintenance m WHERE m.startDatetime = :startDatetime"),
-    @NamedQuery(name = "Maintenance.findByEndDatetime", query = "SELECT m FROM Maintenance m WHERE m.endDatetime = :endDatetime")})
-public class Maintenance implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
-    @Basic(optional = false)
-    @Column(name = "title")
+public class Maintenance {
+    private int id;
     private String title;
-    @Basic(optional = false)
-    @Lob
-    @Column(name = "description")
     private String description;
-    @Basic(optional = false)
-    @Column(name = "start_datetime")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date startDatetime;
-    @Basic(optional = false)
-    @Column(name = "end_datetime")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date endDatetime;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "maintenanceId")
-    private Set<EquipmentMaintenance> equipmentMaintenanceSet;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
+    private LocalDateTime createdDate;
 
     public Maintenance() {
+        super();
     }
-
-    public Maintenance(Integer id) {
-        this.id = id;
-    }
-
-    public Maintenance(Integer id, String title, String description, Date startDatetime, Date endDatetime) {
+    public Maintenance(
+            int id,
+            String title,
+            String description,
+            LocalDateTime startDatetime,
+            LocalDateTime endDatetime,
+            LocalDateTime createdDate) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.startDatetime = startDatetime;
-        this.endDatetime = endDatetime;
+        this.startDateTime = startDatetime;
+        this.endDateTime = endDatetime;
+        this.createdDate = createdDate;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -99,53 +52,27 @@ public class Maintenance implements Serializable {
         this.description = description;
     }
 
-    public Date getStartDatetime() {
-        return startDatetime;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
     }
 
-    public void setStartDatetime(Date startDatetime) {
-        this.startDatetime = startDatetime;
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
     }
 
-    public Date getEndDatetime() {
-        return endDatetime;
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
-    public void setEndDatetime(Date endDatetime) {
-        this.endDatetime = endDatetime;
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
     }
 
-    public Set<EquipmentMaintenance> getEquipmentMaintenanceSet() {
-        return equipmentMaintenanceSet;
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
     }
 
-    public void setEquipmentMaintenanceSet(Set<EquipmentMaintenance> equipmentMaintenanceSet) {
-        this.equipmentMaintenanceSet = equipmentMaintenanceSet;
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Maintenance)) {
-            return false;
-        }
-        Maintenance other = (Maintenance) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.hatecode.pojo.Maintenance[ id=" + id + " ]";
-    }
-    
 }

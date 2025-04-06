@@ -15,7 +15,6 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -126,7 +125,7 @@
                                                     </VBox>
                                                 </children>
                                             </AnchorPane>
-                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="623.0" prefWidth="0.0" style="-fx-background-color: white;">
+                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="621.0" prefWidth="976.0" style="-fx-background-color: white;">
                                                 <children>
                                                     <VBox prefHeight="623.0" prefWidth="1001.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                                         <padding>
@@ -149,8 +148,8 @@
                                              </HBox>
                                                             <GridPane hgap="15.0" prefHeight="420.0" prefWidth="938.0" vgap="15.0" VBox.vgrow="ALWAYS">
                                                                 <columnConstraints>
-                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="146.6666259765625" minWidth="120.0" prefWidth="131.2645263671875" />
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="281.91265869140625" minWidth="10.0" prefWidth="275.7354736328125" />
+                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="145.0" minWidth="145.0" prefWidth="145.0" />
+                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="281.91265869140625" minWidth="10.0" prefWidth="261.0" />
                                                                     <ColumnConstraints hgrow="NEVER" maxWidth="265.666748046875" minWidth="9.83331298828125" prefWidth="55.00006103515625" />
                                                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="421.6666259765625" minWidth="10.0" prefWidth="353.99993896484375" />
                                                                 </columnConstraints>
@@ -158,6 +157,7 @@
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                                   <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -174,61 +174,80 @@
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <Label styleClass="" text="Status:" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                                                                    <Label styleClass="" text="Status:" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <Label styleClass="" text="Last Maintenance:" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                                                                    <Label styleClass="" text="Last Maintenance:" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <Label styleClass="" text="Next Maintenance:" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                                                                    <Label styleClass="" text="Next Maintenance:" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <Label styleClass="" text="Description:" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                                                                    <Label styleClass="" text="Description:" GridPane.halignment="LEFT" GridPane.rowIndex="7" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
                                                                     <TextField fx:id="equipmentIDTextField" disable="true" prefHeight="42.0" prefWidth="225.0" styleClass="text-field-disabled" GridPane.columnIndex="1" />
-                                                                    <TextField fx:id="equipmentNameTextField" styleClass="text-field" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
-                                                                    <ComboBox fx:id="statusEquipmentComboBox" prefHeight="31.0" prefWidth="707.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-                                                                    <TextArea fx:id="equipmentDescriptionTextField" prefHeight="50.0" prefWidth="200.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" />
+                                                                    <TextField fx:id="equipmentNameTextField" prefHeight="44.0" prefWidth="717.0" styleClass="text-field" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
+                                                                    <TextArea fx:id="equipmentDescriptionTextField" prefHeight="50.0" prefWidth="200.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" />
                                                                     <Label styleClass="" text="Code:" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
                                                                     <TextField fx:id="equipmentCodeTextField" disable="true" prefHeight="42.0" prefWidth="225.0" styleClass="text-field-disabled" GridPane.columnIndex="3" />
-                                                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.rowSpan="3">
-                                                                        <children>
-                                                                            <ImageView fitHeight="150.0" fitWidth="234.0" pickOnBounds="true" preserveRatio="true">
-                                                                                <image>
-                                                                                    <Image url="@../../../../../../../Desktop/CleanShot%202025-03-25%20at%2021.42.53@2x.png" />
-                                                                                </image>
-                                                                            </ImageView>
-                                                                            <Region prefHeight="150.0" prefWidth="8.0" HBox.hgrow="ALWAYS" />
-                                                                            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="32.0" prefWidth="92.0" text="Change" wrapText="true" />
-                                                                        </children>
-                                                                    </HBox>
-                                                                    <Label alignment="TOP_LEFT" prefHeight="0.0" prefWidth="47.0" styleClass="" text="Image:" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                                                    <Label alignment="TOP_LEFT" prefHeight="0.0" prefWidth="47.0" styleClass="" text="Image:" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                   <DatePicker fx:id="nextMaintenanceDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                                                   <Text fx:id="lastMaintenanceDateTextField" strokeType="OUTSIDE" strokeWidth="0.0" text="None" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                   <DatePicker fx:id="nextMaintenanceDatePicker" prefHeight="44.0" prefWidth="265.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                   <Text fx:id="lastMaintenanceDateTextField" strokeType="OUTSIDE" strokeWidth="0.0" text="None" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                      <font>
+                                                         <Font name="System Bold" size="14.0" />
+                                                      </font>
+                                                   </Text>
+                                                   <Text fx:id="statusEquipmentText" strokeType="OUTSIDE" strokeWidth="0.0" text="None" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                      <font>
+                                                         <Font name="System Bold" size="14.0" />
+                                                      </font>
+                                                   </Text>
+                                                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="3" GridPane.rowIndex="2" GridPane.rowSpan="4">
+                                                      <children>
+                                                         <ImageView fx:id="equipmentImage" fitHeight="202.0" fitWidth="234.0" pickOnBounds="true" preserveRatio="true" />
+                                                                            <Button fx:id="changeEquipmentImageButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="32.0" prefWidth="92.0" text="Change" wrapText="true" />
+                                                      </children>
+                                                   </HBox>
+                                                   <Label text="Regular maintenance:" GridPane.rowIndex="5">
                                                       <font>
                                                          <Font size="14.0" />
                                                       </font>
-                                                   </Text>
+                                                   </Label>
+                                                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                      <children>
+                                                         <TextField fx:id="regularMaintenanceTimeTextField" prefHeight="44.0" prefWidth="133.0" />
+                                                         <Label text="Day">
+                                                            <font>
+                                                               <Font size="14.0" />
+                                                            </font>
+                                                         </Label>
+                                                      </children>
+                                                   </HBox>
+                                                   <ComboBox fx:id="equipmentCategoryComboBox" prefHeight="34.0" prefWidth="268.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                   <Label prefHeight="20.0" prefWidth="136.0" styleClass="" text="Category:" GridPane.rowIndex="2">
+                                                      <font>
+                                                         <Font name="SF Pro Text Semibold" size="14.0" />
+                                                      </font>
+                                                   </Label>
                                                                 </children>
                                                             </GridPane>
-                                                            <Region prefHeight="18.0" prefWidth="938.0" />
                                                         </children>
                                                     </VBox>
                                                       <Separator AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />

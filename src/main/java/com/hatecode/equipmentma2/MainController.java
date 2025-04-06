@@ -1,23 +1,15 @@
 package com.hatecode.equipmentma2;
 
-import com.hatecode.models.Status;
-import com.hatecode.models.User;
-import com.hatecode.models.Maintenance;
-import com.hatecode.models.Equipment;
-import com.hatecode.models.BaseObject;
+import com.hatecode.pojo.*;
 import com.hatecode.equipmentma2.controllers.EquipmentManager;
 import com.hatecode.equipmentma2.controllers.MaintenanceManager;
-import com.hatecode.services.interfaces.MaintenanceService;
-import com.hatecode.services.impl.MaintenanceServiceImpl;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -46,7 +38,7 @@ public class MainController  implements Initializable {
     ComboBox<String> typeFilterComboBox;
 
     @FXML
-    ComboBox<BaseObject> valueFilterComboBox;
+    ComboBox<Object> valueFilterComboBox;
 
     @FXML
     TextField equipmentIDTextField;
@@ -58,7 +50,10 @@ public class MainController  implements Initializable {
     TextField equipmentNameTextField;
 
     @FXML
-    ComboBox<Status> statusEquipmentComboBox;
+    ComboBox<Category> equipmentCategoryComboBox;
+
+    @FXML
+    Text statusEquipmentText;
 
     @FXML
     TextArea equipmentDescriptionTextField;
@@ -80,6 +75,15 @@ public class MainController  implements Initializable {
 
     @FXML
     Label modeLabel;
+
+    @FXML
+    Button changeEquipmentImageButton;
+
+    @FXML
+    ImageView equipmentImage;
+
+    @FXML
+    TextField regularMaintenanceTimeTextField;
 
     /* Tab Maintenance */
     @FXML
@@ -117,7 +121,8 @@ public class MainController  implements Initializable {
                 equipmentIDTextField,
                 equipmentCodeTextField,
                 equipmentNameTextField,
-                statusEquipmentComboBox,
+                equipmentCategoryComboBox,
+                statusEquipmentText,
                 lastMaintenanceDateTextField,
                 nextMaintenanceDatePicker,
                 equipmentDescriptionTextField,
@@ -126,8 +131,10 @@ public class MainController  implements Initializable {
                 cancelEquipmentButton,
                 updateEquipmentButton,
                 modeComboBox,
-                modeLabel
-
+                modeLabel,
+                changeEquipmentImageButton,
+                equipmentImage,
+                regularMaintenanceTimeTextField
         );
 
         MaintenanceManager maintenanceManager = new MaintenanceManager(

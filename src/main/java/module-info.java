@@ -17,7 +17,7 @@ module com.hatecode.equipmentma2 {
     opens com.hatecode.equipmentma2 to javafx.fxml;
     exports com.hatecode.equipmentma2;
 
-    exports com.hatecode.models;
+    exports com.hatecode.pojo;
     exports com.hatecode.services.interfaces;
     exports com.hatecode.services.impl;
 
