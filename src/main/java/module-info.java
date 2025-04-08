@@ -11,6 +11,7 @@ module com.hatecode.equipmentma2 {
     requires jakarta.mail;
 
     requires java.desktop;
+    requires java.persistence;
 
 
     opens com.hatecode.equipmentma2 to javafx.fxml;

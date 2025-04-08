@@ -11,6 +11,11 @@ public class Image {
     public Image() {
     }
 
+    public Image(String filename, String path) {
+        this.filename = filename;
+        this.path = path;
+    }
+
     public Image(String filename, LocalDateTime createDate, String path) {
         this.filename = filename;
         this.createDate = createDate;

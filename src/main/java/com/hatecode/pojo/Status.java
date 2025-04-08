@@ -1,31 +1,45 @@
 package com.hatecode.pojo;
 
-public class Status extends BaseObject{
+import java.util.List;
+
+public enum Status {
+    INACTIVE (1, "Không hoạt động"),
+    ACTIVE (2, "Đang hoạt động"),
+    UNDER_MAINTENANCE (3, "Đang bảo trì"),
+    BROKEN (4, "Đã hỏng"),
+    LIQUIDATED (5, "Đã thanh lý");
+
+    private int id;
     private String description;
 
-    public Status() {
-    }
-
-    public Status(int id, String name) {
-        super(id, name);
-    }
-
-    public Status(String name, String description) {
-        super(name);
+    Status(int id, String description) {
+        this.id = id;
         this.description = description;
     }
 
-    public Status(int id, String name, String description) {
-        super(id, name);
-        this.description = description;
+    public int getId() {
+        return id;
     }
 
-    // Getters and Setters
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public static Status fromId(int id) {
+        for (Status status : Status.values()) {
+            if (status.getId() == id) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Invalid id: " + id);
+    }
+
+    @Override
+    public String toString() {
+        return this.getDescription();
+    }
+
+    public static  List<Status> getAllStatus() {
+        return List.of(Status.values());
     }
 }

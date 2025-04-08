@@ -1,20 +1,17 @@
 package com.hatecode.equipmentma2;
 
+import com.hatecode.pojo.*;
 import com.hatecode.equipmentma2.controllers.EquipmentManager;
 import com.hatecode.equipmentma2.controllers.MaintenanceManager;
-import com.hatecode.pojo.*;
-import com.hatecode.services.interfaces.MaintenanceService;
-import com.hatecode.services.impl.MaintenanceServiceImpl;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -41,7 +38,7 @@ public class MainController  implements Initializable {
     ComboBox<String> typeFilterComboBox;
 
     @FXML
-    ComboBox<BaseObject> valueFilterComboBox;
+    ComboBox<Object> valueFilterComboBox;
 
     @FXML
     TextField equipmentIDTextField;
@@ -53,7 +50,10 @@ public class MainController  implements Initializable {
     TextField equipmentNameTextField;
 
     @FXML
-    ComboBox<Status> statusEquipmentComboBox;
+    ComboBox<Category> equipmentCategoryComboBox;
+
+    @FXML
+    Text statusEquipmentText;
 
     @FXML
     TextArea equipmentDescriptionTextField;
@@ -61,12 +61,43 @@ public class MainController  implements Initializable {
     @FXML
     Button addEquipmentButton;
 
+    @FXML
+    Button saveEquipmentButton;
+
+    @FXML
+    Button cancelEquipmentButton;
+
+    @FXML
+    Button updateEquipmentButton;
+
+    @FXML
+    ComboBox<String> modeComboBox;
+
+    @FXML
+    Label modeLabel;
+
+    @FXML
+    Button changeEquipmentImageButton;
+
+    @FXML
+    ImageView equipmentImage;
+
+    @FXML
+    TextField regularMaintenanceTimeTextField;
+
     /* Tab Maintenance */
     @FXML
     TableView<Maintenance> maintenanceTable;
 
     @FXML
     TextField maintenanceQueryTextField;
+
+    @FXML
+    Text lastMaintenanceDateTextField;
+
+    @FXML
+    DatePicker nextMaintenanceDatePicker;
+
 
     private void initUI() {
         User currentUser = App.getCurrentUser();
@@ -90,9 +121,20 @@ public class MainController  implements Initializable {
                 equipmentIDTextField,
                 equipmentCodeTextField,
                 equipmentNameTextField,
-                statusEquipmentComboBox,
+                equipmentCategoryComboBox,
+                statusEquipmentText,
+                lastMaintenanceDateTextField,
+                nextMaintenanceDatePicker,
                 equipmentDescriptionTextField,
-                addEquipmentButton
+                addEquipmentButton,
+                saveEquipmentButton,
+                cancelEquipmentButton,
+                updateEquipmentButton,
+                modeComboBox,
+                modeLabel,
+                changeEquipmentImageButton,
+                equipmentImage,
+                regularMaintenanceTimeTextField
         );
 
         MaintenanceManager maintenanceManager = new MaintenanceManager(

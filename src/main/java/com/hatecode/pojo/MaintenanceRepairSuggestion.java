@@ -1,28 +1,30 @@
 package com.hatecode.pojo;
 
-public class MaintenanceType {
+import java.time.LocalDateTime;
+
+public class MaintenanceRepairSuggestion {
     private int id;
     private String name;
     private String description;
     private float suggestPrice;
+    private LocalDateTime createdDate;
 
-    public MaintenanceType() {
+    public MaintenanceRepairSuggestion() {
     }
 
-    public MaintenanceType(String name, String description, float suggestPrice) {
-        this.name = name;
-        this.description = description;
-        this.suggestPrice = suggestPrice;
-    }
-
-    public MaintenanceType(int id, String name, String description, float suggestPrice) {
+    public MaintenanceRepairSuggestion(
+            int id,
+            String name,
+            String description,
+            float suggestPrice,
+            LocalDateTime createdDate) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.suggestPrice = suggestPrice;
+        this.createdDate = createdDate;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -53,5 +55,13 @@ public class MaintenanceType {
 
     public void setSuggestPrice(float suggestPrice) {
         this.suggestPrice = suggestPrice;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 }

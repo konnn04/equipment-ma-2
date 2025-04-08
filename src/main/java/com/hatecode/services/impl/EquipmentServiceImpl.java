@@ -1,44 +1,25 @@
 package com.hatecode.services.impl;
 
-
-import com.hatecode.pojo.Category;
-import com.hatecode.pojo.Equipment;
-import com.hatecode.pojo.EquipmentMaintainance;
-import com.hatecode.pojo.Status;
+import com.hatecode.pojo.*;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.EquipmentService;
-import com.hatecode.services.interfaces.StatusService;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
-/**
- *
- * @author ADMIN
- */
 public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public List<Equipment> getEquipments() throws SQLException {
         List<Equipment> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT e.*, s.id AS status_id, s.name AS status_name, s.description AS status_description, " +
-                    "c.id AS category_id, c.name AS category_name " +
+            String sql = "SELECT e.*, " +
+                    "c.id AS category_id, c.name AS category_name, c.is_active AS category_is_active, " +
+                    "i.id AS image_id, i.filename AS image_filename, i.created_date AS image_created_date, i.path AS image_path " +
                     "FROM equipment e " +
-                    "LEFT JOIN Status s ON e.status = s.id " +
-                    "LEFT JOIN Category c ON e.category = c.id";
-
+                    "LEFT JOIN Category c ON e.category = c.id " +
+                    "LEFT JOIN image i ON e.image = i.id ";
             PreparedStatement stm = conn.prepareStatement(sql);
             ResultSet rs = stm.executeQuery();
 
@@ -47,19 +28,24 @@ public class EquipmentServiceImpl implements EquipmentService {
                         rs.getInt("id"),
                         rs.getString("code"),
                         rs.getString("name"),
-                        rs.getDate("import_date"),
-                        new Status(
-                                rs.getInt("status_id"),
-                                rs.getString("status_name"),
-                                rs.getString("status_description")
-                        ),
+                        Status.fromId(rs.getInt("status")),
                         new Category(
                                 rs.getInt("category_id"),
-                                rs.getString("category_name")
+                                rs.getString("category_name"),
+                                rs.getBoolean("category_is_active")
                         ),
-                        rs.getString("description")
+                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
+                        new Image(
+                                rs.getInt("image_id"),
+                                rs.getString("image_filename"),
+                                rs.getTimestamp("image_created_date") != null ? rs.getTimestamp("image_created_date").toLocalDateTime() : null,
+                                rs.getString("image_path")
+                        ),
+                        rs.getInt("regular_maintenance_day"),
+                        rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,
+                        rs.getString("description"),
+                        rs.getBoolean("is_active")
                 );
-                e.setStatusName(rs.getString("status_name"));
                 res.add(e);
             }
         }
@@ -73,15 +59,15 @@ public class EquipmentServiceImpl implements EquipmentService {
         if (query == null || query.isEmpty()) query = "";
         page = Math.max(1, page);
         pageSize = Math.max(1, pageSize);
-        StatusService statusService = new StatusServiceImpl();
         List<Equipment> res = new ArrayList<>();
         System.out.println(key+ " == " + value);
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT e.*, s.id AS status_id, s.name AS status_name, s.description AS status_description, " +
-                    "c.id AS category_id, c.name AS category_name " +
+            String sql = "SELECT e.*, " +
+                    "c.id AS category_id, c.name AS category_name, c.is_active AS category_is_active, " +
+                    "i.id AS image_id, i.filename AS image_filename, i.created_date AS image_created_date, i.path AS image_path " +
                     "FROM equipment e " +
-                    "LEFT JOIN Status s ON e.status = s.id " +
                     "LEFT JOIN Category c ON e.category = c.id " +
+                    "LEFT JOIN image i ON e.image = i.id " +
                     "WHERE (e.code LIKE ? OR e.name LIKE ?) ";
             boolean b = key != null && !key.isEmpty() && value != null && !value.isEmpty();
             if (b) {
@@ -107,19 +93,24 @@ public class EquipmentServiceImpl implements EquipmentService {
                         rs.getInt("id"),
                         rs.getString("code"),
                         rs.getString("name"),
-                        rs.getDate("import_date"),
-                        new Status(
-                                rs.getInt("status_id"),
-                                rs.getString("status_name"),
-                                rs.getString("status_description")
-                        ),
+                        Status.fromId(rs.getInt("status")),
                         new Category(
                                 rs.getInt("category_id"),
-                                rs.getString("category_name")
+                                rs.getString("category_name"),
+                                rs.getBoolean("category_is_active")
                         ),
-                        rs.getString("description")
+                        rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null,
+                        new Image(
+                                rs.getInt("image_id"),
+                                rs.getString("image_filename"),
+                                rs.getTimestamp("image_created_date") != null ? rs.getTimestamp("image_created_date").toLocalDateTime() : null,
+                                rs.getString("image_path")
+                        ),
+                        rs.getInt("regular_maintenance_day"),
+                        rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,
+                        rs.getString("description"),
+                        rs.getBoolean("is_active")
                 );
-                e.setStatusName(rs.getString("status_name"));
                 res.add(e);
             }
         }
@@ -127,29 +118,8 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public void getEquipmentsImage() throws SQLException {
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT e.id AS equipment_id, i.filename, i.path " +
-                    "FROM equipment e " +
-                    "JOIN equipment_image ei ON e.id = ei.equipment_id " +
-                    "JOIN image i ON ei.image_id = i.id";
-            PreparedStatement stm = conn.prepareStatement(sql);
-            ResultSet rs = stm.executeQuery();
-
-            while (rs.next()) {
-                int equipmentId = rs.getInt("equipment_id");
-                String filename = rs.getString("filename");
-                String path = rs.getString("path");
-
-                // In thông tin hình ảnh (hoặc thực hiện hành động khác)
-                System.out.println("Equipment ID: " + equipmentId + ", Filename: " + filename + ", Path: " + path);
-            }
-        }
-    }
-
-    @Override
-    public List<EquipmentMaintainance> getEquipmentMaintainances(int id) throws SQLException {
-        List<EquipmentMaintainance> res = new ArrayList<>();
+    public List<EquipmentMaintenance> getEquipmentMaintainances(int id) throws SQLException {
+        List<EquipmentMaintenance> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "SELECT * FROM equipment_maintenance WHERE equipment_id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
@@ -157,13 +127,17 @@ public class EquipmentServiceImpl implements EquipmentService {
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                EquipmentMaintainance em = new EquipmentMaintainance(
+                EquipmentMaintenance em = new EquipmentMaintenance(
                         rs.getInt("id"),
                         rs.getInt("equipment_id"),
+                        rs.getInt("maintenance_id"),
+                        rs.getInt("technician_id"),
                         rs.getString("description"),
-                        rs.getInt("maintenance_type_id"),
-                        rs.getFloat("price"),
-                        rs.getInt("maintenance_id")
+                        Result.fromCode(rs.getInt("result")),
+                        rs.getString("repair_name"),
+                        rs.getFloat("repair_price"),
+                        rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
+                        rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null
                 );
                 res.add(em);
             }
@@ -174,14 +148,17 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public boolean addEquipment(Equipment e) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "INSERT INTO equipment (code, name, status, category, import_date) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Equipment (code, name, status, category, regular_maintenance_day, description, image) VALUES"+
+                    " (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setString(1, e.getCode());
             stm.setString(2, e.getName());
             stm.setInt(3, e.getStatus().getId());
             stm.setInt(4, e.getCategory().getId());
-            stm.setDate(5, new java.sql.Date(e.getImportDate().getTime()));
-
+            stm.setInt(5, e.getRegularMaintenanceDay());
+//            stm.setTimestamp(6, e.getLastMaintenanceTime() != null ? java.sql.Timestamp.valueOf(e.getLastMaintenanceTime()) : null);
+            stm.setString(6, e.getDescription());
+            stm.setInt(7, e.getImage() != null ? e.getImage().getId() : 0); // Nếu không có ảnh, truyền vào 0 hoặc null
             int rowsAffected = stm.executeUpdate();
             return rowsAffected > 0; // Trả về true nếu có ít nhất một dòng được thêm vào
         }
@@ -190,15 +167,18 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public boolean updateEquipment(Equipment e) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "UPDATE equipment SET code = ?, name = ?, status = ?, category = ?, import_date = ? WHERE id = ?";
+            String sql = "UPDATE equipment SET code = ?, name = ?, status = ?, category = ?, regular_maintenance_day = ?, last_maintenance_time = ?, description = ?, image = ? WHERE id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setString(1, e.getCode());
             stm.setString(2, e.getName());
             stm.setInt(3, e.getStatus().getId());
             stm.setInt(4, e.getCategory().getId());
-            stm.setDate(5, new java.sql.Date(e.getImportDate().getTime()));
-            stm.setInt(6, e.getId());
-
+            stm.setInt(5, e.getRegularMaintenanceDay());
+            stm.setTimestamp(6, Timestamp.valueOf(e.getLastMaintenanceTime()));
+            stm.setString(7, e.getDescription());
+            stm.setInt(8, e.getImage() != null ? e.getImage().getId() : 0); // Nếu không có ảnh, truyền vào 0 hoặc null
+            stm.setInt(9, e.getId()); // ID của thiết bị cần cập nhật
+            // Thực hiện câu lệnh cập nhật
             int rowsAffected = stm.executeUpdate();
             return rowsAffected > 0; // Trả về true nếu có ít nhất một dòng được cập nhật
         }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence           http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+  <persistence-unit name="com.hatecode_equipment-ma-2_jar_1.0-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>com.hatecode.pojo2.UserMaintenance</class>
+    <class>com.hatecode.pojo2.Role</class>
+    <class>com.hatecode.pojo2.Status</class>
+    <class>com.hatecode.pojo2.MaintenanceType</class>
+    <class>com.hatecode.pojo2.EquipmentImage</class>
+    <class>com.hatecode.pojo2.User</class>
+    <class>com.hatecode.pojo2.Category</class>
+    <class>com.hatecode.pojo2.Maintenance</class>
+    <class>com.hatecode.pojo2.Image</class>
+    <class>com.hatecode.pojo2.EquipmentMaintenance</class>
+    <class>com.hatecode.pojo2.Equipment</class>
+    <class>com.hatecode.pojo.Category</class>
+    <class>com.hatecode.pojo.Role</class>
+    <class>com.hatecode.pojo.MaintenanceRepairSuggestion</class>
+    <class>com.hatecode.pojo.Maintenance</class>
+    <class>com.hatecode.pojo.Image</class>
+    <class>com.hatecode.pojo.User</class>
+    <class>com.hatecode.pojo.Status</class>
+    <class>com.hatecode.pojo.EquipmentMaintenanceStatus</class>
+    <class>com.hatecode.pojo.EquipmentImage</class>
+    <class>com.hatecode.pojo.EquipmentMaintenance</class>
+    <class>com.hatecode.pojo.Equipment</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/equipmentma2?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
+      <property name="javax.persistence.jdbc.user" value="root"/>
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+      <property name="javax.persistence.jdbc.password" value="Abc@123"/>
+    </properties>
+  </persistence-unit>
+</persistence>

@@ -1,5 +1,7 @@
 package com.hatecode.pojo;
 
+import java.time.LocalDateTime;
+
 public class User
 {
     private int id;
@@ -11,12 +13,23 @@ public class User
     private String phone;
     private Role role;
     private boolean isActive;
-    private String avatar;
+    private Image avatar;
+    private LocalDateTime createdDate;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, String avatar) {
+    public User(
+            String firstName,
+            String lastName,
+            String username,
+            String password,
+            String email,
+            String phone,
+            Role role,
+            boolean isActive,
+            Image avatar,
+            LocalDateTime createdDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -26,9 +39,21 @@ public class User
         this.role = role;
         this.isActive = isActive;
         this.avatar = avatar;
+        this.createdDate = createdDate;
     }
 
-    public User(int id, String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, String avatar) {
+    public User(
+            int id,
+            String firstName,
+            String lastName,
+            String username,
+            String password,
+            String email,
+            String phone,
+            Role role,
+            boolean isActive,
+            Image avatar,
+            LocalDateTime createdDate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -39,9 +64,9 @@ public class User
         this.role = role;
         this.isActive = isActive;
         this.avatar = avatar;
+        this.createdDate = createdDate;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -114,16 +139,19 @@ public class User
         isActive = active;
     }
 
-    public String getAvatar() {
+    public Image getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) {
+    public void setAvatar(Image avatar) {
         this.avatar = avatar;
     }
 
-    @Override
-    public String toString() {
-        return firstName + " " + lastName;
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 }

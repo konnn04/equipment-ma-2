@@ -22,9 +22,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getInt("id"),
                         rs.getString("title"),
                         rs.getString("description"),
-                        rs.getDate("start_datetime"),
-                        rs.getDate("end_datetime"),
-                        rs.getInt("quantity")
+                        rs.getTimestamp("start_datetime").toLocalDateTime(),
+                        rs.getTimestamp("end_datetime").toLocalDateTime(),
+                        rs.getTimestamp("created_date").toLocalDateTime()
                 );
                 maintenances.add(maintenance);
             }
@@ -57,9 +57,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getInt("id"),
                         rs.getString("title"),
                         rs.getString("description"),
-                        rs.getDate("start_datetime"),
-                        rs.getDate("end_datetime"),
-                        rs.getInt("quantity")
+                        rs.getTimestamp("start_datetime").toLocalDateTime(),
+                        rs.getTimestamp("end_datetime").toLocalDateTime(),
+                        rs.getTimestamp("created_datetime").toLocalDateTime()
                 );
                 res.add(maintenance);
             }
@@ -70,7 +70,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     @Override
     public Maintenance getMantenanceById(int id) throws SQLException {
         Maintenance maintenance = null;
-        String sql = "SELECT * FROM Mantenance WHERE id = ?";
+        String sql = "SELECT * FROM Maintenance WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -83,9 +83,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getInt("id"),
                         rs.getString("title"),
                         rs.getString("description"),
-                        rs.getDate("start_datetime"),
-                        rs.getDate("end_datetime"),
-                        rs.getInt("quantity")
+                        rs.getTimestamp("start_datetime").toLocalDateTime(),
+                        rs.getTimestamp("end_datetime").toLocalDateTime(),
+                        rs.getTimestamp("created_datetime").toLocalDateTime()
                 );
             }
         }
@@ -95,34 +95,29 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
     @Override
     public boolean addMantenance(Maintenance maintenance) throws SQLException {
-        String sql = "INSERT INTO Mantenance (title, description, start_datetime, end_datetime, quantity) VALUES (?, ?, ? ,? ,?)";
-
+        String sql = "INSERT INTO Maintenance (title, description, start_datetime, end_datetime) VALUES (?, ?, ? ,?)";
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
-            stmt.setDate(3, new java.sql.Date(maintenance.getStartDatetime().getTime()));
-            stmt.setDate(4, new java.sql.Date(maintenance.getEndDatetime().getTime()));
-            stmt.setInt(5, maintenance.getQuantity());
-
+            stmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
+            stmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
             return stmt.executeUpdate() > 0;
         }
     }
 
     @Override
     public boolean updateMantenance(Maintenance maintenance) throws SQLException {
-        String sql = "UPDATE Mantenance SET title = ?, description = ?, start_datetime = ?, end_datetime = ?, quantity = ? WHERE id = ?";
+        String sql = "UPDATE Maintenance SET title = ?, description = ?, start_datetime = ?, end_datetime = ? WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
-            stmt.setDate(3, new java.sql.Date(maintenance.getStartDatetime().getTime()));
-            stmt.setDate(4, new java.sql.Date(maintenance.getEndDatetime().getTime()));
-            stmt.setInt(5, maintenance.getQuantity());
-            stmt.setInt(6, maintenance.getId());
+            stmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
+            stmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
+            stmt.setInt(5, maintenance.getId());
 
             return stmt.executeUpdate() > 0;
         }
@@ -130,7 +125,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
     @Override
     public boolean deleteMantenance(int id) throws SQLException {
-        String sql = "DELETE FROM Mantenance WHERE id = ?";
+        String sql = "DELETE FROM Maintenance WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -5,7 +5,6 @@ import com.hatecode.services.impl.MaintenanceServiceImpl;
 import com.hatecode.services.interfaces.MaintenanceService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -56,8 +55,8 @@ public class MaintenanceManager {
         maintenanceStartDateTableColumn.setPrefWidth(200);
         maintenanceStartDateTableColumn.setCellValueFactory(cellData -> {
             Maintenance maintenance = cellData.getValue();
-            if (maintenance.getStartDatetime() != null) {
-                return new SimpleStringProperty(maintenance.getStartDatetime().toString());
+            if (maintenance.getStartDateTime() != null) {
+                return new SimpleStringProperty(maintenance.getStartDateTime().toString());
             } else {
                 return new SimpleStringProperty("");
             }
@@ -67,8 +66,8 @@ public class MaintenanceManager {
         maintenanceEndDateTableColumn.setPrefWidth(200);
         maintenanceEndDateTableColumn.setCellValueFactory(cellData -> {
             Maintenance maintenance = cellData.getValue();
-            if (maintenance.getEndDatetime() != null) {
-                return new SimpleStringProperty(maintenance.getEndDatetime().toString());
+            if (maintenance.getEndDateTime() != null) {
+                return new SimpleStringProperty(maintenance.getEndDateTime().toString());
             } else {
                 return new SimpleStringProperty("");
             }
