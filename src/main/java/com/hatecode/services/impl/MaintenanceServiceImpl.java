@@ -63,7 +63,6 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getTimestamp("end_datetime").toLocalDateTime(),
                         rs.getTimestamp("created_date").toLocalDateTime()
                 );
-                maintenance.setTechnician(us.getUserById(rs.getInt("user_id")));
                 res.add(maintenance);
             }
         }

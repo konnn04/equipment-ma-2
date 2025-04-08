@@ -82,13 +82,9 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         Equipment equipment = null;
         try (Connection conn = JdbcUtils.getConn()) {
             // Truy vấn để lấy thông tin thiết bị dựa trên id của bản ghi bảo trì
-            String sql = "SELECT e.*, m.id AS maintenance_id, " +
-                    "c.id AS category_id, c.name AS category_name ," +
-                    "i.id AS image_id, i.filename AS image_filename, i.created_date AS image_created_date, i.path AS image_path " +
+            String sql = "SELECT e.*, m.id AS maintenance_id " +
                     "FROM equipment e " +
                     "LEFT JOIN equipment_maintenance m ON e.id = m.equipment_id " +
-                    "LEFT JOIN image i ON e.image = i.id " +
-                    "LEFT JOIN Category c ON e.category = c.id " +
                     "WHERE m.id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setInt(1, id); // Thiết lập giá trị tham số cho id của bản ghi bảo trì
@@ -101,18 +97,9 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                         rs.getString("code"),
                         rs.getString("name"),
                         Status.fromId(rs.getInt("status")),
-                        new Category(
-                                rs.getInt("category_id"),
-                                rs.getString("category_name"),
-                                rs.getBoolean("category_is_active")
-                        ),
+                        rs.getInt("category"),
                         rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
-                        new Image(
-                                rs.getInt("image_id"),
-                                rs.getString("image_filename"),
-                                rs.getTimestamp("image_created_date") != null ? rs.getTimestamp("image_created_date").toLocalDateTime() : null,
-                                rs.getString("image_path")
-                        ),
+                        rs.getInt("image"),
                         rs.getInt("regular_maintenance_day"),
                         rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,
                         rs.getString("description"),

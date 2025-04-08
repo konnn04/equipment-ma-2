@@ -15,6 +15,7 @@ import java.util.List;
  */
 public interface CategoryService {
     List<Category> getCategories() throws SQLException;
+    Category getCategoryById(int id) throws SQLException;
     List<Equipment> getEquipmentByCategory(int id) throws SQLException;
     boolean addCategory(Category cate) throws SQLException;
     boolean updateCategory(Category cate) throws SQLException;

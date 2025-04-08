@@ -2,7 +2,9 @@ package com.hatecode.equipmentma2.controllers;
 
 import com.hatecode.pojo.Role;
 import com.hatecode.pojo.User;
+import com.hatecode.services.impl.ImageServiceImpl;
 import com.hatecode.services.impl.UserServiceImpl;
+import com.hatecode.services.interfaces.ImageService;
 import com.hatecode.services.interfaces.UserService;
 import com.hatecode.utils.ExtractImageIdUtils;
 import com.hatecode.utils.PasswordUtils;
@@ -96,7 +98,7 @@ public class UserManager {
         colName.setCellValueFactory(new PropertyValueFactory("username"));
 
         TableColumn colRole = users.getColumns().get(2);
-        colRole.setCellValueFactory(new PropertyValueFactory("roleName"));
+        colRole.setCellValueFactory(new PropertyValueFactory("role"));
     }
 
     public void loadUsers(String kw, int roleId) {
@@ -114,7 +116,7 @@ public class UserManager {
         List<Role> data = Role.getAllRoles();
         ObservableList<Role> roleList = FXCollections.observableArrayList(data);
         roles.setItems(roleList);
-        roleComboBox.getSelectionModel().clearSelection();
+        roleComboBox.setItems(roleList);
     }
 
     public void setupHandler() {
@@ -137,7 +139,11 @@ public class UserManager {
         // Chọn user từ bảng
         users.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                showUserDetails(newVal);
+                try {
+                    showUserDetails(newVal);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -176,9 +182,9 @@ public class UserManager {
         });
     }
 
-    private void showUserDetails(User user) {
+    private void showUserDetails(User user) throws SQLException {
         this.currentUser = user;
-        System.out.println(user.getAvatar().getId());
+        System.out.println(user.getAvatarId());
 
         // Hiển thị thông tin user lên form
         userIdField.setText(String.valueOf(user.getId()));
@@ -198,13 +204,13 @@ public class UserManager {
             }
         }
 
-        // Hiển thị avatar
         // Hiển thị avatar từ Cloudinary
-        if (user.getAvatar() != null && user.getAvatar().getPath() != null && !user.getAvatar().getPath().isEmpty()) {
+        ImageService  imageService = new ImageServiceImpl();
+        if (imageService.getImageById(user.getAvatarId()) != null) {
             try {
                 UserService userService = new UserServiceImpl();
                 String imageUrl = userService.getUserImage(user);
-
+                System.out.println(imageUrl);
                 if (imageUrl != null) {
                     // Tải ảnh từ URL và hiển thị
                     Image image = new Image(imageUrl, true); // true để tải ảnh nền
@@ -218,6 +224,7 @@ public class UserManager {
                 avatarImageView.setImage(null);
             }
         } else {
+            System.out.println("No avatar found");
             avatarImageView.setImage(null);
         }
 
@@ -410,7 +417,7 @@ public class UserManager {
                         phone,
                         selectedRole,
                         isActive,
-                        avatar
+                        avatar.getId()
                 );
 
                 if (userService.addUser(currentUser)) {
