@@ -25,6 +25,7 @@ public class MaintenanceRepairSuggestion {
         this.createdDate = createdDate;
     }
 
+    // Getters and Setters
     public int getId() {
         return id;
     }

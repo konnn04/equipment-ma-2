@@ -1,6 +1,7 @@
 package com.hatecode.services.impl;
 
 import com.hatecode.pojo.*;
+import com.hatecode.services.interfaces.ImageService;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.EquipmentService;
 
@@ -9,6 +10,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EquipmentServiceImpl implements EquipmentService {
+
+    ImageService imageService = new ImageServiceImpl();
+
+    @Override
+    public Equipment getEquipmentById(int id) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT *, " +
+                    "c.id AS category_id, c.name AS category_name FROM equipment e " +
+                    "LEFT JOIN Category c ON e.category = c.id " +
+                    "WHERE e.id = ?";
+
+            PreparedStatement stm = conn.prepareStatement(sql);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                Equipment e = new Equipment(
+                        rs.getInt("id"),
+                        rs.getString("code"),
+                        rs.getString("name"),
+                        Status.fromId(rs.getInt("status")),
+                        new Category(
+                                rs.getInt("category"),
+                                rs.getString("category_name")
+                        ),
+                        imageService.getImageById(rs.getInt("image")),
+                        rs.getInt("regular_maintenance_day"),
+                        rs.getString("description")
+                );
+                return e;
+            }
+            return null;
+        }
+    }
 
     @Override
     public List<Equipment> getEquipments() throws SQLException {

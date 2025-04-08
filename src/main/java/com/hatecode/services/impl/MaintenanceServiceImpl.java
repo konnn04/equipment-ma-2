@@ -1,18 +1,21 @@
 package com.hatecode.services.impl;
 
+import com.hatecode.services.interfaces.UserService;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.services.interfaces.MaintenanceService;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MaintenanceServiceImpl implements MaintenanceService {
+    UserService us = new UserServiceImpl();
+
     @Override
     public List<Maintenance> getMaintenances() throws SQLException {
         List<Maintenance> maintenances = new ArrayList<>();
-
         try (Connection conn = JdbcUtils.getConn()) {
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT * FROM maintenance");
@@ -29,7 +32,6 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 maintenances.add(maintenance);
             }
         }
-
         return maintenances;
     }
 
@@ -43,7 +45,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         List<Maintenance> res = new ArrayList<>();
 
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT * FROM maintenance WHERE title LIKE ? OR description LIKE ? LIMIT ?, ?";
+            String sql = "SELECT * FROM maintenance  WHERE title LIKE ? OR description LIKE ? LIMIT ?, ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, "%" + query + "%");
             stmt.setString(2, "%" + query + "%");
@@ -61,11 +63,13 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getTimestamp("end_datetime").toLocalDateTime(),
                         rs.getTimestamp("created_date").toLocalDateTime()
                 );
+                maintenance.setTechnician(us.getUserById(rs.getInt("user_id")));
                 res.add(maintenance);
             }
         }
         return res;
     }
+
 
     @Override
     public List<Maintenance> getMaintenances(String query) throws SQLException {

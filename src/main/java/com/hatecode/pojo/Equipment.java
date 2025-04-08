@@ -22,7 +22,7 @@ public class Equipment {
     private String description;
     private boolean isActive;
 
-    public Equipment() {
+    public Equipment(int id, String code, String name, Status status, Category category, Image image, int regularMaintenanceDay, String description) {
     }
 
     public Equipment(

@@ -5,6 +5,7 @@
 package com.hatecode.services.impl;
 
 import com.hatecode.pojo.*;
+import com.hatecode.services.interfaces.EquipmentService;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.EquipmentMaintenanceService;
 
@@ -16,6 +17,8 @@ import java.util.List;
  * @author ADMIN
  */
 public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceService {
+
+    EquipmentService es = new EquipmentServiceImpl();
 
     @Override
     public List<EquipmentMaintenance> getEquipmentMaintenance() throws SQLException {
@@ -181,6 +184,58 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             int rowsAffected = stm.executeUpdate();
             return rowsAffected > 0; // Trả về true nếu có ít nhất một dòng được xóa
         }
+    }
+
+
+    @Override
+    public List<EquipmentMaintenance> getEquipmentsMaintenanceByEMId(String kw, int maintenanceId, int page, int pageSize) throws SQLException {
+        if (page < 1)
+            page = 1;
+
+        List<EquipmentMaintenance> maintainanceEquipments = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            // Truy vấn để lấy thông tin thiết bị dựa trên id của bản ghi bảo trì
+            String sql = "SELECT em.* FROM equipment_maintenance em JOIN equipment e ON em.equipment_id = e.id WHERE em.maintenance_id = ?";
+
+            if (kw != null && !kw.isEmpty()) {
+                sql += " AND (e.name LIKE ?)";
+            }
+            sql +=  " LIMIT ?, ?";
+
+            PreparedStatement stm = conn.prepareStatement(sql);
+            stm.setInt(1, maintenanceId);
+            if (kw != null && !kw.isEmpty()) {
+                stm.setString(2, "%" + kw + "%");
+                stm.setInt(3, (page - 1) * pageSize);
+                stm.setInt(4, pageSize);
+            } else {
+                stm.setInt(2, (page - 1) * pageSize);
+                stm.setInt(3, pageSize);
+            }
+
+            System.out.println(stm.toString());
+            ResultSet rs = stm.executeQuery();
+
+            // Nếu có kết quả, tạo đối tượng Equipment từ dữ liệu trả về
+            while (rs.next()) {
+                EquipmentMaintenance maintainanceEquipment = new EquipmentMaintenance(
+                        rs.getInt("id"),
+                        rs.getInt("equipment_id"),
+                        rs.getInt("maintenance_id"),
+                        rs.getInt("technician_id"),
+                        rs.getString("description"),
+                        Result.fromCode(rs.getInt("result")),
+                        rs.getString("repair_name"),
+                        rs.getFloat("repair_price"),
+                        rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
+                        rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null
+                );
+
+                maintainanceEquipments.add(maintainanceEquipment);
+            }
+        }
+        System.out.println("E size:"+maintainanceEquipments.size());
+        return maintainanceEquipments;
     }
 
 }

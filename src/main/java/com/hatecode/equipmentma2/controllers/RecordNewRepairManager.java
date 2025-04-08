@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
-public class RecordNewRepairManager {
+public class    RecordNewRepairManager {
     private final TableView<Maintenance> recordNewRepairMaintenance;
     private final TextField recordNewRepairSearch;
     private final TableView<EquipmentMaintenance> recordNewRepairMaintenceEquipments;

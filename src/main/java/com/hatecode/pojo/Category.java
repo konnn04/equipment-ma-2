@@ -25,6 +25,11 @@ public class Category {
         this.isActive = isActive;
     }
 
+    public Category(int category, String categoryName) {
+        this.id = category;
+        this.name = categoryName;
+    }
+
     public int getId() {
         return id;
     }

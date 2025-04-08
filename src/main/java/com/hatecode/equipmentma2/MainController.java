@@ -1,9 +1,6 @@
 package com.hatecode.equipmentma2;
 
-import com.hatecode.equipmentma2.controllers.EquipmentManager;
-import com.hatecode.equipmentma2.controllers.MaintenanceManager;
-import com.hatecode.equipmentma2.controllers.RecordNewRepairManager;
-import com.hatecode.equipmentma2.controllers.UserManager;
+import com.hatecode.equipmentma2.controllers.*;
 import com.hatecode.pojo.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -296,5 +293,56 @@ public class MainController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    TableView<Maintenance> maintenancesTableViewTable;
+
+    @FXML
+    TableView<EquipmentMaintenance> equipmentsTableViewTable;
+
+    @FXML
+    TextField equipmentIdTextField;
+    @FXML
+    TextField historyEquipmentNameTextField;
+    @FXML
+    TextField equipmentTechnicianTextField;
+    @FXML
+    TextField startDateTextField;
+    @FXML
+    TextField endDateTextField;
+    @FXML
+    TextArea descriptionTextArea;
+    @FXML
+    TextField priceTextField;
+    @FXML
+    TextField maintenanceTypeTextField;
+    @FXML
+    TextField searchMaintenanceTextField;
+    @FXML
+    DatePicker fromDatePicker;
+    @FXML
+    DatePicker toDatePicker;
+    @FXML
+    TextField searchEquipmentTextField;
+
+    public void openMaintenanceHistoryHandler() {
+        MaintenanceHistory maintenanceHistory = new MaintenanceHistory(
+                maintenancesTableViewTable,
+                equipmentsTableViewTable,
+                equipmentIdTextField,
+                historyEquipmentNameTextField,
+                equipmentTechnicianTextField,
+                startDateTextField,
+                endDateTextField,
+                descriptionTextArea,
+                priceTextField,
+                maintenanceTypeTextField,
+                searchMaintenanceTextField,
+                fromDatePicker,
+                toDatePicker,
+                searchEquipmentTextField
+        );
+        maintenanceHistory.initMaintenanceHistory();
     }
 }
