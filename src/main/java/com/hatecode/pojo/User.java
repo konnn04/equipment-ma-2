@@ -11,7 +11,7 @@ public class User
     private String phone;
     private Role role;
     private boolean isActive;
-    private Image avatar;
+    private int avatarId;
     private String roleName;
 
     public User() {
@@ -22,7 +22,7 @@ public class User
         this.username = username;
     }
 
-    public User(String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, Image avatar) {
+    public User(String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, int avatarId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -31,10 +31,10 @@ public class User
         this.phone = phone;
         this.role = role;
         this.isActive = isActive;
-        this.avatar = avatar;
+        this.avatarId = avatarId;
     }
 
-    public User(int id, String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, Image avatar) {
+    public User(int id, String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, int avatarId) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -44,7 +44,7 @@ public class User
         this.phone = phone;
         this.role = role;
         this.isActive = isActive;
-        this.avatar = avatar;
+        this.avatarId = avatarId;
     }
 
     // Getters and Setters
@@ -120,14 +120,6 @@ public class User
         isActive = active;
     }
 
-    public Image getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(Image avatar) {
-        this.avatar = avatar;
-    }
-
     @Override
     public String toString() {
         return firstName + " " + lastName;
@@ -139,5 +131,13 @@ public class User
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public int getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(int avatarId) {
+        this.avatarId = avatarId;
     }
 }

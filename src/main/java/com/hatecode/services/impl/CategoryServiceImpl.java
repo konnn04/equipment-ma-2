@@ -46,16 +46,30 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Category getCategoryById(int id) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * FROM category WHERE id = ?";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                Category c = new Category(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getBoolean("is_active")
+                );
+                return c;
+            }
+            return null;
+        }
+    }
+
+    @Override
     public List<Equipment> getEquipmentByCategory(int id) throws SQLException {
         List<Equipment> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT e.*, " +
-                    "c.id AS category_id, c.name AS category_name, c.is_active AS category_is_active, " +
-                    "i.id AS image_id, i.filename AS image_filename, i.created_date AS image_created_date, i.path AS image_path " +
-                    "FROM equipment e " +
-                    "LEFT JOIN Category c ON e.category = c.id " +
-                    "LEFT JOIN image i ON e.image = i.id " +
-                    "WHERE c.id = ?";
+            String sql = "SELECT * FROM equipment e " +
+                    "WHERE category = ?";
             // Truy vấn để lấy thông tin thiết bị dựa trên id của bản ghi bảo trì
             PreparedStatement stm = conn.prepareCall(sql);
             stm.setInt(1, id);
@@ -66,18 +80,9 @@ public class CategoryServiceImpl implements CategoryService {
                         rs.getString("code"),
                         rs.getString("name"),
                         Status.fromId(rs.getInt("status")),
-                        new Category(
-                                rs.getInt("category_id"),
-                                rs.getString("category_name"),
-                                rs.getBoolean("category_is_active")
-                        ),
+                        rs.getInt("category"),
                         rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
-                        new Image(
-                                rs.getInt("image_id"),
-                                rs.getString("image_filename"),
-                                rs.getTimestamp("image_created_date") != null ? rs.getTimestamp("image_created_date").toLocalDateTime() : null,
-                                rs.getString("image_path")
-                        ),
+                        rs.getInt("image"),
                         rs.getInt("regular_maintenance_day"),
                         rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,
                         rs.getString("description"),

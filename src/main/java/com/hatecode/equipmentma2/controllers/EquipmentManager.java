@@ -13,6 +13,7 @@ import com.hatecode.services.interfaces.CategoryService;
 import com.hatecode.services.interfaces.EquipmentService;
 import com.hatecode.services.interfaces.ImageService;
 import com.hatecode.utils.AlertBox;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -119,7 +120,22 @@ public class EquipmentManager {
 
         TableColumn<Equipment, String> equipmentCategoryColumn = new TableColumn<>("Category");
         equipmentCategoryColumn.setPrefWidth(180);
-        equipmentCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+        equipmentCategoryColumn.setCellValueFactory(
+                cellData -> {
+                    Equipment equipment = cellData.getValue();
+                    try {
+                        Category category = categoryService.getCategoryById(equipment.getCategoryId());
+                        if (category != null) {
+                            return new SimpleStringProperty(category.getName());
+                        } else {
+                            return null;
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }
+        );
 
         TableColumn<Equipment, String> createdDateColumn = new TableColumn<>("Created Date");
         createdDateColumn.setPrefWidth(200);
@@ -195,18 +211,24 @@ public class EquipmentManager {
     }
 
     /* Chuyển dữ liệu từ bảng Equipment sang các trường nhập liệu */
-    private void praseSelectedEquipmentData(Equipment selectedEquipment) {
+    private void praseSelectedEquipmentData(Equipment selectedEquipment) throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
+        ImageService imageService = new ImageServiceImpl();
+
         isImageChanged = false;
         equipmentIDTextField.setText(String.valueOf(selectedEquipment.getId()));
         equipmentCodeTextField.setText(selectedEquipment.getCode());
         equipmentNameTextField.setText(selectedEquipment.getName());
-        equipmentCategoryComboBox.getSelectionModel().select(selectedEquipment.getCategory());
+        equipmentCategoryComboBox.getSelectionModel().select(
+                categoryService.getCategoryById(selectedEquipment.getCategoryId()));
         statusEquipmentText.setText(selectedEquipment.getStatus().getDescription());
         equipmentDescriptionTextField.setText(selectedEquipment.getDescription());
         lastMaintenanceDateTextField.setText(selectedEquipment.getLastMaintenanceTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         regularMaintenanceTimeTextField.setText(selectedEquipment.getRegularMaintenanceDay() + "");
-        if (selectedEquipment.getImage() != null) {
-            equipmentImage.setImage(new ImageView(selectedEquipment.getImage().getPath()).getImage());
+
+        Image image = imageService.getImageById(selectedEquipment.getImageId());
+        if (image != null) {
+            equipmentImage.setImage(new ImageView(image.getPath()).getImage());
         } else {
             equipmentImage.setImage(null);
         }
@@ -222,7 +244,11 @@ public class EquipmentManager {
         equipmentTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 selectedEquipment = newSelection;
-                praseSelectedEquipmentData(newSelection);
+                try {
+                    praseSelectedEquipmentData(newSelection);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -334,12 +360,13 @@ public class EquipmentManager {
                     imageService.addImage(uploadImage);
                 }
 
+                assert uploadImage != null;
                 Equipment newEquipment = new Equipment(
                         equipmentCodeTextField.getText(),
                         equipmentNameTextField.getText(),
                         Status.ACTIVE,
-                        equipmentCategoryComboBox.getSelectionModel().getSelectedItem(),
-                        uploadImage,
+                        equipmentCategoryComboBox.getSelectionModel().getSelectedItem().getId(),
+                        uploadImage.getId(),
                         Integer.parseInt(regularMaintenanceTimeTextField.getText()),
                         equipmentDescriptionTextField.getText()
                 );
@@ -369,14 +396,14 @@ public class EquipmentManager {
                                 file.getName(),
                                 cloundinaryServices.uploadImage(file)
                         );
-                        selectedEquipment.setImage(image);
+                        selectedEquipment.setImageId(image.getId());
                     }
 
                     EquipmentService equipmentService = new EquipmentServiceImpl();
                     selectedEquipment.setCode(equipmentCodeTextField.getText());
                     selectedEquipment.setName(equipmentNameTextField.getText());
                     selectedEquipment.setDescription(equipmentDescriptionTextField.getText());
-                    selectedEquipment.setCategory(equipmentCategoryComboBox.getSelectionModel().getSelectedItem());
+                    selectedEquipment.setCategoryId(equipmentCategoryComboBox.getSelectionModel().getSelectedItem().getId());
                     selectedEquipment.setRegularMaintenanceDay(Integer.parseInt(regularMaintenanceTimeTextField.getText()));
 
                     equipmentService.updateEquipment(selectedEquipment);

@@ -254,7 +254,6 @@ public class MainController implements Initializable {
             userManager.loadRole();
             userManager.setupHandler();
 
-
             maintenanceManager.loadColumnMaintenanceTableView();
             maintenanceManager.fetchMaintenanceTableView();
 

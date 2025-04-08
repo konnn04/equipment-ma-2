@@ -64,7 +64,7 @@ public class ImageServiceImpl implements ImageService {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
-            pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
+            pstmt.setTimestamp(2, Timestamp.    valueOf(image.getCreateDate()));
             pstmt.setString(3, image.getPath());
 
             return pstmt.executeUpdate() > 0;

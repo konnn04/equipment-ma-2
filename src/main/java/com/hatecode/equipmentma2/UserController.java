@@ -95,7 +95,7 @@ public class UserController implements Initializable {
         colName.setCellValueFactory(new PropertyValueFactory("username"));
 
         TableColumn colRole = users.getColumns().get(2);
-        colRole.setCellValueFactory(new PropertyValueFactory("roleName"));
+        colRole.setCellValueFactory(new PropertyValueFactory("role"));
     }
 
     public void loadUsers(String kw, int roleId) {
@@ -136,7 +136,11 @@ public class UserController implements Initializable {
         // Chọn user từ bảng
         users.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                showUserDetails(newVal);
+                try {
+                    showUserDetails(newVal);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -175,9 +179,9 @@ public class UserController implements Initializable {
         });
     }
 
-    private void showUserDetails(User user) {
+    private void showUserDetails(User user) throws SQLException {
         this.currentUser = user;
-        System.out.println(user.getAvatar().getId());
+//        System.out.println(user.getAvatar().getId());
 
         // Hiển thị thông tin user lên form
         userIdField.setText(String.valueOf(user.getId()));
@@ -188,18 +192,13 @@ public class UserController implements Initializable {
         emailField.setText(user.getEmail());
         phoneField.setText(user.getPhone());
         isActiveCheckBox.setSelected(user.isActive());
+        roles.getSelectionModel().select(user.getRole());
 
-        // Thiết lập role
-        for (Role role : roleComboBox.getItems()) {
-            if (role.getId() == user.getRole().getId()) {
-                roleComboBox.getSelectionModel().select(role);
-                break;
-            }
-        }
 
         // Hiển thị avatar
-        // Hiển thị avatar từ Cloudinary
-        if (user.getAvatar() != null && user.getAvatar().getPath() != null && !user.getAvatar().getPath().isEmpty()) {
+        ImageService imageService = new ImageServiceImpl();
+        com.hatecode.pojo.Image avatar = imageService.getImageById(user.getAvatarId());
+        if (avatar != null) {
             try {
                 UserService userService = new UserServiceImpl();
                 String imageUrl = userService.getUserImage(user);
@@ -249,7 +248,7 @@ public class UserController implements Initializable {
                     phoneField.getText(),
                     selectedRole,
                     isActiveCheckBox.isSelected(),
-                    avatar
+                    avatar.getId()
             );
             if (services.addUser(currentUser)) {
                 showInfoAlert("Succesfully", "Add new user Successfully");
@@ -326,11 +325,11 @@ public class UserController implements Initializable {
                     ImageService imgServices = new ImageServiceImpl();
                     String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
                     // Nếu là hình mặc định thì tạo mới
-                    if (currentUser.getAvatar().getId() == 1) {
+                    if (currentUser.getAvatarId() == 1) {
                         currUserImg = new com.hatecode.pojo.Image();
                         currUserImg.setId(0);
                     } else {
-                        currUserImg = imgServices.getImageById(currentUser.getAvatar().getId());
+                        currUserImg = imgServices.getImageById(currentUser.getAvatarId());
                     }
                     currUserImg.setFilename(fileName);
                     currUserImg.setPath(imgUrl);

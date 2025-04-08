@@ -4,6 +4,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Role;
+import com.hatecode.services.interfaces.ImageService;
 import com.hatecode.utils.ExtractImageIdUtils;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
@@ -24,15 +25,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsers(String kw, int roleId) throws SQLException {
         List<User> users = new ArrayList<>();
-
         if (kw == null) kw = "";
-
-        String sql = "SELECT u.*, i.filename, i.path, i.created_date, i.id as image_id FROM user u JOIN image i ON u.avatar = i.id WHERE 1=1";
-
+        String sql = "SELECT u.* FROM user u WHERE 1=1 ";
         // Thêm điều kiện tìm kiếm
         if (!kw.isEmpty()) {
             sql += "AND (u.username LIKE CONCAT('%', ?, '%') ";
-
             try {
                 Integer.parseInt(kw); // Kiểm tra nếu kw là số
                 sql += "OR u.id = ? ";
@@ -78,12 +75,7 @@ public class UserServiceImpl implements UserService {
                             rs.getString("phone"),
                             Role.fromId(rs.getInt("role")),
                             rs.getBoolean("is_active"),
-                            new Image(
-                                    rs.getInt("id"),
-                                    rs.getString("filename"),
-                                    rs.getDate("created_date").toLocalDate().atStartOfDay(),
-                                    rs.getString("path")
-                            )
+                            rs.getInt("avatar")
                     );
                     users.add(user);
                 }
@@ -125,11 +117,7 @@ public class UserServiceImpl implements UserService {
                     rs.getString("phone"),
                     Role.fromId(rs.getInt("role")),
                     rs.getBoolean("is_active"),
-                    new Image(
-                            rs.getString("filename"),
-                            rs.getDate("created_date").toLocalDate().atStartOfDay(),
-                            rs.getString("path")
-                    )
+                    rs.getInt("avatar")
             );
         }
         return user;
@@ -159,20 +147,22 @@ public class UserServiceImpl implements UserService {
             conn = JdbcUtils.getConn();
             conn.setAutoCommit(false); // Bắt đầu transaction
 
-            // 1. Thêm Image trước
-            if (user.getAvatar() != null) {
+            if (user.getAvatarId() != 0) {
+                ImageService imageService = new ImageServiceImpl();
+                Image image = imageService.getImageById(user.getAvatarId());
+
                 String sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
-                    pstmt.setString(1, user.getAvatar().getFilename());
-                    pstmt.setTimestamp(2, Timestamp.valueOf(user.getAvatar().getCreateDate()));
-                    pstmt.setString(3, user.getAvatar().getPath());
+                    pstmt.setString(1, image.getFilename());
+                    pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
+                    pstmt.setString(3, image.getPath());
 
                     pstmt.executeUpdate();
 
                     // Lấy ID vừa tạo
                     try (ResultSet rs = pstmt.getGeneratedKeys()) {
                         if (rs.next()) {
-                            user.getAvatar().setId(rs.getInt(1));
+                            image.setId(rs.getInt(1));
                         }
                     }
                 }
@@ -192,8 +182,8 @@ public class UserServiceImpl implements UserService {
                 pstmt.setBoolean(8, user.isActive());
 
                 // Set image_id hoặc null
-                if (user.getAvatar() != null) {
-                    pstmt.setInt(9, user.getAvatar().getId());
+                if (user.getAvatarId() != 0) {
+                    pstmt.setInt(9, user.getAvatarId());
                 } else {
                     pstmt.setInt(9, 1);
                 }
@@ -243,7 +233,9 @@ public class UserServiceImpl implements UserService {
                 String sqlImage = "";
                 if (newImage.getId() != 0) {
                     sqlImage = "UPDATE image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
-                    this.deleteUserImage(user.getAvatar().getPath());
+                    ImageService imageService = new ImageServiceImpl();
+                    Image oldImage = imageService.getImageById(newImage.getId());
+                    this.deleteUserImage(oldImage.getPath());
                 } else {
                     sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
                 }
@@ -264,7 +256,7 @@ public class UserServiceImpl implements UserService {
                             }
                         }
                     else
-                        newImgId = user.getAvatar().getId();
+                        newImgId = newImage.getId();
                 }
             }
             String sql = "UPDATE User SET first_name = ?, last_name = ?,username = ?, password = ?, " +
@@ -297,7 +289,9 @@ public class UserServiceImpl implements UserService {
     public boolean deleteUser(int id) throws SQLException {
         String sql = "DELETE FROM User WHERE id = ?";
         User u = getUserById(id);
-        boolean b = (u.getAvatar().getId() == 1 ? true : deleteUserImage(u.getAvatar().getPath()));
+        ImageService imageService = new ImageServiceImpl();
+        Image image = imageService.getImageById(id);
+        boolean b = (image.getId() == 1 ? true : deleteUserImage(image.getPath()));
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -331,12 +325,7 @@ public class UserServiceImpl implements UserService {
                         rs.getString("phone"),
                         Role.valueOf(rs.getString("role")),
                         rs.getBoolean("is_active"),
-                        new Image(
-                                rs.getInt("avatar_id"),
-                                rs.getString("filename"),
-                                rs.getDate("created_date").toLocalDate().atStartOfDay(),
-                                rs.getString("path")
-                        )
+                        rs.getInt("avatar")
                 );
             }
         } catch (SQLException ex) {
@@ -348,8 +337,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getUserImage(User user) {
         try {
-            String imgUrl = cloudiServices.getImageUrl(user.getAvatar().getPath());
-            return imgUrl;
+            ImageService imageService = new ImageServiceImpl();
+            Image image = imageService.getImageById(user.getAvatarId());
+            return cloudiServices.getImageUrl(image.getPath());
         } catch (SQLException ex) {
             Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }

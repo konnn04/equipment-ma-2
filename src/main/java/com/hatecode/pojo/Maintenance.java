@@ -10,8 +10,6 @@ public class Maintenance {
     private LocalDateTime endDateTime;
     private LocalDateTime createdDate;
 
-    private User technician;
-
     public Maintenance() {
         super();
     }
@@ -76,13 +74,5 @@ public class Maintenance {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public User getTechnician() {
-        return technician;
-    }
-
-    public void setTechnician(User technician) {
-        this.technician = technician;
     }
 }

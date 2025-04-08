@@ -14,30 +14,46 @@ public class Equipment {
     private String code;
     private String name;
     private Status status;
-    private Category category;
+    private int categoryId;
     private LocalDateTime createdDate;
-    private Image image;
+    private int imageId;
     private int regularMaintenanceDay;
     private LocalDateTime lastMaintenanceTime;
     private String description;
     private boolean isActive;
 
-    public Equipment(int id, String code, String name, Status status, Category category, Image image, int regularMaintenanceDay, String description) {
+    public Equipment(
+            int id,
+            String code,
+            String name,
+            Status status,
+            int categoryId,
+            int imageId,
+            int regularMaintenanceDay,
+            String description) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+        this.status = status;
+        this.categoryId = categoryId;
+        this.imageId = imageId;
+        this.regularMaintenanceDay = regularMaintenanceDay;
+        this.description = description;
     }
 
     public Equipment(
             String code,
             String name,
             Status status,
-            Category category,
-            Image image,
+            int categoryId,
+            int imageId,
             int regularMaintenanceDay,
             String description) {
         this.code = code;
         this.name = name;
         this.status = status;
-        this.category = category;
-        this.image = image;
+        this.categoryId = categoryId;
+        this.imageId = imageId;
         this.regularMaintenanceDay = regularMaintenanceDay;
         this.description = description;
     }
@@ -47,9 +63,9 @@ public class Equipment {
             String code,
             String name,
             Status status,
-            Category category,
+            int categoryId,
             LocalDateTime createdDate,
-            Image image,
+            int imageId,
             int regularMaintenanceDay,
             LocalDateTime lastMaintenanceTime,
             String description,
@@ -58,9 +74,9 @@ public class Equipment {
         this.code = code;
         this.name = name;
         this.status = status;
-        this.category = category;
+        this.categoryId = categoryId;
         this.createdDate = createdDate;
-        this.image = image;
+        this.imageId = imageId;
         this.regularMaintenanceDay = regularMaintenanceDay;
         this.lastMaintenanceTime = lastMaintenanceTime;
         this.description = description;
@@ -95,28 +111,12 @@ public class Equipment {
         this.status = status;
     }
 
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
     }
 
     public int getRegularMaintenanceDay() {
@@ -149,5 +149,25 @@ public class Equipment {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public int getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(int imageId) {
+        this.imageId = imageId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
