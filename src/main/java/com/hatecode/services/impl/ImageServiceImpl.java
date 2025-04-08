@@ -71,6 +71,7 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+
     @Override
     public boolean updateImage(Image image) throws SQLException {
         String sql = "UPDATE Image SET filename = ?, created_date = ?, path = ? WHERE id = ?";

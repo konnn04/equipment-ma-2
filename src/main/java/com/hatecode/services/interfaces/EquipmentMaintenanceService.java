@@ -6,6 +6,8 @@ package com.hatecode.services.interfaces;
 
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintenance;
+import com.hatecode.pojo.Maintenance;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -13,10 +15,12 @@ import java.util.List;
  *
  * @author ADMIN
  */
-public interface EquipmentMaintainanceService {
-    List<EquipmentMaintenance> getEquipmentMaintainance() throws SQLException;
+public interface EquipmentMaintenanceService {
+    List<EquipmentMaintenance> getEquipmentMaintenance() throws SQLException;
+    List<EquipmentMaintenance> getEquipmentMaintenance(Maintenance m);
     Equipment getEquipmentByEMId(int id) throws SQLException;
-    boolean addEquipmentMaintainance(EquipmentMaintenance em) throws SQLException;
-    boolean updateEquipmentMaintainance(EquipmentMaintenance em) throws SQLException;
-    boolean deleteEquipmentMaintainance(int id) throws SQLException;
+    boolean addEquipmentMaintenance(EquipmentMaintenance em) throws SQLException;
+    boolean updateEquipmentMaintenance(EquipmentMaintenance em) throws SQLException;
+    boolean deleteEquipmentMaintenance(int id) throws SQLException;
+
 }

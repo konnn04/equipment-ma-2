@@ -6,7 +6,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.*;
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.services.interfaces.EquipmentMaintainanceService;
+import com.hatecode.services.interfaces.EquipmentMaintenanceService;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,10 +15,10 @@ import java.util.List;
 /**
  * @author ADMIN
  */
-public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceService {
+public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceService {
 
     @Override
-    public List<EquipmentMaintenance> getEquipmentMaintainance() throws SQLException {
+    public List<EquipmentMaintenance> getEquipmentMaintenance() throws SQLException {
         List<EquipmentMaintenance> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "SELECT * FROM equipment_maintenance";
@@ -40,6 +40,36 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
                 );
                 res.add(em);
             }
+        }
+        return res;
+    }
+
+    @Override
+    public List<EquipmentMaintenance> getEquipmentMaintenance(Maintenance m) {
+        List<EquipmentMaintenance> res = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * FROM equipment_maintenance WHERE maintenance_id = ?";
+            PreparedStatement stm = conn.prepareStatement(sql);
+            stm.setInt(1, m.getId());
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                EquipmentMaintenance em = new EquipmentMaintenance(
+                        rs.getInt("id"),
+                        rs.getInt("equipment_id"),
+                        rs.getInt("maintenance_id"),
+                        rs.getInt("technician_id"),
+                        rs.getString("description"),
+                        Result.fromCode(rs.getInt("result")),
+                        rs.getString("repair_name"),
+                        rs.getFloat("repair_price"),
+                        rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
+                        rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null
+                );
+                res.add(em);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return res;
     }
@@ -91,7 +121,7 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
     }
 
     @Override
-    public boolean addEquipmentMaintainance(EquipmentMaintenance em) throws SQLException {
+    public boolean addEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result, repair_name, repair_price, inspection_date)" +
                     " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -115,7 +145,7 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
     }
 
     @Override
-    public boolean updateEquipmentMaintainance(EquipmentMaintenance em) throws SQLException {
+    public boolean updateEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "UPDATE equipment_maintenance" +
             " SET equipment_id = ?, maintenance_id = ?, technician_id = ?, description = ?, result = ?, repair_name = ?, repair_price = ?, inspection_date = ? " +
@@ -143,7 +173,7 @@ public class EquipmentMaintainanceServiceImpl implements EquipmentMaintainanceSe
     }
 
     @Override
-    public boolean deleteEquipmentMaintainance(int id) throws SQLException {
+    public boolean deleteEquipmentMaintenance(int id) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "DELETE FROM equipment_maintenance WHERE id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);

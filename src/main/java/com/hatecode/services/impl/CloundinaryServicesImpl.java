@@ -21,6 +21,10 @@ import java.util.logging.Logger;
  */
 public class CloundinaryServicesImpl implements CloundinaryServices {
 
+    private static final String CLOUD_NAME = "";
+    private static final String API_KEY = "";
+    private static final String API_SECRET = "";
+
     private final Cloudinary cloudinary;
 
     public CloundinaryServicesImpl() {

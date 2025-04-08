@@ -42,3 +42,5 @@ build/
 mvnw
 mvnw.cmd
 target/
+
+.env
