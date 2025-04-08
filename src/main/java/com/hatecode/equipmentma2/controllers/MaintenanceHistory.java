@@ -1,11 +1,16 @@
 package com.hatecode.equipmentma2.controllers;
 
-import com.hatecode.pojo.EquipmentMaintainance;
+import com.hatecode.pojo.Equipment;
+import com.hatecode.pojo.EquipmentMaintenance;
 import com.hatecode.pojo.Maintenance;
-import com.hatecode.services.impl.EquipmentMaintainanceServiceImpl;
+import com.hatecode.services.impl.EquipmentMaintenanceServiceImpl;
+import com.hatecode.services.impl.EquipmentServiceImpl;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
-import com.hatecode.services.interfaces.EquipmentMaintainanceService;
+import com.hatecode.services.impl.UserServiceImpl;
+import com.hatecode.services.interfaces.EquipmentMaintenanceService;
+import com.hatecode.services.interfaces.EquipmentService;
 import com.hatecode.services.interfaces.MaintenanceService;
+import com.hatecode.services.interfaces.UserService;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -21,11 +26,11 @@ import static com.hatecode.config.AppConfig.PAGE_SIZE;
 
 public class MaintenanceHistory {
     MaintenanceService maintenanceService = new MaintenanceServiceImpl();
-    EquipmentMaintainanceService equipmentMaintainanceService = new EquipmentMaintainanceServiceImpl();
+    EquipmentMaintenanceService equipmentMaintainanceService = new EquipmentMaintenanceServiceImpl();
 
 
     TableView<Maintenance> maintenancesTableViewTable;
-    TableView<EquipmentMaintainance> equipmentsTableViewTable;
+    TableView<EquipmentMaintenance> equipmentsTableViewTable;
 
     TextField equipmentIdTextField;
     TextField equipmentNameTextField;
@@ -40,7 +45,7 @@ public class MaintenanceHistory {
     DatePicker toDatePicker;
     TextField searchEquipmentTextField;
 
-    public MaintenanceHistory(TableView<Maintenance> maintenancesTableViewTable, TableView<EquipmentMaintainance> equipmentsTableViewTable, TextField equipmentIdTextField, TextField equipmentNameTextField, TextField equipmentTechnicianTextField, TextField startDateTextField, TextField endDateTextField, TextArea descriptionTextArea, TextField priceTextField, TextField maintenanceTypeTextField, TextField searchMaintenanceTextField, DatePicker fromDatePicker, DatePicker toDatePicker, TextField searchEquipmentTextField) {
+    public MaintenanceHistory(TableView<Maintenance> maintenancesTableViewTable, TableView<EquipmentMaintenance> equipmentsTableViewTable, TextField equipmentIdTextField, TextField equipmentNameTextField, TextField equipmentTechnicianTextField, TextField startDateTextField, TextField endDateTextField, TextArea descriptionTextArea, TextField priceTextField, TextField maintenanceTypeTextField, TextField searchMaintenanceTextField, DatePicker fromDatePicker, DatePicker toDatePicker, TextField searchEquipmentTextField) {
         this.maintenancesTableViewTable = maintenancesTableViewTable;
         this.equipmentsTableViewTable = equipmentsTableViewTable;
         this.equipmentIdTextField = equipmentIdTextField;
@@ -68,8 +73,8 @@ public class MaintenanceHistory {
 
         maintenanceStartDateColumn.setCellValueFactory(cellData -> {
             Maintenance maintenance = cellData.getValue();
-            if (maintenance.getStartDatetime() != null) {
-                return new SimpleStringProperty(maintenance.getStartDatetime().toString());
+            if (maintenance.getStartDateTime() != null) {
+                return new SimpleStringProperty(maintenance.getStartDateTime().toString());
             } else {
                 return new SimpleStringProperty("Not found");
             }
@@ -78,23 +83,29 @@ public class MaintenanceHistory {
         this.maintenancesTableViewTable.getColumns().addAll(maintenanceIDColumn, maintenanceTitleColumn, maintenanceStartDateColumn);
 
         // Maintenance Equipments  Table
-        TableColumn<EquipmentMaintainance, String> equipmentIDColumn = new TableColumn<>("E.ID");
-        equipmentIDColumn.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getEquipment() != null) {
-                return new SimpleStringProperty(String.valueOf(cellData.getValue().getEquipment().getId()));
-            } else {
-                return new SimpleStringProperty("Not found");
-            }
-        });
+        TableColumn<EquipmentMaintenance, String> equipmentIDColumn = new TableColumn<>("E.ID");
+        equipmentIDColumn.setCellValueFactory(
+                new PropertyValueFactory<>("equipmentId"));
 
-        TableColumn<EquipmentMaintainance, String> equipmentNameColumn = new TableColumn<>("E.Name");
-        equipmentNameColumn.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getEquipment() != null) {
-                return new SimpleStringProperty(cellData.getValue().getEquipment().getName());
-            } else {
-                return new SimpleStringProperty("Not found");
-            }
-        });
+        TableColumn<EquipmentMaintenance, String> equipmentNameColumn = new TableColumn<>("E.Name");
+//        equipmentNameColumn.setCellValueFactory(cellData -> {
+//            EquipmentService equipmentService = new EquipmentServiceImpl();
+//            Equipment equipment = null;
+//            try {
+//                equipment = equipmentService.getEquipmentById(cellData.getValue().getEquipmentId());
+//                if (equipment!= null) {
+//                    return new SimpleStringProperty(equipment.getDescription());
+//                } else {
+//                    return new SimpleStringProperty("Not found");
+//                }
+//            } catch (SQLException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//        });
+        equipmentNameColumn.setCellValueFactory(
+                new PropertyValueFactory<>("description")
+        );
 
         this.equipmentsTableViewTable.getColumns().addAll(equipmentIDColumn, equipmentNameColumn);
     }
@@ -155,7 +166,7 @@ public class MaintenanceHistory {
                 toDate = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
             }
 
-            maintenances = this.maintenanceService.getMaintenances(kw, fromDate, toDate, 1, PAGE_SIZE);
+            maintenances = this.maintenanceService.getMaintenances(kw);
 
             this.maintenancesTableViewTable.setItems(FXCollections.observableList(maintenances));
 
@@ -166,7 +177,7 @@ public class MaintenanceHistory {
     }
 
     public void fetchEquipmentByEMId(int id, String kw) throws SQLException {
-        List<EquipmentMaintainance> equipments;
+        List<EquipmentMaintenance> equipments;
         if (kw != null && !kw.isEmpty())
             equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(kw, id, 1, PAGE_SIZE);
         else
@@ -175,20 +186,23 @@ public class MaintenanceHistory {
         this.equipmentsTableViewTable.setItems(FXCollections.observableList(equipments));
     }
 
-    public void fillEquipmentInfo(EquipmentMaintainance equipmentMaintainance) {
+    public void fillEquipmentInfo(EquipmentMaintenance equipmentMaintainance) throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
+        Equipment equipment =  equipmentService.getEquipmentById(equipmentMaintainance.getEquipmentId());
+        UserService userService = new UserServiceImpl();
 
-        this.equipmentIdTextField.setText(String.valueOf(equipmentMaintainance.getEquipment().getId()));
-        this.equipmentNameTextField.setText(equipmentMaintainance.getEquipment().getName());
-        this.equipmentTechnicianTextField.setText(this.maintenancesTableViewTable.getSelectionModel().getSelectedItems().getFirst().getTechnician().getFirstName() + " " + this.maintenancesTableViewTable.getSelectionModel().getSelectedItems().getFirst().getTechnician().getLastName());
+        this.equipmentIdTextField.setText(String.valueOf(equipment.getId()));
+        this.equipmentNameTextField.setText(equipment.getName());
+        this.equipmentTechnicianTextField.setText(userService.getUserById(equipmentMaintainance.getTechnicianId()).getLastName());
 
-        this.startDateTextField.setText(this.maintenancesTableViewTable.getSelectionModel().getSelectedItems().getFirst().getStartDatetime().toString());
-        this.endDateTextField.setText(this.maintenancesTableViewTable.getSelectionModel().getSelectedItems().getFirst().getEndDatetime().toString());
+        this.startDateTextField.setText(this.maintenancesTableViewTable.getSelectionModel().getSelectedItems().getFirst().getStartDateTime().toString());
+        this.endDateTextField.setText(this.maintenancesTableViewTable.getSelectionModel().getSelectedItems().getFirst().getEndDateTime().toString());
 
-        this.priceTextField.setText(String.valueOf(equipmentMaintainance.getPrice()));
+        this.priceTextField.setText(String.valueOf(equipmentMaintainance.getRepairPrice()));
         this.descriptionTextArea.setText(equipmentMaintainance.getDescription());
 
 
-        this.maintenanceTypeTextField.setText(equipmentMaintainance.getMaintenanceType().toString());
+        this.maintenanceTypeTextField.setText(equipmentMaintainance.getResult().getName());
     }
 
     public void initMaintenanceHistory() {

@@ -6,15 +6,16 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
+import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Status;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.interfaces.CategoryService;
-import com.hatecode.services.interfaces.StatusService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,11 @@ public class CategoryServiceImpl implements CategoryService {
 
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
-                Category c = new Category(rs.getInt("id"), rs.getString("name"));
+                Category c = new Category(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getBoolean("is_active")
+                );
                 res.add(c);
             }
             return res;
@@ -42,36 +47,41 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Equipment> getEquipmentByCategory(int id) throws SQLException {
-        StatusService statusService = new StatusServiceImpl();
         List<Equipment> res = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT e.*, s.id AS status_id, s.name AS status_name, s.description AS status_description, " +
-                    "c.id AS category_id, c.name AS category_name "+
+            String sql = "SELECT e.*, " +
+                    "c.id AS category_id, c.name AS category_name, c.is_active AS category_is_active, " +
+                    "i.id AS image_id, i.filename AS image_filename, i.created_date AS image_created_date, i.path AS image_path " +
                     "FROM equipment e " +
-                    "LEFT JOIN Status s ON e.status = s.id " +
                     "LEFT JOIN Category c ON e.category = c.id " +
+                    "LEFT JOIN image i ON e.image = i.id " +
                     "WHERE c.id = ?";
             // Truy vấn để lấy thông tin thiết bị dựa trên id của bản ghi bảo trì
             PreparedStatement stm = conn.prepareCall(sql);
             stm.setInt(1, id);
-
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
                 Equipment e = new Equipment(
                         rs.getInt("id"),
                         rs.getString("code"),
                         rs.getString("name"),
-                        rs.getDate("import_date"),
-                        new Status(
-                                rs.getInt("status_id"),
-                                rs.getString("status_name"),
-                                rs.getString("status_description")
-                        ),
+                        Status.fromId(rs.getInt("status")),
                         new Category(
                                 rs.getInt("category_id"),
-                                rs.getString("category_name")
+                                rs.getString("category_name"),
+                                rs.getBoolean("category_is_active")
                         ),
-                        rs.getString("description")
+                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
+                        new Image(
+                                rs.getInt("image_id"),
+                                rs.getString("image_filename"),
+                                rs.getTimestamp("image_created_date") != null ? rs.getTimestamp("image_created_date").toLocalDateTime() : null,
+                                rs.getString("image_path")
+                        ),
+                        rs.getInt("regular_maintenance_day"),
+                        rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,
+                        rs.getString("description"),
+                        rs.getBoolean("is_active")
                 );
                 res.add(e);
             }
@@ -85,7 +95,6 @@ public class CategoryServiceImpl implements CategoryService {
             String sql = "INSERT INTO category (name) VALUES (?)";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setString(1, cate.getName());
-
             int rowsAffected = stm.executeUpdate();
             return rowsAffected > 0; // Trả về true nếu có ít nhất một dòng được thêm vào
         }
@@ -94,10 +103,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean updateCategory(Category cate) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "UPDATE category SET name = ? WHERE id = ?";
+            String sql = "UPDATE category SET name = ?, is_active = ? WHERE id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setString(1, cate.getName());
-            stm.setInt(2, cate.getId());
+            stm.setBoolean(2, cate.isActive());
+            stm.setInt(3, cate.getId());
 
             int rowsAffected = stm.executeUpdate();
             return rowsAffected > 0; // Trả về true nếu có ít nhất một dòng được cập nhật
@@ -110,7 +120,6 @@ public class CategoryServiceImpl implements CategoryService {
             String sql = "DELETE FROM category WHERE id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setInt(1, id);
-
             int rowsAffected = stm.executeUpdate();
             return rowsAffected > 0; // Trả về true nếu có ít nhất một dòng được xóa
         }

@@ -15,7 +15,6 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -105,14 +104,19 @@
                                                                 </font>
                                                             </Label>
                                                             <TextField fx:id="equipmentQueryTextField" promptText="Search equipment..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" />
-                                                            <HBox alignment="BOTTOM_LEFT" prefHeight="31.0" prefWidth="349.0" spacing="10.0">
+                                                            <HBox alignment="BOTTOM_LEFT" prefHeight="31.0" prefWidth="349.0" spacing="10.0" VBox.vgrow="ALWAYS">
                                                                 <children>
-                                                                    <Label prefHeight="31.0" prefWidth="68.0" styleClass="" text="Filter by" HBox.hgrow="NEVER">
-                                                                        <font>
-                                                                            <Font name="SF Pro Text Semibold" size="16.0" />
-                                                                        </font>
-                                                                    </Label>
-                                                                    <ComboBox fx:id="typeFilterComboBox" prefHeight="31.0" prefWidth="159.0" promptText="Select" style="-fx-background-color: rgb(232, 232, 237);" HBox.hgrow="NEVER" />
+                                                   <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                                      <children>
+                                                                          <Label prefHeight="31.0" prefWidth="68.0" styleClass="" text="Filter by" HBox.hgrow="NEVER">
+                                                                              <font>
+                                                                                  <Font name="SF Pro Text Semibold" size="16.0" />
+                                                                              </font>
+                                                                          </Label>
+                                                                          <ComboBox fx:id="typeFilterComboBox" prefHeight="31.0" prefWidth="159.0" promptText="Select" style="-fx-background-color: rgb(232, 232, 237);" HBox.hgrow="NEVER" />
+                                                      </children>
+                                                   </HBox>
+                                                   <Button fx:id="addEquipmentButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="primary-button" text="New" />
                                                                 </children>
                                                             </HBox>
                                                             <ComboBox fx:id="valueFilterComboBox" prefHeight="26.0" prefWidth="1246.0" promptText="All" style="-fx-background-color: rgb(232, 232, 237);" styleClass="combo-box" />
@@ -121,22 +125,31 @@
                                                     </VBox>
                                                 </children>
                                             </AnchorPane>
-                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="623.0" prefWidth="0.0" style="-fx-background-color: white;">
+                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="621.0" prefWidth="976.0" style="-fx-background-color: white;">
                                                 <children>
                                                     <VBox prefHeight="623.0" prefWidth="1001.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                                         <padding>
                                                             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                                                         </padding>
                                                         <children>
-                                                            <Label prefHeight="31.0" prefWidth="163.0" text="Equipment Details">
-                                                                <font>
-                                                                    <Font name="SF Pro Text Semibold" size="16.0" />
-                                                                </font>
-                                                            </Label>
+                                             <HBox prefHeight="55.0" prefWidth="861.0">
+                                                <children>
+                                                   <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                                      <children>
+                                                         <Label fx:id="modeLabel" text="Equipment Details">
+                                                            <font>
+                                                               <Font name="System Bold" size="24.0" />
+                                                            </font>
+                                                         </Label>
+                                                      </children>
+                                                   </HBox>
+                                                   <ComboBox fx:id="modeComboBox" prefWidth="150.0" />
+                                                </children>
+                                             </HBox>
                                                             <GridPane hgap="15.0" prefHeight="420.0" prefWidth="938.0" vgap="15.0" VBox.vgrow="ALWAYS">
                                                                 <columnConstraints>
-                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="146.6666259765625" minWidth="120.0" prefWidth="131.2645263671875" />
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="281.91265869140625" minWidth="10.0" prefWidth="275.7354736328125" />
+                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="145.0" minWidth="145.0" prefWidth="145.0" />
+                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="281.91265869140625" minWidth="10.0" prefWidth="261.0" />
                                                                     <ColumnConstraints hgrow="NEVER" maxWidth="265.666748046875" minWidth="9.83331298828125" prefWidth="55.00006103515625" />
                                                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="421.6666259765625" minWidth="10.0" prefWidth="353.99993896484375" />
                                                                 </columnConstraints>
@@ -144,6 +157,7 @@
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                                   <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -160,64 +174,88 @@
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <Label styleClass="" text="Status:" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                                                                    <Label styleClass="" text="Status:" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <Label styleClass="" text="Last Maintenance:" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                                                                    <Label styleClass="" text="Last Maintenance:" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <Label styleClass="" text="Next Maintenance:" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                                                                    <Label styleClass="" text="Next Maintenance:" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <Label styleClass="" text="Description:" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                                                                    <Label styleClass="" text="Description:" GridPane.halignment="LEFT" GridPane.rowIndex="7" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
                                                                     <TextField fx:id="equipmentIDTextField" disable="true" prefHeight="42.0" prefWidth="225.0" styleClass="text-field-disabled" GridPane.columnIndex="1" />
-                                                                    <TextField fx:id="equipmentNameTextField" styleClass="text-field" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
-                                                                    <ComboBox fx:id="statusEquipmentComboBox" prefHeight="31.0" prefWidth="707.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-                                                                    <Label fx:id="lastMaintenanceLabel1" styleClass="" text="Never performed" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
-                                                                    <Label fx:id="nextMaintenanceLabel1" styleClass="" text="Not scheduled" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
-                                                                    <TextArea fx:id="equipmentDescriptionTextField" prefHeight="50.0" prefWidth="200.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" />
+                                                                    <TextField fx:id="equipmentNameTextField" prefHeight="44.0" prefWidth="717.0" styleClass="text-field" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
+                                                                    <TextArea fx:id="equipmentDescriptionTextField" prefHeight="50.0" prefWidth="200.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" />
                                                                     <Label styleClass="" text="Code:" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
                                                                     <TextField fx:id="equipmentCodeTextField" disable="true" prefHeight="42.0" prefWidth="225.0" styleClass="text-field-disabled" GridPane.columnIndex="3" />
-                                                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.rowSpan="3">
-                                                                        <children>
-                                                                            <ImageView fitHeight="150.0" fitWidth="234.0" pickOnBounds="true" preserveRatio="true">
-                                                                                <image>
-                                                                                    <Image url="@../../../../../../../Desktop/CleanShot%202025-03-25%20at%2021.42.53@2x.png" />
-                                                                                </image>
-                                                                            </ImageView>
-                                                                            <Region prefHeight="150.0" prefWidth="8.0" HBox.hgrow="ALWAYS" />
-                                                                            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="32.0" prefWidth="92.0" text="Change" wrapText="true" />
-                                                                        </children>
-                                                                    </HBox>
-                                                                    <Label alignment="TOP_LEFT" prefHeight="0.0" prefWidth="47.0" styleClass="" text="Image:" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                                                    <Label alignment="TOP_LEFT" prefHeight="0.0" prefWidth="47.0" styleClass="" text="Image:" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
+                                                   <DatePicker fx:id="nextMaintenanceDatePicker" prefHeight="44.0" prefWidth="265.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                   <Text fx:id="lastMaintenanceDateTextField" strokeType="OUTSIDE" strokeWidth="0.0" text="None" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                      <font>
+                                                         <Font name="System Bold" size="14.0" />
+                                                      </font>
+                                                   </Text>
+                                                   <Text fx:id="statusEquipmentText" strokeType="OUTSIDE" strokeWidth="0.0" text="None" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                      <font>
+                                                         <Font name="System Bold" size="14.0" />
+                                                      </font>
+                                                   </Text>
+                                                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="3" GridPane.rowIndex="2" GridPane.rowSpan="4">
+                                                      <children>
+                                                         <ImageView fx:id="equipmentImage" fitHeight="202.0" fitWidth="234.0" pickOnBounds="true" preserveRatio="true" />
+                                                                            <Button fx:id="changeEquipmentImageButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="32.0" prefWidth="92.0" text="Change" wrapText="true" />
+                                                      </children>
+                                                   </HBox>
+                                                   <Label text="Regular maintenance:" GridPane.rowIndex="5">
+                                                      <font>
+                                                         <Font size="14.0" />
+                                                      </font>
+                                                   </Label>
+                                                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                      <children>
+                                                         <TextField fx:id="regularMaintenanceTimeTextField" prefHeight="44.0" prefWidth="133.0" />
+                                                         <Label text="Day">
+                                                            <font>
+                                                               <Font size="14.0" />
+                                                            </font>
+                                                         </Label>
+                                                      </children>
+                                                   </HBox>
+                                                   <ComboBox fx:id="equipmentCategoryComboBox" prefHeight="34.0" prefWidth="268.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                   <Label prefHeight="20.0" prefWidth="136.0" styleClass="" text="Category:" GridPane.rowIndex="2">
+                                                      <font>
+                                                         <Font name="SF Pro Text Semibold" size="14.0" />
+                                                      </font>
+                                                   </Label>
                                                                 </children>
                                                             </GridPane>
-                                                            <Region prefHeight="18.0" prefWidth="938.0" />
                                                         </children>
                                                     </VBox>
                                                       <Separator AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
-                                                      <HBox alignment="CENTER_RIGHT" spacing="15.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+                                                      <HBox alignment="BASELINE_RIGHT" spacing="15.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                                                           <children>
-                                                              <Button fx:id="addEquipmentButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="primary-button" text="Save" />
-                                             <Button fx:id="saveButton121" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="primary-button" text="Update" />
+                                             <Button fx:id="cancelEquipmentButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="117.0" styleClass="warning-button" text="Cancel" />
+                                                              <Button fx:id="saveEquipmentButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="primary-button" text="Save" />
+                                             <Button fx:id="updateEquipmentButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="primary-button" text="Update" />
                                                               <Button fx:id="reportIssueButton1" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="warning-button" text="Report Issue" />
                                                           </children>
                                                       </HBox>
@@ -306,7 +344,7 @@
                                                                         </TableView>
                                                                     </children>
                                                                 </VBox>
-                                                <Button fx:id="openPopupButton" mnemonicParsing="false" onAction="#openPopup" styleClass="secondary-button" text="+" />
+                                                <Button fx:id="openPopupButton" mnemonicParsing="false" styleClass="secondary-button" text="+" />
                                                                 <GridPane hgap="20.0" prefHeight="360.0" prefWidth="493.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                                     <columnConstraints>
                                                                         <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="53.0" prefWidth="87.0" />
@@ -564,7 +602,7 @@
                         <center>
                             <SplitPane dividerPositions="0.2994409503843466" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                 <items>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="620.0" prefWidth="485.0" style="-fx-background-color: white;">
                                         <children>
                                             <VBox prefHeight="411.0" prefWidth="400.0" spacing="15.0" style="-fx-background-color: #F5F5F7; -fx-background-radius: 10;" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                                 <padding>
@@ -576,7 +614,7 @@
                                                             <Font name="SF Pro Text Semibold" size="16.0" />
                                                         </font>
                                                     </Label>
-                                                    <TextField fx:id="searchField1111" prefHeight="39.0" prefWidth="440.0" promptText="Search plan..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" />
+                                                    <TextField fx:id="recordNewRepairSearch" prefHeight="39.0" prefWidth="440.0" promptText="Search plan..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" />
                                                     <HBox alignment="BOTTOM_LEFT" prefHeight="31.0" prefWidth="349.0" spacing="10.0" VBox.vgrow="NEVER">
                                                         <children>
                                                             <Label prefHeight="31.0" styleClass="" text="Filter by" HBox.hgrow="NEVER">
@@ -588,18 +626,19 @@
                                                         </children>
                                                     </HBox>
                                                     <ComboBox fx:id="statusFilter1111" prefHeight="26.0" prefWidth="1246.0" promptText="All Statuses" style="-fx-background-color: rgb(232, 232, 237);" styleClass="combo-box" />
-                                                    <TableView prefHeight="478.0" prefWidth="388.0" VBox.vgrow="ALWAYS">
+                                                    <TableView fx:id="recordNewRepairMaintance" prefHeight="360.0" prefWidth="437.0" VBox.vgrow="ALWAYS">
                                                         <columns>
                                                             <TableColumn prefWidth="113.0" text="Plan ID" />
                                                             <TableColumn prefWidth="118.0" text="Name" />
-                                                            <TableColumn prefWidth="194.0" text="Date" />
+                                                            <TableColumn prefWidth="120.0" text="Start Date" />
+                                                            <TableColumn prefWidth="120.0" text="End Date" />
                                                         </columns>
                                                     </TableView>
                                                 </children>
                                             </VBox>
                                         </children>
                                     </AnchorPane>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="620.0" prefWidth="1258.0" style="-fx-background-color: white;">
                                         <children>
                                             <VBox style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                                 <padding>
@@ -617,22 +656,21 @@
                                        </HBox>
                                                     <HBox prefHeight="503.0" prefWidth="888.0" spacing="15.0" VBox.vgrow="ALWAYS">
                                                         <children>
-                                                            <TableView prefHeight="446.0" prefWidth="407.0">
+                                                            <TableView fx:id="recordNewRepairMaintanceEquipments" prefHeight="446.0" prefWidth="407.0">
                                                                 <columns>
-                                                                    <TableColumn prefWidth="90.8333740234375" text="E.Code" />
-                                                                    <TableColumn prefWidth="154.5" text="Name" />
-                                                                    <TableColumn prefWidth="187.5" text="Quanity" />
+                                                                    <TableColumn prefWidth="74.39999084472583" text="E.Code" />
+                                                                    <TableColumn prefWidth="217.59999084472656" text="Description" />
+                                                                    <TableColumn prefWidth="144.79998779296875" text="Status" />
                                                                 </columns>
                                                             </TableView>
                                                             <GridPane hgap="20.0" prefHeight="486.0" prefWidth="500.0" vgap="15.0" HBox.hgrow="ALWAYS">
                                                                 <columnConstraints>
-                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="50.0" prefWidth="86.23541259765625" />
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="117.3543701171875" />
-                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="39.8834228515625" />
-                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="169.1165771484375" />
+                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="50.0" prefWidth="107.19998779296876" />
+                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="148.80007324218752" />
+                                                                    <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="44.59995117187498" />
+                                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="137.40004882812497" />
                                                                 </columnConstraints>
                                                                 <rowConstraints>
-                                                                    <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -645,8 +683,7 @@
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <ComboBox fx:id="technicianComboBox11111" prefHeight="31.0" prefWidth="489.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                                                                    <Label styleClass="" text="Date:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                                                                    <Label styleClass="" text="Inspection Date:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
@@ -657,39 +694,32 @@
                                                                         </font>
                                                                     </Label>
                                                                     <ComboBox fx:id="maintenanceTimeComboBox11111" prefHeight="31.0" prefWidth="408.0" styleClass="combo-box" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-                                                                    <Label styleClass="" text="Description:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                                                                    <Label styleClass="" text="Description:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <TextArea fx:id="maintenanceDescriptionTextArea11121" prefHeight="79.0" prefWidth="738.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="5" />
+                                                                    <TextArea fx:id="equipmentMaintainanceDescription" prefHeight="79.0" prefWidth="738.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4" />
                                                                     <Label styleClass="" text="ID:" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <TextField fx:id="equipmentId2113" disable="true" prefHeight="38.0" prefWidth="145.0" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
-                                                                    <Label styleClass="" text="Title:" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="LEFT">
+                                                                    <TextField fx:id="equipmentMaintainanceTechnician" disable="true" prefHeight="44.0" prefWidth="171.0" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                                                                    <Label styleClass="" text="ECode" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="LEFT">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <TextField fx:id="equipmentId21131" disable="true" prefHeight="42.0" prefWidth="225.0" styleClass="text-field-disabled" GridPane.columnIndex="3" />
-                                                                    <DatePicker fx:id="fromDatePicker1111" prefHeight="42.0" prefWidth="462.0" promptText="From" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-                                                                    <DatePicker fx:id="toDatePicker1111" prefHeight="42.0" prefWidth="395.0" promptText="To" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
-                                                                    <ComboBox fx:id="maintenanceTimeComboBox111112" prefHeight="31.0" prefWidth="424.0" styleClass="combo-box" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                                                                    <Label styleClass="" text="Cost:" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                                                                    <TextField fx:id="equipmentID" disable="true" prefHeight="42.0" prefWidth="225.0" styleClass="text-field-disabled" GridPane.columnIndex="3" />
+                                                                    <DatePicker fx:id="inspectionDate" prefHeight="42.0" prefWidth="462.0" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+                                                                    <Label styleClass="" text="Status:" GridPane.rowIndex="3">
                                                                         <font>
                                                                             <Font name="SF Pro Text Semibold" size="14.0" />
                                                                         </font>
                                                                     </Label>
-                                                                    <TextField fx:id="costTextField1121" prefWidth="260.0" promptText="0.00" styleClass="text-field" GridPane.columnIndex="3" GridPane.rowIndex="4" />
-                                                                    <Label styleClass="" text="Type:" GridPane.rowIndex="4">
-                                                                        <font>
-                                                                            <Font name="SF Pro Text Semibold" size="14.0" />
-                                                                        </font>
-                                                                    </Label>
-                                                                    <ComboBox fx:id="maintenanceTimeComboBox1111121" prefHeight="31.0" prefWidth="424.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                                    <ComboBox fx:id="statusComboBox" prefHeight="31.0" prefWidth="424.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                   <TextField fx:id="equipmentMaintainanceID" disable="true" prefHeight="44.0" prefWidth="406.0" styleClass="text-field-disabled" GridPane.columnIndex="1" />
                                                                 </children>
                                                             </GridPane>
                                                         </children>
@@ -699,7 +729,7 @@
                                  <Separator prefWidth="200.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
                                  <HBox alignment="CENTER_RIGHT" spacing="15.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                                     <children>
-                                       <Button fx:id="scheduleButton11111111" lineSpacing="10.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="primary-button" text="Save">
+                                       <Button fx:id="recordNewRepairSaveButton" lineSpacing="10.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="primary-button" text="Save">
                                           <HBox.margin>
                                              <Insets />
                                           </HBox.margin>
@@ -734,7 +764,7 @@
                                                                     <Font name="SF Pro Text Semibold" size="16.0" />
                                                                 </font>
                                                             </Label>
-                                                            <TextField fx:id="searchField11111" prefHeight="39.0" prefWidth="440.0" promptText="Search user..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" />
+                                                            <TextField fx:id="txtSearchUser" prefHeight="39.0" prefWidth="440.0" promptText="Search user..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" />
                                                             <HBox alignment="BOTTOM_LEFT" prefHeight="31.0" prefWidth="349.0" spacing="10.0" VBox.vgrow="NEVER">
                                                                 <children>
                                                                     <Label prefHeight="31.0" styleClass="" text="Filter by" HBox.hgrow="NEVER">
@@ -745,8 +775,8 @@
                                                                     <ComboBox prefHeight="31.0" promptText="Select" style="-fx-background-color: rgb(232, 232, 237);" />
                                                                 </children>
                                                             </HBox>
-                                                            <ComboBox fx:id="statusFilter11111" prefHeight="26.0" prefWidth="1246.0" promptText="All Roles" style="-fx-background-color: rgb(232, 232, 237);" styleClass="combo-box" />
-                                                            <TableView prefHeight="478.0" prefWidth="388.0" VBox.vgrow="ALWAYS">
+                                                            <ComboBox fx:id="roles" prefHeight="26.0" prefWidth="1246.0" promptText="All Roles" style="-fx-background-color: rgb(232, 232, 237);" styleClass="combo-box" />
+                                                            <TableView fx:id="users" prefHeight="478.0" prefWidth="388.0" VBox.vgrow="ALWAYS">
                                                                 <columns>
                                                                     <TableColumn prefWidth="113.0" text="User ID" />
                                                                     <TableColumn prefWidth="118.0" text="Name" />
@@ -785,6 +815,7 @@
                                                                             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                                                         </rowConstraints>
@@ -794,7 +825,7 @@
                                                                                     <Font name="SF Pro Text Semibold" size="14.0" />
                                                                                 </font>
                                                                             </Label>
-                                                                            <ComboBox fx:id="technicianComboBox111111" styleClass="combo-box" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" />
+                                                                            <ComboBox fx:id="roleComboBox" styleClass="combo-box" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" />
                                                                             <Label styleClass="" text="Email:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                                                                                 <font>
                                                                                     <Font name="SF Pro Text Semibold" size="14.0" />
@@ -805,7 +836,7 @@
                                                                                     <Font name="SF Pro Text Semibold" size="14.0" />
                                                                                 </font>
                                                                             </Label>
-                                                                            <Label styleClass="" text="Password:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                                                                            <Label styleClass="" text="Password:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                                                                                 <font>
                                                                                     <Font name="SF Pro Text Semibold" size="14.0" />
                                                                                 </font>
@@ -815,20 +846,19 @@
                                                                                     <Font name="SF Pro Text Semibold" size="14.0" />
                                                                                 </font>
                                                                             </Label>
-                                                                            <TextField fx:id="equipmentId21131" disable="true" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
+                                                                            <TextField fx:id="userIdField" disable="true" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
                                                                             <Label styleClass="" text="First name:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="1">
                                                                                 <font>
                                                                                     <Font name="SF Pro Text Semibold" size="14.0" />
                                                                                 </font>
                                                                             </Label>
-                                                                            <TextField fx:id="equipmentId211311" disable="true" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                                            <DatePicker fx:id="fromDatePicker11111" promptText="From" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-                                                                            <Label styleClass="" text="Avatar:" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                                                            <TextField fx:id="firstNameField" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                                            <Label styleClass="" text="Avatar:" GridPane.columnIndex="2" GridPane.rowIndex="4">
                                                                                 <font>
                                                                                     <Font name="SF Pro Text Semibold" size="14.0" />
                                                                                 </font>
                                                                             </Label>
-                                                                            <Label styleClass="" text="Is active:" GridPane.rowIndex="4">
+                                                                            <Label styleClass="" text="Is active:" GridPane.rowIndex="5">
                                                                                 <font>
                                                                                     <Font name="SF Pro Text Semibold" size="14.0" />
                                                                                 </font>
@@ -838,16 +868,23 @@
                                                                <Font name="SF Pro Text Semibold" size="14.0" />
                                                             </font>
                                                          </Label>
-                                                         <TextField fx:id="equipmentId2113111" disable="true" styleClass="text-field-disabled" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                                                         <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.rowSpan="2">
+                                                         <TextField fx:id="lastNameField" styleClass="text-field" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                                                         <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.rowSpan="2">
                                                             <children>
-                                                               <ImageView fitHeight="150.0" fitWidth="226.0" pickOnBounds="true" preserveRatio="true" />
-                                                               <Button mnemonicParsing="false" styleClass="secondary-button" text="Change" />
+                                                               <ImageView fx:id="avatarImageView" fitHeight="150.0" fitWidth="226.0" pickOnBounds="true" preserveRatio="true" />
+                                                               <Button fx:id="changeAvatarButton" mnemonicParsing="false" styleClass="secondary-button" text="Change" />
                                                             </children>
                                                          </HBox>
-                                                         <CheckBox mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                                         <TextField fx:id="equipmentId2113112" disable="true" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                         <TextField fx:id="equipmentId21131111" disable="true" styleClass="text-field-disabled" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                                                         <CheckBox fx:id="isActiveCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                         <TextField fx:id="passwordField" prefHeight="35.0" prefWidth="372.0" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                         <TextField fx:id="phoneField" styleClass="text-field" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                                                         <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                         <Label styleClass="" text="Username" wrapText="true" GridPane.rowIndex="3">
+                                                            <font>
+                                                               <Font name="SF Pro Text Semibold" size="14.0" />
+                                                            </font>
+                                                         </Label>
+                                                         <TextField fx:id="usernameField" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                                         </children>
                                                                     </GridPane>
                                                                 </children>
@@ -857,12 +894,13 @@
                                                       <Separator prefWidth="200.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
                                                       <HBox alignment="CENTER_RIGHT" layoutX="14.0" layoutY="575.0" spacing="15.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                                                           <children>
-                                                              <Button fx:id="scheduleButton111111" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="primary-button" text="New User" />
-                                             <Button fx:id="scheduleButton1111111" lineSpacing="10.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="primary-button" text="Save">
+                                                              <Button fx:id="newUserButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="primary-button" text="New User" />
+                                             <Button fx:id="saveButton" lineSpacing="10.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="primary-button" text="Save">
                                                 <HBox.margin>
                                                    <Insets />
                                                 </HBox.margin>
                                              </Button>
+                                             <Button fx:id="deleteUserButton" layoutX="680.0" layoutY="10.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="warning-button" text="Delete" />
                                                           </children>
                                                       </HBox>
                                                 </children>

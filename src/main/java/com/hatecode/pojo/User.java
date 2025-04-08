@@ -11,12 +11,18 @@ public class User
     private String phone;
     private Role role;
     private boolean isActive;
-    private String avatar;
+    private Image avatar;
+    private String roleName;
 
     public User() {
     }
+    
+    public User(int id,String username){
+        this.id = id;
+        this.username = username;
+    }
 
-    public User(String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, String avatar) {
+    public User(String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, Image avatar) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -28,7 +34,7 @@ public class User
         this.avatar = avatar;
     }
 
-    public User(int id, String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, String avatar) {
+    public User(int id, String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, Image avatar) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -114,16 +120,24 @@ public class User
         isActive = active;
     }
 
-    public String getAvatar() {
+    public Image getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) {
+    public void setAvatar(Image avatar) {
         this.avatar = avatar;
     }
 
     @Override
     public String toString() {
         return firstName + " " + lastName;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 }

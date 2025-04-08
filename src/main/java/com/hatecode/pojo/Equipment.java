@@ -4,66 +4,71 @@
  */
 package com.hatecode.pojo;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
- *
  * @author ADMIN
  */
 public class Equipment {
     private int id;
     private String code;
     private String name;
-    private Date importDate;
     private Status status;
     private Category category;
-    private String statusName;
+    private LocalDateTime createdDate;
+    private Image image;
+    private int regularMaintenanceDay;
+    private LocalDateTime lastMaintenanceTime;
     private String description;
+    private boolean isActive;
 
-    public Equipment() {
+    public Equipment(int id, String code, String name, Status status, Category category, Image image, int regularMaintenanceDay, String description) {
     }
 
-    public Equipment(int id, String code, String name, Date importDate, Status status, Category category, String description) {
-        this.id = id;
+    public Equipment(
+            String code,
+            String name,
+            Status status,
+            Category category,
+            Image image,
+            int regularMaintenanceDay,
+            String description) {
         this.code = code;
         this.name = name;
-        this.importDate = importDate;
         this.status = status;
         this.category = category;
+        this.image = image;
+        this.regularMaintenanceDay = regularMaintenanceDay;
         this.description = description;
     }
 
-    /**
-     * @return the status
-     */
-    public Status getStatus() {
-        return status;
-    }
-
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(Status status) {
+    public Equipment(
+            int id,
+            String code,
+            String name,
+            Status status,
+            Category category,
+            LocalDateTime createdDate,
+            Image image,
+            int regularMaintenanceDay,
+            LocalDateTime lastMaintenanceTime,
+            String description,
+            boolean isActive) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
         this.status = status;
-    }
-
-    /**
-     * @return the category
-     */
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
         this.category = category;
+        this.createdDate = createdDate;
+        this.image = image;
+        this.regularMaintenanceDay = regularMaintenanceDay;
+        this.lastMaintenanceTime = lastMaintenanceTime;
+        this.description = description;
+        this.isActive = isActive;
     }
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getCode() {
@@ -82,20 +87,52 @@ public class Equipment {
         this.name = name;
     }
 
-    public Date getImportDate() {
-        return importDate;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setImport_date(Date import_date) {
-        this.importDate = import_date;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
-    public String getStatusName() {
-        return statusName;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public int getRegularMaintenanceDay() {
+        return regularMaintenanceDay;
+    }
+
+    public void setRegularMaintenanceDay(int regularMaintenanceDay) {
+        this.regularMaintenanceDay = regularMaintenanceDay;
+    }
+
+    public LocalDateTime getLastMaintenanceTime() {
+        return lastMaintenanceTime;
+    }
+
+    public void setLastMaintenanceTime(LocalDateTime lastMaintenanceTime) {
+        this.lastMaintenanceTime = lastMaintenanceTime;
     }
 
     public String getDescription() {
@@ -106,7 +143,11 @@ public class Equipment {
         this.description = description;
     }
 
-    public void setImportDate(Date importDate) {
-        this.importDate = importDate;
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

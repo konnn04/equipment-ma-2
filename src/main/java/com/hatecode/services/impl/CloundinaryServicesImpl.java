@@ -6,6 +6,7 @@ package com.hatecode.services.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.hatecode.config.CloudinaryConfig;
 import com.hatecode.services.CloundinaryServices;
 
 import java.io.File;
@@ -28,9 +29,9 @@ public class CloundinaryServicesImpl implements CloundinaryServices {
 
     public CloundinaryServicesImpl() {
         this.cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", CLOUD_NAME,
-                "api_key", API_KEY,
-                "api_secret", API_SECRET,
+                "cloud_name", CloudinaryConfig.CLOUD_NAME,
+                "api_key", CloudinaryConfig.API_KEY,
+                "api_secret", CloudinaryConfig.API_SECRET,
                 "secure", true
         ));
     }

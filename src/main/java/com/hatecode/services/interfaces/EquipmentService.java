@@ -5,11 +5,10 @@
 package com.hatecode.services.interfaces;
 
 import com.hatecode.pojo.Equipment;
-import com.hatecode.pojo.EquipmentMaintainance;
-import java.io.File;
+import com.hatecode.pojo.EquipmentMaintenance;
+
 import java.sql.SQLException;
 import java.util.List;
-import javafx.scene.image.Image;
 
 /**
  *
@@ -19,8 +18,7 @@ public interface EquipmentService {
     Equipment getEquipmentById(int id) throws SQLException;
     List<Equipment> getEquipments() throws SQLException;
     List<Equipment> getEquipments(String query, int page, int pageSize, String key, String value) throws SQLException;
-    void getEquipmentsImage() throws SQLException;
-    List<EquipmentMaintainance> getEquipmentMaintainances(int id) throws SQLException;
+    List<EquipmentMaintenance> getEquipmentMaintainances(int id) throws SQLException;
     boolean addEquipment(Equipment e) throws SQLException;
     boolean updateEquipment(Equipment e) throws SQLException;
     boolean deleteEquipment(int id) throws SQLException;
