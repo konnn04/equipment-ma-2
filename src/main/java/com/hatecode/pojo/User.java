@@ -1,7 +1,5 @@
 package com.hatecode.pojo;
 
-import java.time.LocalDateTime;
-
 public class User
 {
     private int id;
@@ -14,22 +12,17 @@ public class User
     private Role role;
     private boolean isActive;
     private Image avatar;
-    private LocalDateTime createdDate;
+    private String roleName;
 
     public User() {
     }
+    
+    public User(int id,String username){
+        this.id = id;
+        this.username = username;
+    }
 
-    public User(
-            String firstName,
-            String lastName,
-            String username,
-            String password,
-            String email,
-            String phone,
-            Role role,
-            boolean isActive,
-            Image avatar,
-            LocalDateTime createdDate) {
+    public User(String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, Image avatar) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -39,21 +32,9 @@ public class User
         this.role = role;
         this.isActive = isActive;
         this.avatar = avatar;
-        this.createdDate = createdDate;
     }
 
-    public User(
-            int id,
-            String firstName,
-            String lastName,
-            String username,
-            String password,
-            String email,
-            String phone,
-            Role role,
-            boolean isActive,
-            Image avatar,
-            LocalDateTime createdDate) {
+    public User(int id, String firstName, String lastName, String username, String password, String email, String phone, Role role, boolean isActive, Image avatar) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -64,9 +45,9 @@ public class User
         this.role = role;
         this.isActive = isActive;
         this.avatar = avatar;
-        this.createdDate = createdDate;
     }
 
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -147,11 +128,16 @@ public class User
         this.avatar = avatar;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    @Override
+    public String toString() {
+        return firstName + " " + lastName;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 }
