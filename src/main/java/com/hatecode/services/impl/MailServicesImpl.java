@@ -4,7 +4,7 @@
  */
 package com.hatecode.services.impl;
 
-import com.hatecode.services.MailServices;
+import com.hatecode.services.interfaces.MailServices;
 
 import java.util.List;
 import java.util.Properties;

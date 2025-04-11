@@ -6,8 +6,8 @@ package com.hatecode.services.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.hatecode.config.CloudinaryConfig;
-import com.hatecode.services.CloundinaryServices;
+import com.hatecode.config.AppConfig;
+import com.hatecode.services.interfaces.CloundinaryServices;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,17 +21,13 @@ import java.util.logging.Logger;
  */
 public class CloundinaryServicesImpl implements CloundinaryServices {
 
-    private static final String CLOUD_NAME = "";
-    private static final String API_KEY = "";
-    private static final String API_SECRET = "";
-
     private final Cloudinary cloudinary;
 
     public CloundinaryServicesImpl() {
         this.cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", CloudinaryConfig.CLOUD_NAME,
-                "api_key", CloudinaryConfig.API_KEY,
-                "api_secret", CloudinaryConfig.API_SECRET,
+                "cloud_name", AppConfig.CLOUD_NAME,
+                "api_key", AppConfig.API_KEY,
+                "api_secret", AppConfig.API_SECRET,
                 "secure", true
         ));
     }

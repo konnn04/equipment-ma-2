@@ -6,6 +6,7 @@ package com.hatecode.services.interfaces;
 
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintenance;
+import com.hatecode.pojo.Image;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -20,7 +21,9 @@ public interface EquipmentService {
     List<Equipment> getEquipments(String query, int page, int pageSize, String key, String value) throws SQLException;
     List<EquipmentMaintenance> getEquipmentMaintainances(int id) throws SQLException;
     boolean addEquipment(Equipment e) throws SQLException;
+    boolean addEquipment(Equipment e, Image image) throws SQLException;
     boolean updateEquipment(Equipment e) throws SQLException;
+    boolean updateEquipment(Equipment e, Image image) throws SQLException;
     boolean deleteEquipment(int id) throws SQLException;
     List<Object> getDistinctValues(String columnName) throws SQLException;
 }
