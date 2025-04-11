@@ -341,7 +341,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                 rs.getString("name"),
                 Status.fromId(rs.getInt("status")),
                 rs.getInt("category"),
-                rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
+                rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null,
                 rs.getInt("image"),
                 rs.getInt("regular_maintenance_day"),
                 rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,

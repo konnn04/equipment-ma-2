@@ -1,12 +1,12 @@
 package com.hatecode.utils;
 
+import com.hatecode.config.AppConfig;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import io.github.cdimascio.dotenv.Dotenv;
 
 public class JdbcUtils {
-    private static final Dotenv dotenv = Dotenv.load();
 
     static {
         try {
@@ -18,9 +18,9 @@ public class JdbcUtils {
 
     public static Connection getConn() throws SQLException {
         return DriverManager.getConnection(
-                dotenv.get("DB_URL"),
-                dotenv.get("DB_USER"),
-                dotenv.get("DB_PASS")
+                AppConfig.DB_URL,
+                AppConfig.DB_USER,
+                AppConfig.DB_PASS
         );
     }
 }
