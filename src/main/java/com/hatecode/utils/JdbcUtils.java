@@ -3,9 +3,11 @@ package com.hatecode.utils;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import com.hatecode.config.DBConfig;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class JdbcUtils {
+    private static final Dotenv dotenv = Dotenv.load();
+
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -16,9 +18,9 @@ public class JdbcUtils {
 
     public static Connection getConn() throws SQLException {
         return DriverManager.getConnection(
-                DBConfig.DB_URL,
-                DBConfig.USER,
-                DBConfig.PASS
+                dotenv.get("DB_URL"),
+                dotenv.get("DB_USER"),
+                dotenv.get("DB_PASS")
         );
     }
 }

@@ -101,7 +101,7 @@ public class CategoryServiceImpl implements CategoryService {
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setString(1, cate.getName());
             int rowsAffected = stm.executeUpdate();
-            return rowsAffected > 0; // Trả về true nếu có ít nhất một dòng được thêm vào
+            return rowsAffected > 0;
         }
     }
 

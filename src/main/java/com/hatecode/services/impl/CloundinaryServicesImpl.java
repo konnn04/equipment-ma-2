@@ -6,8 +6,8 @@ package com.hatecode.services.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.hatecode.config.CloudinaryConfig;
-import com.hatecode.services.CloundinaryServices;
+import com.hatecode.services.interfaces.CloundinaryServices;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,10 +28,11 @@ public class CloundinaryServicesImpl implements CloundinaryServices {
     private final Cloudinary cloudinary;
 
     public CloundinaryServicesImpl() {
+        Dotenv dotenv = Dotenv.load();
         this.cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", CloudinaryConfig.CLOUD_NAME,
-                "api_key", CloudinaryConfig.API_KEY,
-                "api_secret", CloudinaryConfig.API_SECRET,
+                "cloud_name", dotenv.get("CLOUD_NAME"),
+                "api_key", dotenv.get("API_KEY"),
+                "api_secret", dotenv.get("API_SECRET"),
                 "secure", true
         ));
     }

@@ -15,6 +15,7 @@ module com.hatecode.equipmentma2 {
 
 //    requires dotenv.java;
     requires mysql.connector.j;
+    requires dotenv.java;
 
 
     opens com.hatecode.equipmentma2 to javafx.fxml;

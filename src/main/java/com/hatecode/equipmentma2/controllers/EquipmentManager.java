@@ -4,7 +4,7 @@ import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.Status;
 import com.hatecode.pojo.Image;
-import com.hatecode.services.CloundinaryServices;
+import com.hatecode.services.interfaces.CloundinaryServices;
 import com.hatecode.services.impl.CategoryServiceImpl;
 import com.hatecode.services.impl.CloundinaryServicesImpl;
 import com.hatecode.services.impl.EquipmentServiceImpl;
