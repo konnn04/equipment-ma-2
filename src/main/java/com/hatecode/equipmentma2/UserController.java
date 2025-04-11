@@ -233,6 +233,7 @@ public class UserController implements Initializable {
                 String imgUrl = services.uploadUserImage(selectedAvatarFile);
                 String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
                 avatar = new com.hatecode.pojo.Image(
+                        0,
                         fileName,
                         LocalDateTime.now(),
                         imgUrl
@@ -248,7 +249,7 @@ public class UserController implements Initializable {
                     phoneField.getText(),
                     selectedRole,
                     isActiveCheckBox.isSelected(),
-                    avatar.getId()
+                    avatar != null ? 0 : 1
             );
             if (services.addUser(currentUser)) {
                 showInfoAlert("Succesfully", "Add new user Successfully");

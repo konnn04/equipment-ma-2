@@ -393,6 +393,7 @@ public class UserManager {
                 String imgUrl = userService.uploadUserImage(selectedAvatarFile);
                 String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
                 avatar = new com.hatecode.pojo.Image(
+                        0,
                         fileName,
                         LocalDateTime.now(),
                         imgUrl
@@ -417,7 +418,7 @@ public class UserManager {
                         phone,
                         selectedRole,
                         isActive,
-                        avatar.getId()
+                        avatar != null ? 0 : 1
                 );
 
                 if (userService.addUser(currentUser)) {

@@ -146,11 +146,8 @@ public class UserServiceImpl implements UserService {
         try {
             conn = JdbcUtils.getConn();
             conn.setAutoCommit(false); // Bắt đầu transaction
-
-            if (user.getAvatarId() != 0) {
-                ImageService imageService = new ImageServiceImpl();
-                Image image = imageService.getImageById(user.getAvatarId());
-
+            Image image = new Image();
+            if (user.getAvatarId() == 0) { // Trường hợp có chọn ảnh
                 String sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, image.getFilename());
@@ -182,8 +179,8 @@ public class UserServiceImpl implements UserService {
                 pstmt.setBoolean(8, user.isActive());
 
                 // Set image_id hoặc null
-                if (user.getAvatarId() != 0) {
-                    pstmt.setInt(9, user.getAvatarId());
+                if (user.getAvatarId() != 1) {
+                    pstmt.setInt(9, image.getId());
                 } else {
                     pstmt.setInt(9, 1);
                 }

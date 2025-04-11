@@ -6,7 +6,6 @@ module com.hatecode.equipmentma2 {
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
 
-    requires junit;
     requires cloudinary.core;
     requires jakarta.mail;
 
