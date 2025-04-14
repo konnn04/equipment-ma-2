@@ -19,7 +19,7 @@ public interface CategoryService {
     List<Category> getCategories() throws SQLException;
     Category getCategoryById(int id) throws SQLException;
     List<Equipment> getEquipmentByCategory(int id) throws SQLException;
-    OperationResult addCategory(Category cate) throws SQLException;
-    OperationResult updateCategory(Category cate) throws SQLException;
-    OperationResult deleteCategory(int id) throws SQLException;
+    boolean addCategory(Category cate) throws SQLException;
+    boolean updateCategory(Category cate) throws SQLException;
+    boolean deleteCategory(int id) throws SQLException;
 }
