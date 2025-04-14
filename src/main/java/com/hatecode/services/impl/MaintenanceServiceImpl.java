@@ -1,13 +1,12 @@
 package com.hatecode.services.impl;
 
-import com.hatecode.services.interfaces.UserService;
+import com.hatecode.services.UserService;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.Maintenance;
-import com.hatecode.services.interfaces.MaintenanceService;
+import com.hatecode.services.MaintenanceService;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MaintenanceServiceImpl implements MaintenanceService {

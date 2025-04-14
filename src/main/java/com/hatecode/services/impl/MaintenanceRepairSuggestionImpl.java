@@ -2,7 +2,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.MaintenanceRepairSuggestion;
-import com.hatecode.services.interfaces.MaintenanceRepairSuggestionService;
+import com.hatecode.services.MaintenanceRepairSuggestionService;
 
 import java.sql.*;
 import java.util.ArrayList;

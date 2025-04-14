@@ -1,15 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.Status;
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.services.interfaces.CategoryService;
-import com.hatecode.utils.OperationResult;
+import com.hatecode.services.CategoryService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,6 +25,27 @@ public class CategoryServiceImpl implements CategoryService {
             String sql = "SELECT * FROM category";
             PreparedStatement stm = conn.prepareCall(sql);
 
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                Category c = new Category(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getBoolean("is_active"),
+                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null
+                );
+                res.add(c);
+            }
+            return res;
+        }
+    }
+
+    @Override
+    public List<Category> getCategories(String query) throws SQLException {
+        List<Category> res = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * FROM category WHERE name LIKE ?";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1, "%" + query + "%");
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
                 Category c = new Category(
@@ -94,26 +110,80 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public OperationResult addCategory(Category cate) {
-        // Check if the category name is empty
-        if (cate.getName().trim().isEmpty()) {
-            return new OperationResult(false, "Category name cannot be empty");
+    public boolean addCategory(Category cate) {
+        if (cate == null) {
+            return false;
         }
-        // Check if the category name already exists
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "INSERT INTO category (name, is_active) VALUES (?, ?)";
-            PreparedStatement stm = conn.prepareStatement(sql);
-            stm.setString(1, cate.getName());
-            stm.setBoolean(2, cate.isActive());
-            int rowsAffected = stm.executeUpdate();
-            return new OperationResult(rowsAffected > 0, "Added category successfully");
+        // Kiểm tra tên danh mục không rỗng
+        if (cate.getName() == null || cate.getName().isEmpty()) {
+            return false;
+        }
+
+        Connection conn = null;
+        PreparedStatement checkStm = null;
+        PreparedStatement insertStm = null;
+        ResultSet rs = null;
+
+        try {
+            conn = JdbcUtils.getConn();
+            // Bắt đầu transaction
+            conn.setAutoCommit(false);
+
+//            // Kiểm tra tên danh mục đã tồn tại chưa
+//            String checkSql = "SELECT COUNT(*) FROM category WHERE name = ?";
+//            checkStm = conn.prepareStatement(checkSql);
+//            checkStm.setString(1, cate.getName());
+//            rs = checkStm.executeQuery();
+//
+//            if (rs.next()) {
+//                int count = rs.getInt(1);
+//                if (count > 0) {
+//                    // Tên danh mục đã tồn tại, không thực hiện thêm mới
+//                    return false;
+//                }
+//            }
+
+            // Thêm danh mục mới
+            String insertSql = "INSERT INTO category (name, is_active) VALUES (?, ?)";
+            insertStm = conn.prepareStatement(insertSql);
+            insertStm.setString(1, cate.getName());
+            insertStm.setBoolean(2, cate.isActive() != null ? cate.isActive() : true);
+
+            int rowsAffected = insertStm.executeUpdate();
+            // Nếu thêm thành công, commit transaction
+            conn.commit();
+            return rowsAffected > 0;
         } catch (SQLException e) {
-            return new OperationResult(false, e.getMessage());
+            try {
+                if (conn != null) {
+                    conn.rollback(); // Rollback khi có lỗi
+                }
+            } catch (SQLException rollbackEx) {
+                // Ghi log lỗi rollback
+                rollbackEx.printStackTrace();
+            }
+            // Nên sử dụng logger thay vì in stack trace
+            e.printStackTrace();
+            return false;
+        }finally {
+            try {
+                // Đóng tất cả tài nguyên theo thứ tự ngược
+                if (rs != null) rs.close();
+                if (checkStm != null) checkStm.close();
+                if (insertStm != null) insertStm.close();
+                if (conn != null) {
+                    conn.setAutoCommit(true); // Khôi phục trạng thái auto-commit
+                    conn.close();
+                }
+            } catch (SQLException closeEx) {
+                closeEx.printStackTrace();
+            }
         }
+
     }
 
     @Override
-    public OperationResult updateCategory(Category cate)  {
+    public boolean updateCategory(Category cate)  {
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "UPDATE category SET name = ?, is_active = ? WHERE id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
@@ -122,22 +192,25 @@ public class CategoryServiceImpl implements CategoryService {
             stm.setInt(3, cate.getId());
 
             int rowsAffected = stm.executeUpdate();
-            return new OperationResult(rowsAffected > 0, "Updated category successfully");
+            return rowsAffected > 0;
         }catch (SQLException e) {
-            return new OperationResult(false, e.getMessage());
+            // Handle SQL exception
+            e.printStackTrace();
+            return false;
         }
     }
 
     @Override
-    public OperationResult deleteCategory(int id)  {
+    public boolean deleteCategory(int id)  {
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "DELETE FROM category WHERE id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setInt(1, id);
             int rowsAffected = stm.executeUpdate();
-            return new OperationResult(rowsAffected > 0, "Deleted category successfully");
+            return rowsAffected > 0;
         } catch (SQLException e) {
-            return new OperationResult(false, e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
 

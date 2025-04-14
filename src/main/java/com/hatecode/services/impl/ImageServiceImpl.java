@@ -2,7 +2,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Image;
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.services.interfaces.ImageService;
+import com.hatecode.services.ImageService;
 
 import java.sql.*;
 import java.util.ArrayList;

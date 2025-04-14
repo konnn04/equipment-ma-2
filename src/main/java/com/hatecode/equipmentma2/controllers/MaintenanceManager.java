@@ -2,7 +2,7 @@ package com.hatecode.equipmentma2.controllers;
 
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
-import com.hatecode.services.interfaces.MaintenanceService;
+import com.hatecode.services.MaintenanceService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Label;

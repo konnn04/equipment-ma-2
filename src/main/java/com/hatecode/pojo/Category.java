@@ -39,6 +39,11 @@ public class Category {
         this.isActive = isActive;
     }
 
+    public Category(String name) {
+        this.name = name;
+
+    }
+
     public int getId() {
         return id;
     }
