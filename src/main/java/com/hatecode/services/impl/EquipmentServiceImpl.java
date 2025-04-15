@@ -357,7 +357,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                 rs.getString("name"),
                 Status.fromId(rs.getInt("status")),
                 rs.getInt("category"),
-                rs.getTimestamp("created_date"),
+                rs.getTimestamp("created_at"),
                 rs.getInt("image"),
                 rs.getInt("regular_maintenance_day"),
                 rs.getTimestamp("last_maintenance_time"),
@@ -380,7 +380,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                 rs.getString("repair_name"),
                 rs.getFloat("repair_price"),
                 rs.getTimestamp("inspection_date"),
-                rs.getTimestamp("created_date")
+                rs.getTimestamp("created_at")
         );
     }
 }

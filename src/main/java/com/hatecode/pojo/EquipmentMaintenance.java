@@ -20,7 +20,7 @@ public class EquipmentMaintenance {
     private String repairName;
     private float repairPrice;
     private Date inspectionDate;
-    private Date createdDate;
+    private Date createdAt;
 
     public EquipmentMaintenance() {
     }
@@ -35,7 +35,7 @@ public class EquipmentMaintenance {
             String repairName,
             float repairPrice,
             Date inspectionDate,
-            Date createdDate) {
+            Date createdAt) {
         this.id = id;
         this.equipmentId = equipmentId;
         this.maintenanceId = maintenanceId;
@@ -45,15 +45,15 @@ public class EquipmentMaintenance {
         this.repairName = repairName;
         this.repairPrice = repairPrice;
         this.inspectionDate = inspectionDate;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
+    public Date getcreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+    public void setcreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Date getInspectionDate() {

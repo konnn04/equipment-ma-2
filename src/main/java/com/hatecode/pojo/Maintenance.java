@@ -8,7 +8,7 @@ public class Maintenance {
     private String description;
     private Date startDateTime;
     private Date endDateTime;
-    private Date createdDate;
+    private Date createdAt;
 
     public Maintenance() {
         super();
@@ -19,13 +19,13 @@ public class Maintenance {
             String description,
             Date startDatetime,
             Date endDatetime,
-            Date createdDate) {
+            Date createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.startDateTime = startDatetime;
         this.endDateTime = endDatetime;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
     }
 
     public int getId() {
@@ -68,11 +68,11 @@ public class Maintenance {
         this.endDateTime = endDateTime;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
+    public Date getcreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+    public void setcreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }

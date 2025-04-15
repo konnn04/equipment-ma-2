@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
                 ImageService imageService = new ImageServiceImpl();
                 Image image = imageService.getImageById(user.getAvatarId());
 
-                String sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
+                String sqlImage = "INSERT INTO image (filename, created_at, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, image.getFilename());
                     pstmt.setTimestamp(2, (Timestamp)image.getCreateDate());
@@ -232,12 +232,12 @@ public class UserServiceImpl implements UserService {
             if (newImage != null) {
                 String sqlImage = "";
                 if (newImage.getId() != 0) {
-                    sqlImage = "UPDATE image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
+                    sqlImage = "UPDATE image SET filename = ?, created_at = ?, path = ? WHERE id = ?";
                     ImageService imageService = new ImageServiceImpl();
                     Image oldImage = imageService.getImageById(newImage.getId());
                     this.deleteUserImage(oldImage.getPath());
                 } else {
-                    sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
+                    sqlImage = "INSERT INTO image (filename, created_at, path) VALUES (?, ?, ?)";
                 }
 
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
@@ -303,7 +303,7 @@ public class UserServiceImpl implements UserService {
     // https://res.cloudinary.com/dg66aou8q/image/upload/v1743086605/dysaruyl1ye7xejpakbp.png
     @Override
     public User authenticateUser(String username, String password) throws SQLException {
-        String sql ="SELECT u.*, i.id as avatarId, i.filename, i.created_date, i.path\n" +
+        String sql ="SELECT u.*, i.id as avatarId, i.filename, i.created_at, i.path\n" +
                     "FROM User u\n" +
                     "LEFT JOIN image i ON u.avatar = i.id\n" +
                     "WHERE username = ? and password = ?";

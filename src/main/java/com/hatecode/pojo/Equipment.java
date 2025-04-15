@@ -14,7 +14,7 @@ public class Equipment {
     private String name;
     private Status status;
     private int categoryId;
-    private Date createdDate;
+    private Date createdAt;
     private int imageId;
     private int regularMaintenanceDay;
     private Date lastMaintenanceTime;
@@ -63,7 +63,7 @@ public class Equipment {
             String name,
             Status status,
             int categoryId,
-            Date createdDate,
+            Date createdAt,
             int imageId,
             int regularMaintenanceDay,
             Date lastMaintenanceTime,
@@ -74,7 +74,7 @@ public class Equipment {
         this.name = name;
         this.status = status;
         this.categoryId = categoryId;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
         this.imageId = imageId;
         this.regularMaintenanceDay = regularMaintenanceDay;
         this.lastMaintenanceTime = lastMaintenanceTime;
@@ -110,12 +110,12 @@ public class Equipment {
         this.status = status;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
+    public Date getcreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+    public void setcreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public int getRegularMaintenanceDay() {

@@ -7,7 +7,7 @@ public class MaintenanceRepairSuggestion {
     private String name;
     private String description;
     private float suggestPrice;
-    private Date createdDate;
+    private Date createdAt;
 
     public MaintenanceRepairSuggestion() {
     }
@@ -17,12 +17,12 @@ public class MaintenanceRepairSuggestion {
             String name,
             String description,
             float suggestPrice,
-            Date createdDate) {
+            Date createdAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.suggestPrice = suggestPrice;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
     }
 
     // Getters and Setters
@@ -58,11 +58,11 @@ public class MaintenanceRepairSuggestion {
         this.suggestPrice = suggestPrice;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
+    public Date getcreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+    public void setcreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -39,7 +39,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                         rs.getString("repair_name"),
                         rs.getFloat("repair_price"),
                         rs.getTimestamp("inspection_date"),
-                        rs.getTimestamp("created_date")
+                        rs.getTimestamp("created_at")
                 );
                 res.add(em);
             }
@@ -67,7 +67,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                         rs.getString("repair_name"),
                         rs.getFloat("repair_price"),
                         rs.getTimestamp("inspection_date"),
-                        rs.getTimestamp("created_date")
+                        rs.getTimestamp("created_at")
                 );
                 res.add(em);
             }
@@ -215,7 +215,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                         rs.getString("repair_name"),
                         rs.getFloat("repair_price"),
                         rs.getTimestamp("inspection_date"),
-                        rs.getTimestamp("created_date")
+                        rs.getTimestamp("created_at")
                 );
 
                 maintainanceEquipments.add(maintainanceEquipment);

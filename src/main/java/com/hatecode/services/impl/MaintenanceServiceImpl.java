@@ -26,7 +26,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getString("description"),
                         rs.getTimestamp("start_datetime"),
                         rs.getTimestamp("end_datetime"),
-                        rs.getTimestamp("created_date")
+                        rs.getTimestamp("created_at")
                 );
                 maintenances.add(maintenance);
             }
@@ -60,7 +60,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getString("description"),
                         rs.getTimestamp("start_datetime"),
                         rs.getTimestamp("end_datetime"),
-                        rs.getTimestamp("created_date")
+                        rs.getTimestamp("created_at")
                 );
                 res.add(maintenance);
             }
@@ -116,7 +116,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                             rs.getString("description"),
                             rs.getTimestamp("start_datetime"),
                             rs.getTimestamp("end_datetime"),
-                            rs.getTimestamp("created_date")
+                            rs.getTimestamp("created_at")
                     );
                     res.add(m);
                 }
@@ -145,7 +145,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getString("description"),
                         rs.getTimestamp("start_datetime"),
                         rs.getTimestamp("end_datetime"),
-                        rs.getTimestamp("created_date")
+                        rs.getTimestamp("created_at")
                 );
             }
         }
