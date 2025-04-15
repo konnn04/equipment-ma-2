@@ -1,13 +1,13 @@
 package com.hatecode.pojo;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class MaintenanceRepairSuggestion {
     private int id;
     private String name;
     private String description;
     private float suggestPrice;
-    private LocalDateTime createdDate;
+    private Date createdAt;
 
     public MaintenanceRepairSuggestion() {
     }
@@ -17,23 +17,23 @@ public class MaintenanceRepairSuggestion {
             String name,
             String description,
             float suggestPrice,
-            LocalDateTime createdDate) {
+            Date createdAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.suggestPrice = suggestPrice;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
     }
 
     public MaintenanceRepairSuggestion(
             String name,
             String description,
             float suggestPrice,
-            LocalDateTime createdDate) {
+            Date createdAt) {
         this.name = name;
         this.description = description;
         this.suggestPrice = suggestPrice;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
     }
 
     // Getters and Setters
@@ -69,11 +69,11 @@ public class MaintenanceRepairSuggestion {
         this.suggestPrice = suggestPrice;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public Date getcreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
+    public void setcreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }

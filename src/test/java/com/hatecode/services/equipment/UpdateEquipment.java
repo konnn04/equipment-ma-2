@@ -12,8 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.CsvSource;
+import utils.TestDBUtils;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
@@ -25,7 +27,8 @@ public class UpdateEquipment {
 
     @BeforeAll
     static void setupDatabase() throws SQLException {
-        conn = JdbcUtils.getConn();
+        JdbcUtils.connectionProvider = TestDBUtils::getConnection;
+        conn = TestDBUtils.getConnection();
     }
 
     @BeforeEach
@@ -48,10 +51,10 @@ public class UpdateEquipment {
     }
 
     @ParameterizedTest
-    @CsvSource({"22,EQPP002,Welding Machine,2,2,1,60,Main welding unit, 2022-02-22T22:22:22,2021-01-21T21:21:21, true"})
+    @CsvSource({"21,EQPP002,Welding Machine,2,2,1,60,Main welding unit, 2022-02-22,2021-01-21, true"})
     public void testUpdateEquipment(int id, String code, String name, int status, int categoryId,
                                     int imageId, int regularMaintenanceDay,
-                                    String description, LocalDateTime lastMaintenanceTime, LocalDateTime createdDate, boolean isActive) {
+                                    String description, Date lastMaintenanceTime, Date createdDate, boolean isActive) {
         // Create an Equipment object with the provided parameters
         Equipment equipment = new Equipment(
                 id,
@@ -72,18 +75,24 @@ public class UpdateEquipment {
             boolean result = equipmentService.updateEquipment(equipment);
             assertTrue(result, "Update equipment should return " + true);
 
-        } catch (Exception ex) {
+        }
+        catch (SQLException e) {
+            // Handle the exception if needed
+            e.printStackTrace();
+            fail("SQLException occurred while updating equipment: " + e.getMessage());
+        }
+        catch (Exception ex) {
             // Handle the exception if needed
             ex.printStackTrace();
         }
     }
 
     @ParameterizedTest
-    @CsvSource({"1,EQP-002,Welding Machine,2,2,1,-90,Main welding unit, 2022-02-22T22:22:22,2021-01-21T21:21:21, true"})
+    @CsvSource({"1,EQP-002,Welding Machine,2,2,1,-90,Main welding unit, 2022-02-22,2021-01-21, true"})
     public void testUpdateEquipmentWithNegativeRegularMaintenanceDay(int id, String code, String name, int status,
                                                                      int categoryId, int imageId, int regularMaintenanceDay,
-                                                                     String description, LocalDateTime lastMaintenanceTime,
-                                                                     LocalDateTime createdDate, boolean isActive) {
+                                                                     String description, Date lastMaintenanceTime,
+                                                                     Date createdDate, boolean isActive) {
         // Create an Equipment object with the provided parameters
         Equipment equipment = new Equipment(
                 id,

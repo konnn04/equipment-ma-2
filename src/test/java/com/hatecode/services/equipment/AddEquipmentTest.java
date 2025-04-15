@@ -13,11 +13,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.CsvSource;
+import utils.TestDBUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +31,8 @@ public class AddEquipmentTest {
 
     @BeforeAll
     static void setupDatabase() throws SQLException {
-        conn = JdbcUtils.getConn();
+        JdbcUtils.connectionProvider = TestDBUtils::getConnection;
+        conn = TestDBUtils.getConnection();
     }
 
     @BeforeEach
@@ -149,12 +152,12 @@ public class AddEquipmentTest {
 
         try{
             if (imageId != -1) {
-                boolean result = equipmentService.addEquipment(e, new Image(1, "test.jpg", LocalDateTime.now(), "path/to/image"));
+                boolean result = equipmentService.addEquipment(e, new Image(1, "test.jpg", new Date(), "path/to/image"));
                 assertTrue(result, "Adding equipment should return " + true);
             }
             else
 //                reference to imageId is not found
-                assertThrows(SQLException.class,() -> equipmentService.addEquipment(e, new Image(-1, "not found", LocalDateTime.now(), "not found")), "Adding equipment with null fields should throw SQLIntegrityConstraintViolationException");
+                assertThrows(SQLException.class,() -> equipmentService.addEquipment(e, new Image(-1, "not found", new Date(), "not found")), "Adding equipment with null fields should throw SQLIntegrityConstraintViolationException");
 
         } catch (Exception ex){
             ex.printStackTrace();

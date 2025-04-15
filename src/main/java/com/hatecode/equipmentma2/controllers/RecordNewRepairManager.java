@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 public class    RecordNewRepairManager {
@@ -169,11 +170,11 @@ public class    RecordNewRepairManager {
         User technician = userService.getUserById(e.getTechnicianId());
         this.EquipmentMaintenanceTechnician.setText(String.valueOf(technician.getLastName() + " " + technician.getFirstName()));
         // Xử lý java.sql.Date
-        LocalDateTime sqlDate = e.getInspectionDate();
+        Date sqlDate = e.getInspectionDate();
         if (sqlDate != null) {
-            // Chuyển đổi java.sql.Timestamp ->  LocalDateTime
-            LocalDate localDateTime = sqlDate.toLocalDate();
-            this.inspectionDate.setValue(localDateTime);
+            // Chuyển đổi java.util.Date -> LocalDate
+            LocalDate localDate = sqlDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            this.inspectionDate.setValue(localDate);
         } else {
             this.inspectionDate.setValue(null); // hoặc set ngày mặc định nếu cần
         }
@@ -203,10 +204,8 @@ public class    RecordNewRepairManager {
         // Cập nhật ngày kiểm tra
         if (inspectionDate.getValue() != null) {
             LocalDate localDate = inspectionDate.getValue();
-            Instant instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
-            currentEquipmentMaintenance.setInspectionDate(
-                    LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
-            );
+            Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            currentEquipmentMaintenance.setInspectionDate(date);
         } else {
             currentEquipmentMaintenance.setInspectionDate(null);
         }

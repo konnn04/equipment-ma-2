@@ -10,4 +10,5 @@ public interface MaintenanceRepairSuggestionService {
     boolean addMaintenanceType(MaintenanceRepairSuggestion maintenanceRepairSuggestion) throws SQLException;
     boolean updateMaintenanceType(MaintenanceRepairSuggestion maintenanceRepairSuggestion) throws SQLException;
     boolean deleteMaintenanceType(int id) throws SQLException;
+    boolean hardDeleteMaintenanceType(int id) throws SQLException;
 }

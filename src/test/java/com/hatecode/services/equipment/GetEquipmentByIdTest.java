@@ -8,6 +8,7 @@ import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import utils.TestDBUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,7 +22,8 @@ public class GetEquipmentByIdTest {
 
     @BeforeAll
     static void setupDatabase() throws SQLException {
-        conn = JdbcUtils.getConn();
+        JdbcUtils.connectionProvider = TestDBUtils::getConnection;
+        conn = TestDBUtils.getConnection();
     }
 
     @BeforeEach

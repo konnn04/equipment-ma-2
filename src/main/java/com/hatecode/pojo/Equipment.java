@@ -4,8 +4,7 @@
  */
 package com.hatecode.pojo;
 
-import java.time.LocalDateTime;
-
+import java.util.Date;
 /**
  * @author ADMIN
  */
@@ -15,10 +14,10 @@ public class Equipment {
     private String name;
     private Status status;
     private int categoryId;
-    private LocalDateTime createdDate;
+    private Date createdAt;
     private int imageId;
     private int regularMaintenanceDay;
-    private LocalDateTime lastMaintenanceTime;
+    private Date lastMaintenanceTime;
     private String description;
     private boolean isActive;
 
@@ -64,10 +63,10 @@ public class Equipment {
             String name,
             Status status,
             int categoryId,
-            LocalDateTime createdDate,
+            Date createdAt,
             int imageId,
             int regularMaintenanceDay,
-            LocalDateTime lastMaintenanceTime,
+            Date lastMaintenanceTime,
             String description,
             boolean isActive) {
         this.id = id;
@@ -75,7 +74,7 @@ public class Equipment {
         this.name = name;
         this.status = status;
         this.categoryId = categoryId;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
         this.imageId = imageId;
         this.regularMaintenanceDay = regularMaintenanceDay;
         this.lastMaintenanceTime = lastMaintenanceTime;
@@ -111,12 +110,12 @@ public class Equipment {
         this.status = status;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public Date getcreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
+    public void setcreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public int getRegularMaintenanceDay() {
@@ -127,11 +126,11 @@ public class Equipment {
         this.regularMaintenanceDay = regularMaintenanceDay;
     }
 
-    public LocalDateTime getLastMaintenanceTime() {
+    public Date getLastMaintenanceTime() {
         return lastMaintenanceTime;
     }
 
-    public void setLastMaintenanceTime(LocalDateTime lastMaintenanceTime) {
+    public void setLastMaintenanceTime(Date lastMaintenanceTime) {
         this.lastMaintenanceTime = lastMaintenanceTime;
     }
 

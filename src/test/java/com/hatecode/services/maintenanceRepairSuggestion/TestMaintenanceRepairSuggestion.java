@@ -11,11 +11,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import utils.TestDBUtils;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public class TestMaintenanceRepairSuggestion {
@@ -24,7 +27,8 @@ public class TestMaintenanceRepairSuggestion {
 
     @BeforeAll
     static void setupDatabase() throws SQLException {
-        conn = JdbcUtils.getConn();
+        JdbcUtils.connectionProvider = TestDBUtils::getConnection;
+        conn = TestDBUtils.getConnection();
     }
 
     @BeforeEach
@@ -59,7 +63,7 @@ public class TestMaintenanceRepairSuggestion {
                 assertEquals(name, maintenanceRepairSuggestion.getName());
                 assertEquals(description, maintenanceRepairSuggestion.getDescription());
                 assertEquals(suggestPrice, maintenanceRepairSuggestion.getSuggestPrice());
-                assertEquals(createdDate, maintenanceRepairSuggestion.getCreatedDate());
+                assertEquals(createdDate, maintenanceRepairSuggestion.getcreatedAt());
             }
         }
     }
@@ -75,7 +79,7 @@ public class TestMaintenanceRepairSuggestion {
         assertEquals(name, maintenanceRepairSuggestion.getName());
         assertEquals(description, maintenanceRepairSuggestion.getDescription());
         assertEquals(suggestPrice, maintenanceRepairSuggestion.getSuggestPrice());
-        assertEquals(createdDate, maintenanceRepairSuggestion.getCreatedDate());
+        assertEquals(createdDate, maintenanceRepairSuggestion.getcreatedAt());
     }
 
     @ParameterizedTest
@@ -91,7 +95,7 @@ public class TestMaintenanceRepairSuggestion {
     @ParameterizedTest
     @CsvSource({"Oil Change,Recommended every 3 months for optimal performance.,49.99,2024-03-10T10:15:00"})
     public void testAddMaintenanceRepairSuggestion(String name, String description,
-                                                   float suggestPrice, LocalDateTime createdDate) throws SQLException {
+                                                   float suggestPrice, Date createdDate) throws SQLException {
 
         MaintenanceRepairSuggestion maintenanceRepairSuggestion = new MaintenanceRepairSuggestion(
                 name,
@@ -108,7 +112,7 @@ public class TestMaintenanceRepairSuggestion {
     @ParameterizedTest
     @CsvSource({"Oil Change,Recommended every 3 months for optimal performance.,-49.99,2024-03-10T10:15:00"})
     public void testAddMaintenanceRepairSuggestionWithNegativePrice(String name, String description,
-                                                   float suggestPrice, LocalDateTime createdDate) throws SQLException {
+                                                   float suggestPrice, Date createdDate) throws SQLException {
 
         MaintenanceRepairSuggestion maintenanceRepairSuggestion = new MaintenanceRepairSuggestion(
                 name,
@@ -124,7 +128,7 @@ public class TestMaintenanceRepairSuggestion {
     @ParameterizedTest
     @CsvSource({"1,Thay động cơ,Thay động cơ cho máy khoan,1500000,2025-04-13T10:18:00"})
     public void testUpdateMaintenanceRepairSuggestion(int id, String name, String description,
-                                                      float suggestPrice, LocalDateTime createdDate) throws SQLException {
+                                                      float suggestPrice, Date createdDate) throws SQLException {
 
         MaintenanceRepairSuggestion maintenanceRepairSuggestion = new MaintenanceRepairSuggestion(
                 id,
@@ -142,7 +146,7 @@ public class TestMaintenanceRepairSuggestion {
     @ParameterizedTest
     @CsvSource({"-1,Thay động cơ,Thay động cơ cho máy khoan,1500000,2025-04-13T10:18:00"})
     public void testUpdateMaintenanceRepairSuggestionWithNotFound(int id, String name, String description,
-                                                      float suggestPrice, LocalDateTime createdDate) throws SQLException {
+                                                      float suggestPrice, Date createdDate) throws SQLException {
 
         MaintenanceRepairSuggestion maintenanceRepairSuggestion = new MaintenanceRepairSuggestion(
                 id,

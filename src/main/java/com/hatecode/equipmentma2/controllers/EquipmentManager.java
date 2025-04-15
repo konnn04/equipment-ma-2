@@ -23,6 +23,7 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -223,7 +224,8 @@ public class EquipmentManager {
                 categoryService.getCategoryById(selectedEquipment.getCategoryId()));
         statusEquipmentText.setText(selectedEquipment.getStatus().getDescription());
         equipmentDescriptionTextField.setText(selectedEquipment.getDescription());
-        lastMaintenanceDateTextField.setText(selectedEquipment.getLastMaintenanceTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        lastMaintenanceDateTextField.setText(dateFormat.format(selectedEquipment.getLastMaintenanceTime()));
         regularMaintenanceTimeTextField.setText(selectedEquipment.getRegularMaintenanceDay() + "");
 
         Image image = imageService.getImageById(selectedEquipment.getImageId());
@@ -440,9 +442,9 @@ public class EquipmentManager {
                 if (value < 0) {
                     regularMaintenanceTimeTextField.setText("0");
                 }
-                if (selectedEquipment != null) {
-                    nextMaintenanceDatePicker.setValue(selectedEquipment.getLastMaintenanceTime().plusDays(value).toLocalDate());
-                }
+//                if (selectedEquipment != null) {
+//                    nextMaintenanceDatePicker.setValue(selectedEquipment.getLastMaintenanceTime());
+//                }
             } catch (NumberFormatException e) {
                 regularMaintenanceTimeTextField.setText("0");
             }

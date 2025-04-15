@@ -85,7 +85,10 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
 
             setMaintenanceTypeStatementParameters(pstmt, maintenanceRepairSuggestion, true, 1);
 
-            return pstmt.executeUpdate() > 0;
+            if (pstmt.executeUpdate() > 0)
+                return true;
+            else
+                throw new SQLException("An unexpected error occurred while updating the database");
         }
         catch (SQLException e) {
             throw e;
@@ -96,6 +99,26 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
 
     @Override
     public boolean deleteMaintenanceType(int id) throws SQLException {
+        String sql = "UPDATE Maintenance_Repair_Suggestion SET is_active = false WHERE id = ?";
+
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+
+            if (pstmt.executeUpdate() > 0)
+                return true;
+            else
+                throw new SQLException("An unexpected error occurred while updating the database");
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
+        }
+    }
+
+    @Override
+    public boolean hardDeleteMaintenanceType(int id) throws SQLException {
         String sql = "DELETE FROM Maintenance_Repair_Suggestion WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
@@ -103,7 +126,10 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
 
             pstmt.setInt(1, id);
 
-            return pstmt.executeUpdate() > 0;
+            if (pstmt.executeUpdate() > 0)
+                return true;
+            else
+                throw new SQLException("An unexpected error occurred while updating the database");
         } catch (SQLException e) {
             throw e;
         } catch (Exception e) {
@@ -120,7 +146,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
      * @return A MaintenanceRepairSuggestion object populated with the data from the ResultSet
      * @throws SQLException If there's an error accessing the ResultSet
      */
-    private MaintenanceRepairSuggestion extractMaintenanceTypeFromResultSet(ResultSet resultSet) throws SQLException {
+    private static MaintenanceRepairSuggestion extractMaintenanceTypeFromResultSet(ResultSet resultSet) throws SQLException {
         MaintenanceRepairSuggestion maintenanceType = new MaintenanceRepairSuggestion();
         maintenanceType.setId(resultSet.getInt("id"));
         maintenanceType.setName(resultSet.getString("name"));
@@ -129,7 +155,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
 
         Timestamp timestamp = resultSet.getTimestamp("created_date");
         if (timestamp != null) {
-            maintenanceType.setCreatedDate(timestamp.toLocalDateTime());
+            maintenanceType.setcreatedAt(timestamp);
         }
 
         return maintenanceType;
@@ -145,7 +171,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
      * @return The next parameter index after the ones set by this method
      * @throws SQLException If there's an error setting the parameters
      */
-    private int setMaintenanceTypeStatementParameters(
+    private static int setMaintenanceTypeStatementParameters(
             PreparedStatement preparedStatement,
             MaintenanceRepairSuggestion maintenanceType,
             boolean includeId,
@@ -157,13 +183,6 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
         preparedStatement.setString(paramIndex++, maintenanceType.getName());
         preparedStatement.setString(paramIndex++, maintenanceType.getDescription());
         preparedStatement.setFloat(paramIndex++, maintenanceType.getSuggestPrice());
-
-//        // Handle created date - if null, use current timestamp
-//        if (maintenanceType.getCreatedDate() != null) {
-//            preparedStatement.setTimestamp(paramIndex++, Timestamp.valueOf(maintenanceType.getCreatedDate()));
-//        } else {
-//            preparedStatement.setTimestamp(paramIndex++, Timestamp.valueOf(LocalDateTime.now()));
-//        }
 
         // If including ID (for updates), add it as the last parameter
         if (includeId) {

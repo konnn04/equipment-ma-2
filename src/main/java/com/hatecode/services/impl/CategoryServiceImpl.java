@@ -37,7 +37,8 @@ public class CategoryServiceImpl implements CategoryService {
                 Category c = new Category(
                         rs.getInt("id"),
                         rs.getString("name"),
-                        rs.getBoolean("is_active")
+                        rs.getBoolean("is_active"),
+                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at"): null
                 );
                 res.add(c);
             }
@@ -56,7 +57,8 @@ public class CategoryServiceImpl implements CategoryService {
                 Category c = new Category(
                         rs.getInt("id"),
                         rs.getString("name"),
-                        rs.getBoolean("is_active")
+                        rs.getBoolean("is_active"),
+                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at"): null
                 );
                 return c;
             }
@@ -81,10 +83,10 @@ public class CategoryServiceImpl implements CategoryService {
                         rs.getString("name"),
                         Status.fromId(rs.getInt("status")),
                         rs.getInt("category"),
-                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
+                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at") : null,
                         rs.getInt("image"),
                         rs.getInt("regular_maintenance_day"),
-                        rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,
+                        rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time") : null,
                         rs.getString("description"),
                         rs.getBoolean("is_active")
                 );
