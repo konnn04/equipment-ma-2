@@ -38,8 +38,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                         Result.fromCode(rs.getInt("result")),
                         rs.getString("repair_name"),
                         rs.getFloat("repair_price"),
-                        rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
-                        rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null
+                        rs.getTimestamp("inspection_date"),
+                        rs.getTimestamp("created_date")
                 );
                 res.add(em);
             }
@@ -66,8 +66,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                         Result.fromCode(rs.getInt("result")),
                         rs.getString("repair_name"),
                         rs.getFloat("repair_price"),
-                        rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
-                        rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null
+                        rs.getTimestamp("inspection_date"),
+                        rs.getTimestamp("created_date")
                 );
                 res.add(em);
             }
@@ -98,10 +98,10 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                         rs.getString("name"),
                         Status.fromId(rs.getInt("status")),
                         rs.getInt("category"),
-                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
+                        rs.getTimestamp("created_at"),
                         rs.getInt("image"),
                         rs.getInt("regular_maintenance_day"),
-                        rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,
+                        rs.getTimestamp("last_maintenance_time"),
                         rs.getString("description"),
                         rs.getBoolean("is_active")
                 );
@@ -124,7 +124,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             stm.setString(6, em.getRepairName());
             stm.setFloat(7, em.getRepairPrice());
             if (em.getInspectionDate() != null) {
-                stm.setTimestamp(8, Timestamp.valueOf(em.getInspectionDate()));
+                stm.setTimestamp(8, (Timestamp) em.getInspectionDate());
             } else {
                 stm.setNull(8, Types.TIMESTAMP);
             }
@@ -149,7 +149,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             stm.setString(6, em.getRepairName());
             stm.setFloat(7, em.getRepairPrice());
             if (em.getInspectionDate() != null) {
-                stm.setTimestamp(8, Timestamp.valueOf(em.getInspectionDate()));
+                stm.setTimestamp(8, (Timestamp) em.getInspectionDate());
             } else {
                 stm.setNull(8, Types.TIMESTAMP);
             }
@@ -214,8 +214,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                         Result.fromCode(rs.getInt("result")),
                         rs.getString("repair_name"),
                         rs.getFloat("repair_price"),
-                        rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
-                        rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null
+                        rs.getTimestamp("inspection_date"),
+                        rs.getTimestamp("created_date")
                 );
 
                 maintainanceEquipments.add(maintainanceEquipment);

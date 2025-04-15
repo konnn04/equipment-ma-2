@@ -223,7 +223,7 @@ public class EquipmentManager {
                 categoryService.getCategoryById(selectedEquipment.getCategoryId()));
         statusEquipmentText.setText(selectedEquipment.getStatus().getDescription());
         equipmentDescriptionTextField.setText(selectedEquipment.getDescription());
-        lastMaintenanceDateTextField.setText(selectedEquipment.getLastMaintenanceTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        lastMaintenanceDateTextField.setText(selectedEquipment.getLastMaintenanceTime().toString());
         regularMaintenanceTimeTextField.setText(selectedEquipment.getRegularMaintenanceDay() + "");
 
         Image image = imageService.getImageById(selectedEquipment.getImageId());
@@ -441,7 +441,7 @@ public class EquipmentManager {
                     regularMaintenanceTimeTextField.setText("0");
                 }
                 if (selectedEquipment != null) {
-                    nextMaintenanceDatePicker.setValue(selectedEquipment.getLastMaintenanceTime().plusDays(value).toLocalDate());
+//                    nextMaintenanceDatePicker.setValue(selectedEquipment.getLastMaintenanceTime().plusDays(value).toLocalDate());
                 }
             } catch (NumberFormatException e) {
                 regularMaintenanceTimeTextField.setText("0");

@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public class UserManager {
@@ -392,7 +393,7 @@ public class UserManager {
                 String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
                 avatar = new com.hatecode.pojo.Image(
                         fileName,
-                        LocalDateTime.now(),
+                        new Date(),
                         imgUrl
                 );
             }

@@ -1,14 +1,14 @@
 package com.hatecode.pojo;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class Maintenance {
     private int id;
     private String title;
     private String description;
-    private LocalDateTime startDateTime;
-    private LocalDateTime endDateTime;
-    private LocalDateTime createdDate;
+    private Date startDateTime;
+    private Date endDateTime;
+    private Date createdDate;
 
     public Maintenance() {
         super();
@@ -17,9 +17,9 @@ public class Maintenance {
             int id,
             String title,
             String description,
-            LocalDateTime startDatetime,
-            LocalDateTime endDatetime,
-            LocalDateTime createdDate) {
+            Date startDatetime,
+            Date endDatetime,
+            Date createdDate) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -52,27 +52,27 @@ public class Maintenance {
         this.description = description;
     }
 
-    public LocalDateTime getStartDateTime() {
+    public Date getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(LocalDateTime startDateTime) {
+    public void setStartDateTime(Date startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public LocalDateTime getEndDateTime() {
+    public Date getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(LocalDateTime endDateTime) {
+    public void setEndDateTime(Date endDateTime) {
         this.endDateTime = endDateTime;
     }
 
-    public LocalDateTime getCreatedDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
+    public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 }

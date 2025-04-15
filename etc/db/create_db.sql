@@ -2,16 +2,15 @@ USE equipmentma2;
 
 CREATE TABLE IF NOT EXISTS `Equipment` (
 	`id` int AUTO_INCREMENT NOT NULL UNIQUE,
-	`code` varchar(20) NOT NULL,
+	`code` varchar(20) NOT NULL UNIQUE,
 	`name` nvarchar(255) NOT NULL,
 	`status` int NOT NULL,
-	`category` int NOT NULL,
-	`created_date` timestamp NOT NULL default current_timestamp,
+	`category` int NOT NULL,	
     `image` int,
-    -- day unit
-    `regular_maintenance_day` int NOT NULL,
+    `regular_maintenance_day` int NOT NULL CHECK (regular_maintenance_day > 0),
     `last_maintenance_time` timestamp NOT NULL default current_timestamp,
     `description` text,
+    `created_at` timestamp NOT NULL default current_timestamp,
     `is_active` boolean NOT NULL DEFAULT '1',
 	PRIMARY KEY (`id`)
 );
@@ -20,6 +19,7 @@ CREATE TABLE IF NOT EXISTS `Category` (
 	`id` int AUTO_INCREMENT NOT NULL UNIQUE,
 	`name` nvarchar(50) NOT NULL UNIQUE,
     `is_active` boolean NOT NULL DEFAULT '1',
+    `created_at` timestamp NOT NULL default current_timestamp,
 	PRIMARY KEY (`id`)
 );
 
@@ -31,10 +31,10 @@ CREATE TABLE IF NOT EXISTS `User` (
 	`password` text NOT NULL,
 	`email` varchar(50) NOT NULL UNIQUE,
 	`phone` varchar(20) NOT NULL UNIQUE,
-	`role` int NOT NULL,
-	`is_active` boolean NOT NULL DEFAULT '1',
+	`role` int NOT NULL,	
     `avatar` int,
-    `created_date` timestamp NOT NULL default current_timestamp,
+    
+    `created_at` timestamp NOT NULL default current_timestamp,
 	PRIMARY KEY (`id`)
 );
 
@@ -44,7 +44,8 @@ CREATE TABLE IF NOT EXISTS `Maintenance` (
 	`description` text NOT NULL,
 	`start_datetime` timestamp NOT NULL,
 	`end_datetime` timestamp NOT NULL,
-    `created_date` timestamp NOT NULL default current_timestamp,
+    
+    `created_at` timestamp NOT NULL default current_timestamp,    
 	PRIMARY KEY (`id`)
 );
 
@@ -56,9 +57,10 @@ CREATE TABLE IF NOT EXISTS `Equipment_Maintenance` (
 	`description` text NOT NULL,
     `result` int,
 	`repair_name` nvarchar(255),
-	`repair_price` float,
+	`repair_price` int NOT NULL CHECK (repair_price > 0),
     `inspection_date` timestamp,
-    `created_date` timestamp NOT NULL default current_timestamp,    
+    `is_active` boolean NOT NULL DEFAULT '1',
+    `created_at` timestamp NOT NULL default current_timestamp,    
 	PRIMARY KEY (`id`)
 );
 
@@ -66,16 +68,18 @@ CREATE TABLE IF NOT EXISTS `Maintenance_Repair_Suggestion` (
 	`id` int AUTO_INCREMENT NOT NULL UNIQUE,
 	`name` varchar(255) NOT NULL,
 	`description` text NOT NULL,
-	`suggest_price` float NOT NULL,
-	`created_date` timestamp NOT NULL default current_timestamp,    
+	`suggest_price` float NOT NULL CHECK (suggest_price > 0),
+    `is_active` boolean NOT NULL DEFAULT '1',
+	`created_at` timestamp NOT NULL default current_timestamp,    
 	PRIMARY KEY (`id`)
 );
 
 CREATE TABLE IF NOT EXISTS `Image` (
 	`id` int AUTO_INCREMENT NOT NULL UNIQUE,
 	`filename` varchar(100) NOT NULL UNIQUE,
-	`created_date` timestamp NOT NULL default current_timestamp,    
-	`path` text NOT NULL,
+    `path` text NOT NULL,
+    `is_active` boolean NOT NULL DEFAULT '1',
+	`created_at` timestamp NOT NULL default current_timestamp,    	
 	PRIMARY KEY (`id`)
 );
 

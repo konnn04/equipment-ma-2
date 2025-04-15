@@ -24,9 +24,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getInt("id"),
                         rs.getString("title"),
                         rs.getString("description"),
-                        rs.getTimestamp("start_datetime").toLocalDateTime(),
-                        rs.getTimestamp("end_datetime").toLocalDateTime(),
-                        rs.getTimestamp("created_date").toLocalDateTime()
+                        rs.getTimestamp("start_datetime"),
+                        rs.getTimestamp("end_datetime"),
+                        rs.getTimestamp("created_date")
                 );
                 maintenances.add(maintenance);
             }
@@ -58,9 +58,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getInt("id"),
                         rs.getString("title"),
                         rs.getString("description"),
-                        rs.getTimestamp("start_datetime").toLocalDateTime(),
-                        rs.getTimestamp("end_datetime").toLocalDateTime(),
-                        rs.getTimestamp("created_date").toLocalDateTime()
+                        rs.getTimestamp("start_datetime"),
+                        rs.getTimestamp("end_datetime"),
+                        rs.getTimestamp("created_date")
                 );
                 res.add(maintenance);
             }
@@ -114,9 +114,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                             rs.getInt("id"),
                             rs.getString("title"),
                             rs.getString("description"),
-                            rs.getTimestamp("start_datetime").toLocalDateTime(),
-                            rs.getTimestamp("end_datetime").toLocalDateTime(),
-                            rs.getTimestamp("created_date").toLocalDateTime()
+                            rs.getTimestamp("start_datetime"),
+                            rs.getTimestamp("end_datetime"),
+                            rs.getTimestamp("created_date")
                     );
                     res.add(m);
                 }
@@ -143,9 +143,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         rs.getInt("id"),
                         rs.getString("title"),
                         rs.getString("description"),
-                        rs.getTimestamp("start_datetime").toLocalDateTime(),
-                        rs.getTimestamp("end_datetime").toLocalDateTime(),
-                        rs.getTimestamp("created_date").toLocalDateTime()
+                        rs.getTimestamp("start_datetime"),
+                        rs.getTimestamp("end_datetime"),
+                        rs.getTimestamp("created_date")
                 );
             }
         }
@@ -160,9 +160,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
-            stmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
-            stmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
-            return stmt.executeUpdate() > 0;
+            stmt.setTimestamp(3, (Timestamp)maintenance.getStartDateTime());
+            stmt.setTimestamp(4, (Timestamp) maintenance.getEndDateTime());
+        return stmt.executeUpdate() > 0;
         }
     }
 
@@ -175,8 +175,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
-            stmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
-            stmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
+            stmt.setTimestamp(3, (Timestamp)maintenance.getStartDateTime());
+            stmt.setTimestamp(4, (Timestamp) maintenance.getEndDateTime());
             stmt.setInt(5, maintenance.getId());
 
             return stmt.executeUpdate() > 0;

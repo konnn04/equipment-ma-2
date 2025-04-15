@@ -4,7 +4,7 @@
  */
 package com.hatecode.pojo;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  *
@@ -19,8 +19,8 @@ public class EquipmentMaintenance {
     private Result result;
     private String repairName;
     private float repairPrice;
-    private LocalDateTime inspectionDate;
-    private LocalDateTime createdDate;
+    private Date inspectionDate;
+    private Date createdDate;
 
     public EquipmentMaintenance() {
     }
@@ -34,8 +34,8 @@ public class EquipmentMaintenance {
             Result result,
             String repairName,
             float repairPrice,
-            LocalDateTime inspectionDate,
-            LocalDateTime createdDate) {
+            Date inspectionDate,
+            Date createdDate) {
         this.id = id;
         this.equipmentId = equipmentId;
         this.maintenanceId = maintenanceId;
@@ -48,19 +48,19 @@ public class EquipmentMaintenance {
         this.createdDate = createdDate;
     }
 
-    public LocalDateTime getCreatedDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
+    public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
-    public LocalDateTime getInspectionDate() {
+    public Date getInspectionDate() {
         return inspectionDate;
     }
 
-    public void setInspectionDate(LocalDateTime inspectionDate) {
+    public void setInspectionDate(Date inspectionDate) {
         this.inspectionDate = inspectionDate;
     }
 

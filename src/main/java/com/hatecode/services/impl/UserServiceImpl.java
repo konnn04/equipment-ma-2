@@ -141,6 +141,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean addUser(User user) throws SQLException {
+
         Connection conn = null;
         try {
             conn = JdbcUtils.getConn();
@@ -153,7 +154,7 @@ public class UserServiceImpl implements UserService {
                 String sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, image.getFilename());
-                    pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
+                    pstmt.setTimestamp(2, (Timestamp)image.getCreateDate());
                     pstmt.setString(3, image.getPath());
 
                     pstmt.executeUpdate();
@@ -241,7 +242,7 @@ public class UserServiceImpl implements UserService {
 
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, newImage.getFilename());
-                    pstmt.setTimestamp(2, Timestamp.valueOf(newImage.getCreateDate()));
+                    pstmt.setTimestamp(2, (Timestamp)newImage.getCreateDate());
                     pstmt.setString(3, newImage.getPath());
                     if (newImage.getId() != 0) {
                         pstmt.setInt(4, newImage.getId());

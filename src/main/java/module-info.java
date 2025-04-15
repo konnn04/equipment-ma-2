@@ -11,12 +11,9 @@ module com.hatecode.equipmentma2 {
     requires jakarta.mail;
 
     requires java.desktop;
-//    requires java.persistence;
-
-//    requires dotenv.java;
     requires mysql.connector.j;
-    requires dotenv.java;
-
+    requires io.github.cdimascio.dotenv.java;
+    requires java.persistence;
 
     opens com.hatecode.equipmentma2 to javafx.fxml;
     exports com.hatecode.equipmentma2;

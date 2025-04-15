@@ -22,7 +22,7 @@ public class ImageServiceImpl implements ImageService {
                 Image image = new Image(
                         rs.getInt("id"),
                         rs.getString("filename"),
-                        rs.getTimestamp("create_date").toLocalDateTime(),
+                        rs.getTimestamp("create_date"),
                         rs.getString("path")
                 );
                 images.add(image);
@@ -47,7 +47,7 @@ public class ImageServiceImpl implements ImageService {
                 image = new Image(
                         rs.getInt("id"),
                         rs.getString("filename"),
-                        rs.getTimestamp("created_date").toLocalDateTime(),
+                        rs.getTimestamp("created_date"),
                         rs.getString("path")
                 );
             }
@@ -64,7 +64,7 @@ public class ImageServiceImpl implements ImageService {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
-            pstmt.setTimestamp(2, Timestamp.    valueOf(image.getCreateDate()));
+            pstmt.setTimestamp(2, (Timestamp) (image.getCreateDate()));
             pstmt.setString(3, image.getPath());
 
             return pstmt.executeUpdate() > 0;
@@ -80,7 +80,7 @@ public class ImageServiceImpl implements ImageService {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
-            pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
+            pstmt.setTimestamp(2, (Timestamp) (image.getCreateDate()));
             pstmt.setString(3, image.getPath());
             pstmt.setInt(4, image.getId());
 

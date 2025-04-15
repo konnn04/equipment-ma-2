@@ -24,7 +24,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
                         rs.getString("name"),
                         rs.getString("description"),
                         rs.getFloat("suggest_price"),
-                        rs.getTimestamp("created_date").toLocalDateTime()
+                        rs.getTimestamp("created_date")
                 );
                 maintenanceRepairSuggestions.add(maintenanceRepairSuggestion);
             }
@@ -50,7 +50,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
                         rs.getString("name"),
                         rs.getString("description"),
                         rs.getFloat("suggest_price"),
-                        rs.getTimestamp("created_date").toLocalDateTime()
+                        rs.getTimestamp("created_date")
                 );
             }
         }

@@ -10,7 +10,7 @@ INSERT INTO Category (name) VALUES
 ('Furniture'),
 ('Tools');
 
-INSERT INTO User (first_name, last_name, username, password, email, phone, role, avatar) VALUES
+INSERT INTO User (first_name, last_name, username, password, email, phone, role, avatar_id) VALUES
 ('Nguyen', 'Van A', 'admin', '1', 'admin1@example.com', '1234567890', 1, 1),  -- ADMIN
 ('Tran', 'Thi B', 'technician1', '1', 'tech1@example.com', '0987654321', 2, 1),  -- TECHNICIAN
 ('Le', 'Van C', 'manager1', '1', 'manager1@example.com', '1122334455', 3, 1),  -- MANAGER
@@ -22,27 +22,27 @@ INSERT INTO User (first_name, last_name, username, password, email, phone, role,
 ('Ngo', 'Van I', 'technician4', '1', 'tech4@example.com', '7788990011', 2, 1),  -- TECHNICIAN
 ('Do', 'Thi K', 'admin3', '1', 'admin3@example.com', '8899001122', 1, 1);  -- ADMIN
 
-INSERT INTO Equipment (code, name, status, category, regular_maintenance_day, last_maintenance_time, description, image) VALUES
+INSERT INTO Equipment (code, name, status, category_id, regular_maintenance_day, last_maintenance_time, description, image_id) VALUES
 ('ELEC001', 'Laptop', 2, 1, 180, CURRENT_TIMESTAMP, 'Máy tính xách tay văn phòng', 1),  -- ACTIVE
 ('MACH001', 'Máy khoan', 3, 2, 90, CURRENT_TIMESTAMP, 'Máy khoan công nghiệp', 1),  -- UNDER_MAINTENANCE
 ('VEH001', 'Xe tải', 4, 3, 365, CURRENT_TIMESTAMP, 'Xe tải giao hàng', 1),  -- BROKEN
-('FURN001', 'Ghế văn phòng', 2, 4, 0, CURRENT_TIMESTAMP, 'Ghế công thái học', 1),  -- ACTIVE
-('TOOL001', 'Bộ tua vít', 1, 5, 0, CURRENT_TIMESTAMP, 'Bộ dụng cụ cơ bản', 1),  -- INACTIVE
+('FURN001', 'Ghế văn phòng', 2, 4, 30, CURRENT_TIMESTAMP, 'Ghế công thái học', 1),  -- ACTIVE
+('TOOL001', 'Bộ tua vít', 1, 5, 30, CURRENT_TIMESTAMP, 'Bộ dụng cụ cơ bản', 1),  -- INACTIVE
 ('ELEC002', 'Máy chiếu', 2, 1, 180, CURRENT_TIMESTAMP, 'Máy chiếu phòng họp', 1),  -- ACTIVE
 ('MACH002', 'Máy tiện', 2, 2, 90, CURRENT_TIMESTAMP, 'Máy tiện gia công kim loại', 1),  -- ACTIVE
 ('VEH002', 'Xe nâng', 3, 3, 180, CURRENT_TIMESTAMP, 'Xe nâng kho hàng', 1),  -- UNDER_MAINTENANCE
-('FURN002', 'Bàn làm việc', 2, 4, 0, CURRENT_TIMESTAMP, 'Bàn văn phòng', 1),  -- ACTIVE
-('TOOL002', 'Bộ cờ lê', 2, 5, 0, CURRENT_TIMESTAMP, 'Cờ lê điều chỉnh', 1),  -- ACTIVE
+('FURN002', 'Bàn làm việc', 2, 4, 30, CURRENT_TIMESTAMP, 'Bàn văn phòng', 1),  -- ACTIVE
+('TOOL002', 'Bộ cờ lê', 2, 5, 30, CURRENT_TIMESTAMP, 'Cờ lê điều chỉnh', 1),  -- ACTIVE
 ('ELEC003', 'Máy in', 2, 1, 90, CURRENT_TIMESTAMP, 'Máy in văn phòng', 1),  -- ACTIVE
 ('MACH003', 'Máy CNC', 3, 2, 180, CURRENT_TIMESTAMP, 'Máy gia công chính xác', 1),  -- UNDER_MAINTENANCE
 ('VEH003', 'Xe máy', 2, 3, 180, CURRENT_TIMESTAMP, 'Xe máy giao hàng', 1),  -- ACTIVE
-('FURN003', 'Bàn họp', 2, 4, 0, CURRENT_TIMESTAMP, 'Bàn họp lớn', 1),  -- ACTIVE
+('FURN003', 'Bàn họp', 2, 4, 330, CURRENT_TIMESTAMP, 'Bàn họp lớn', 1),  -- ACTIVE
 ('TOOL003', 'Máy khoan cầm tay', 2, 5, 90, CURRENT_TIMESTAMP, 'Máy khoan không dây', 1),  -- ACTIVE
 ('ELEC004', 'Màn hình', 4, 1, 180, CURRENT_TIMESTAMP, 'Màn hình máy tính', 1),  -- BROKEN
 ('MACH004', 'Máy hàn', 2, 2, 90, CURRENT_TIMESTAMP, 'Máy hàn công nghiệp', 1),  -- ACTIVE
 ('VEH004', 'Xe ô tô', 5, 3, 365, CURRENT_TIMESTAMP, 'Xe công ty cũ', 1),  -- LIQUIDATED
-('FURN004', 'Tủ hồ sơ', 2, 4, 0, CURRENT_TIMESTAMP, 'Tủ đựng tài liệu', 1),  -- ACTIVE
-('TOOL004', 'Búa', 2, 5, 0, CURRENT_TIMESTAMP, 'Búa tay', 1);  -- ACTIVE
+('FURN004', 'Tủ hồ sơ', 2, 4, 330, CURRENT_TIMESTAMP, 'Tủ đựng tài liệu', 1),  -- ACTIVE
+('TOOL004', 'Búa', 2, 5, 330, CURRENT_TIMESTAMP, 'Búa tay', 1);  -- ACTIVE
 
 INSERT INTO Maintenance (title, description, start_datetime, end_datetime) VALUES
 ('Kiểm tra điện tử hàng quý', 'Kiểm tra tất cả thiết bị điện tử', '2023-10-01 09:00:00', '2023-10-01 17:00:00'),
