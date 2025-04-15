@@ -1,0 +1,4 @@
+code,name,status,categoryId,imageId,regularMaintenanceDay,description
+null,Welding Machine,2,2,2,60,Main welding unit
+EQP-003,null,3,3,3,90,Backup power supply
+EQP-004,Hydraulic Lift,-1,4,4,45,For vehicle maintenance

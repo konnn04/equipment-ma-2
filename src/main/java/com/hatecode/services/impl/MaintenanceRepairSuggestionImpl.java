@@ -28,9 +28,14 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
                 );
                 maintenanceRepairSuggestions.add(maintenanceRepairSuggestion);
             }
+
+            return maintenanceRepairSuggestions;
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
 
-        return maintenanceRepairSuggestions;
     }
 
     @Override
@@ -38,12 +43,9 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
         MaintenanceRepairSuggestion maintenanceRepairSuggestion = null;
         String sql = "SELECT * FROM Maintenance_Repair_Suggestion WHERE id = ?";
 
-        try (Connection conn = JdbcUtils.getConn();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
-
             if (rs.next()) {
                 maintenanceRepairSuggestion = new MaintenanceRepairSuggestion(
                         rs.getInt("id"),
@@ -53,13 +55,20 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
                         rs.getTimestamp("created_date").toLocalDateTime()
                 );
             }
+            return maintenanceRepairSuggestion;
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
-
-        return maintenanceRepairSuggestion;
     }
 
     @Override
     public boolean addMaintenanceType(MaintenanceRepairSuggestion maintenanceRepairSuggestion) throws SQLException {
+        if (maintenanceRepairSuggestion.getSuggestPrice() < 0) {
+            throw new SQLException("Suggested price cannot be negative");
+        }
+        
         String sql = "INSERT INTO Maintenance_Repair_Suggestion (name, description, suggest_price) VALUES (?, ?, ?)";
 
         try (Connection conn = JdbcUtils.getConn();
@@ -70,11 +79,19 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
             pstmt.setFloat(3, maintenanceRepairSuggestion.getSuggestPrice());
 
             return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
     }
 
     @Override
     public boolean updateMaintenanceType(MaintenanceRepairSuggestion maintenanceRepairSuggestion) throws SQLException {
+        if (maintenanceRepairSuggestion.getSuggestPrice() < 0) {
+            throw new SQLException("Suggested price cannot be negative");
+        }
+        
         String sql = "UPDATE Maintenance_Repair_Suggestion SET name = ?, description = ?, suggest_price = ? WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
@@ -86,6 +103,11 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
             pstmt.setInt(4, maintenanceRepairSuggestion.getId());
 
             return pstmt.executeUpdate() > 0;
+        }
+        catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
     }
 
@@ -99,6 +121,10 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
             pstmt.setInt(1, id);
 
             return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
     }
 }

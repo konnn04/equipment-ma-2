@@ -18,20 +18,22 @@ public class EquipmentServiceImpl implements EquipmentService {
      */
     @Override
     public Equipment getEquipmentById(int id) throws SQLException {
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT * FROM equipment e " +
-                    "LEFT JOIN Category c ON e.category = c.id " +
-                    "WHERE e.id = ?";
+        String sql = "SELECT * FROM equipment e " +
+                "LEFT JOIN Category c ON e.category = c.id " +
+                "WHERE e.id = ?";
 
-            try (PreparedStatement stm = conn.prepareStatement(sql)) {
-                stm.setInt(1, id);
-                try (ResultSet rs = stm.executeQuery()) {
-                    if (rs.next()) {
-                        return extractEquipmentFromResultSet(rs);
-                    }
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
+            stm.setInt(1, id);
+            try (ResultSet rs = stm.executeQuery()) {
+                if (rs.next()) {
+                    return extractEquipmentFromResultSet(rs);
                 }
             }
             return null;
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get equipment by ID: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
     }
 
@@ -41,17 +43,21 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public List<Equipment> getEquipments() throws SQLException {
         List<Equipment> equipments = new ArrayList<>();
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT e.* FROM equipment e";
-            try (PreparedStatement stm = conn.prepareStatement(sql);
-                 ResultSet rs = stm.executeQuery()) {
+        String sql = "SELECT e.* FROM equipment e";
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stm = conn.prepareStatement(sql);
+             ResultSet rs = stm.executeQuery()) {
 
-                while (rs.next()) {
-                    equipments.add(extractFullEquipmentFromResultSet(rs));
-                }
+            while (rs.next()) {
+                equipments.add(extractFullEquipmentFromResultSet(rs));
             }
+
+            return equipments;
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get all equipments: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
-        return equipments;
     }
 
     /**
@@ -100,8 +106,12 @@ public class EquipmentServiceImpl implements EquipmentService {
                     }
                 }
             }
+            return equipments;
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get equipments: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
-        return equipments;
     }
 
     /**
@@ -120,8 +130,12 @@ public class EquipmentServiceImpl implements EquipmentService {
                     }
                 }
             }
+            return maintenanceList;
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get equipment maintenance history: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
-        return maintenanceList;
     }
 
     /**
@@ -129,6 +143,11 @@ public class EquipmentServiceImpl implements EquipmentService {
      */
     @Override
     public boolean addEquipment(Equipment e) throws SQLException {
+        // Validate regularMaintenanceDay
+        if (e.getRegularMaintenanceDay() <= 0) {
+            throw new SQLException("Regular maintenance day must be greater than zero");
+        }
+        
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "INSERT INTO Equipment (code, name, status, category, regular_maintenance_day, description, image) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -138,6 +157,10 @@ public class EquipmentServiceImpl implements EquipmentService {
 
                 return stm.executeUpdate() > 0;
             }
+        } catch (SQLException ex) {
+            throw new SQLException("Failed to add equipment: " + ex.getMessage(), ex);
+        } catch (Exception ex) {
+            throw new SQLException("An unexpected error occurred while accessing the database", ex);
         }
     }
 
@@ -146,6 +169,10 @@ public class EquipmentServiceImpl implements EquipmentService {
      */
     @Override
     public boolean addEquipment(Equipment equipment, Image image) throws SQLException {
+        if (equipment.getRegularMaintenanceDay() <= 0) {
+            throw new SQLException("Regular maintenance day must be greater than zero");
+        }
+        
         Connection conn = null;
         boolean success = false;
 
@@ -199,16 +226,24 @@ public class EquipmentServiceImpl implements EquipmentService {
      */
     @Override
     public boolean updateEquipment(Equipment e) throws SQLException {
+        if (e.getRegularMaintenanceDay() <= 0) {
+            throw new SQLException("Regular maintenance day must be greater than zero");
+        }
+        
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "UPDATE equipment SET code = ?, name = ?, status = ?, category = ?, " +
-                    "regular_maintenance_day = ?, last_maintenance_time = ?, description = ? WHERE id = ?";
+                    "regular_maintenance_day = ?, description = ?, last_maintenance_time = ?  WHERE id = ?";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 setEquipmentStatementParameters(stm, e);
-                stm.setTimestamp(6, Timestamp.valueOf(e.getLastMaintenanceTime()));
+                stm.setTimestamp(7, Timestamp.valueOf(e.getLastMaintenanceTime()));
                 stm.setInt(8, e.getId());
 
                 return stm.executeUpdate() > 0;
             }
+        } catch (SQLException ex) {
+            throw new SQLException("Failed to update equipment: " + ex.getMessage(), ex);
+        } catch (Exception ex) {
+            throw new SQLException("An unexpected error occurred while accessing the database", ex);
         }
     }
 
@@ -217,6 +252,10 @@ public class EquipmentServiceImpl implements EquipmentService {
      */
     @Override
     public boolean updateEquipment(Equipment equipment, Image image) throws SQLException {
+        if (equipment.getRegularMaintenanceDay() <= 0) {
+            throw new SQLException("Regular maintenance day must be greater than zero");
+        }
+        
         Connection conn = null;
         boolean success = false;
 
@@ -229,10 +268,10 @@ public class EquipmentServiceImpl implements EquipmentService {
 
             // Cập nhật thiết bị với tham chiếu đến hình ảnh mới
             String sql = "UPDATE equipment SET code = ?, name = ?, status = ?, category = ?, " +
-                    "regular_maintenance_day = ?, last_maintenance_time = ?, description = ?, image = ? WHERE id = ?";
+                    "regular_maintenance_day = ?, description = ?, last_maintenance_time = ?, image = ? WHERE id = ?";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 setEquipmentStatementParameters(stm, equipment);
-                stm.setTimestamp(6, Timestamp.valueOf(equipment.getLastMaintenanceTime()));
+                stm.setTimestamp(7, Timestamp.valueOf(equipment.getLastMaintenanceTime()));
                 stm.setInt(8, image.getId());
                 stm.setInt(9, equipment.getId());
 
@@ -271,12 +310,15 @@ public class EquipmentServiceImpl implements EquipmentService {
      */
     @Override
     public boolean deleteEquipment(int id) throws SQLException {
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "DELETE FROM equipment WHERE id = ?";
-            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+        String sql = "DELETE FROM equipment WHERE id = ?";
+
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setInt(1, id);
                 return stm.executeUpdate() > 0;
-            }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to delete equipment: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
     }
 
@@ -286,21 +328,26 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public List<Object> getDistinctValues(String columnName) throws SQLException {
         List<Object> distinctValues = new ArrayList<>();
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT DISTINCT " + columnName + " FROM equipment";
-            try (PreparedStatement stm = conn.prepareStatement(sql);
-                 ResultSet rs = stm.executeQuery()) {
+        String sql = "SELECT DISTINCT " + columnName + " FROM equipment";
 
-                while (rs.next()) {
-                    if (columnName.equals("status") || columnName.equals("category")) {
-                        distinctValues.add(rs.getInt(columnName));
-                    } else {
-                        distinctValues.add(rs.getString(columnName));
-                    }
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stm = conn.prepareStatement(sql);
+             ResultSet rs = stm.executeQuery()) {
+
+            while (rs.next()) {
+                if (columnName.equals("status") || columnName.equals("category")) {
+                    distinctValues.add(rs.getInt(columnName));
+                } else {
+                    distinctValues.add(rs.getString(columnName));
                 }
             }
+
+            return distinctValues;
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get distinct values: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
-        return distinctValues;
     }
 
     /**

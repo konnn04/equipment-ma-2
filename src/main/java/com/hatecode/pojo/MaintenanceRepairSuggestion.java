@@ -25,6 +25,17 @@ public class MaintenanceRepairSuggestion {
         this.createdDate = createdDate;
     }
 
+    public MaintenanceRepairSuggestion(
+            String name,
+            String description,
+            float suggestPrice,
+            LocalDateTime createdDate) {
+        this.name = name;
+        this.description = description;
+        this.suggestPrice = suggestPrice;
+        this.createdDate = createdDate;
+    }
+
     // Getters and Setters
     public int getId() {
         return id;
