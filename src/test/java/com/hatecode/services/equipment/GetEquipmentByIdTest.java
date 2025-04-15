@@ -5,9 +5,7 @@ import com.hatecode.pojo.Status;
 import com.hatecode.services.impl.EquipmentServiceImpl;
 import com.hatecode.services.interfaces.EquipmentService;
 import com.hatecode.utils.JdbcUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
@@ -18,18 +16,31 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GetEquipmentByIdTest {
-    static Connection conn = null;
-    EquipmentService equipmentService = new EquipmentServiceImpl();
+    static Connection conn;
+    EquipmentService equipmentService;
 
     @BeforeAll
-    public static void setUp() throws SQLException {
+    static void setupDatabase() throws SQLException {
         conn = JdbcUtils.getConn();
+    }
+
+    @BeforeEach
+    void setupTestData() throws SQLException {
+        equipmentService = new EquipmentServiceImpl();
         conn.setAutoCommit(false);
     }
 
-    @AfterAll
-    public static void tearDown() throws SQLException {
+    @AfterEach
+    void clearTestChanges() throws SQLException {
+        conn.rollback();
         conn.setAutoCommit(true);
+    }
+
+    @AfterAll
+    static void shutdownDatabase() throws SQLException {
+        if (conn != null) {
+            conn.close();
+        }
     }
 
     @Test

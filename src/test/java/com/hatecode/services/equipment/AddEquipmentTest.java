@@ -7,7 +7,9 @@ import com.hatecode.services.impl.EquipmentServiceImpl;
 import com.hatecode.services.interfaces.EquipmentService;
 import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -21,24 +23,31 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AddEquipmentTest {
-    static Connection conn = null;
-    EquipmentService equipmentService = new EquipmentServiceImpl();
+
+    static Connection conn;
+    EquipmentService equipmentService;
 
     @BeforeAll
-    public static void setUp() throws SQLException {
+    static void setupDatabase() throws SQLException {
         conn = JdbcUtils.getConn();
+    }
+
+    @BeforeEach
+    void setupTestData() throws SQLException {
+        equipmentService = new EquipmentServiceImpl();
         conn.setAutoCommit(false);
     }
 
+    @AfterEach
+    void clearTestChanges() throws SQLException {
+        conn.rollback();
+        conn.setAutoCommit(true);
+    }
+
     @AfterAll
-    public static void tearDown() throws SQLException {
+    static void shutdownDatabase() throws SQLException {
         if (conn != null) {
-            try {
-                conn.rollback();  // Roll back any pending changes
-            } finally {
-                conn.setAutoCommit(true);
-                conn.close();     // Close the connection
-            }
+            conn.close();
         }
     }
 
