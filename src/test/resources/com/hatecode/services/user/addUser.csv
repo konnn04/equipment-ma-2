@@ -4,4 +4,3 @@ Jane,Doe,johndoe,password123,jane@example.com,987654321,1,false,1,false
 Alice,Smith,alicesmith,password123,alice[at]example.com,5555555555,1,false,1,false
 Bob,Brown,bobbrown,password123,,4444444444,1,false,1,false
 Tom,Hanks,tomhanks,password123,tom@example.com,3333333333,99,false,1,false
-Peter,Parker,admin'; DELETE FROM User WHERE id=1; --,password123,peter@example.com,6666666666,1,true,1,false

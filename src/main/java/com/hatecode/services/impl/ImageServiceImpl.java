@@ -9,6 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageServiceImpl implements ImageService {
+    
+    public static Image extractImage(ResultSet rs) throws SQLException{
+        return new Image(
+                rs.getInt("id"),
+                rs.getString("filename"),
+                rs.getTimestamp("created_date").toLocalDateTime(),
+                rs.getString("path")
+        );
+    }
 
     @Override
     public List<Image> getImages() throws SQLException {
@@ -19,12 +28,7 @@ public class ImageServiceImpl implements ImageService {
             ResultSet rs = stm.executeQuery("SELECT * FROM Image");
 
             while (rs.next()) {
-                Image image = new Image(
-                        rs.getInt("id"),
-                        rs.getString("filename"),
-                        rs.getTimestamp("create_date").toLocalDateTime(),
-                        rs.getString("path")
-                );
+                Image image = extractImage(rs);
                 images.add(image);
             }
         }
@@ -37,19 +41,12 @@ public class ImageServiceImpl implements ImageService {
         Image image = null;
         String sql = "SELECT * FROM Image WHERE id = ?";
 
-        try (Connection conn = JdbcUtils.getConn();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                image = new Image(
-                        rs.getInt("id"),
-                        rs.getString("filename"),
-                        rs.getTimestamp("created_date").toLocalDateTime(),
-                        rs.getString("path")
-                );
+                image = extractImage(rs);
             }
         }
 
@@ -60,24 +57,24 @@ public class ImageServiceImpl implements ImageService {
     public boolean addImage(Image image) throws SQLException {
         String sql = "INSERT INTO Image (filename, created_date, path) VALUES (?, ?, ?)";
 
-        try (Connection conn = JdbcUtils.getConn();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
-            pstmt.setTimestamp(2, Timestamp.    valueOf(image.getCreateDate()));
+            pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
             pstmt.setString(3, image.getPath());
 
             return pstmt.executeUpdate() > 0;
         }
     }
 
-
     @Override
     public boolean updateImage(Image image) throws SQLException {
+        if (image.getFilename() == null || image.getCreateDate() == null || image.getPath() == null)
+            throw new IllegalArgumentException("Image fields must not be null.");
+
         String sql = "UPDATE Image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
 
-        try (Connection conn = JdbcUtils.getConn();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
             pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
@@ -90,14 +87,34 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean deleteImage(int id) throws SQLException {
+        if (id <= 0) throw new IllegalArgumentException("ID must be positive");
         String sql = "DELETE FROM Image WHERE id = ?";
 
-        try (Connection conn = JdbcUtils.getConn();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
 
             return pstmt.executeUpdate() > 0;
         }
     }
+
+    @Override
+    public Image getImageByPath(String path) throws SQLException {
+        String sql = "SELECT * FROM image WHERE path = ?";
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
+            stm.setString(1, path);
+            try (ResultSet rs = stm.executeQuery()) {
+                if (rs.next()) {
+                    Image img = new Image();
+                    img.setId(rs.getInt("id"));
+                    img.setFilename(rs.getString("filename"));
+                    img.setCreateDate(rs.getTimestamp("created_date").toLocalDateTime());
+                    img.setPath(rs.getString("path"));
+                    return img;
+                }
+            }
+        }
+        return null;
+    }
+
 }

@@ -1,0 +1,6 @@
+userID,firstName,lastName,username,password,email,phone,roleId,isActive,expectedOutput
+1,John,Doe,johndoe,123456,john.doe@example.com,0909123456,1,true,true
+9999,Ghost,User,ghost,abc123,ghost@example.com,0999999999,2,true,false
+1,,Doe,johndoe,123456,john.doe@example.com,0909123456,1,true,false
+2,Tony,Stark,johndoe, 123456,new@example.com,0908888888,1,true,false
+1,John,Doe,johndoe,123456,john.doe@example.com,0909123456,99,true,false

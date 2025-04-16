@@ -20,6 +20,21 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
 
     EquipmentService es = new EquipmentServiceImpl();
 
+    public static EquipmentMaintenance extractEquipmentMaintenance(ResultSet rs) throws SQLException {
+        return new EquipmentMaintenance(
+                rs.getInt("id"),
+                rs.getInt("equipment_id"),
+                rs.getInt("maintenance_id"),
+                rs.getInt("technician_id"),
+                rs.getString("description"),
+                Result.fromCode(rs.getInt("result")),
+                rs.getString("repair_name"),
+                rs.getFloat("repair_price"),
+                rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
+                rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null
+        );
+    }
+
     @Override
     public List<EquipmentMaintenance> getEquipmentMaintenance() throws SQLException {
         List<EquipmentMaintenance> res = new ArrayList<>();
@@ -29,18 +44,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                EquipmentMaintenance em = new EquipmentMaintenance(
-                        rs.getInt("id"),
-                        rs.getInt("equipment_id"),
-                        rs.getInt("maintenance_id"),
-                        rs.getInt("technician_id"),
-                        rs.getString("description"),
-                        Result.fromCode(rs.getInt("result")),
-                        rs.getString("repair_name"),
-                        rs.getFloat("repair_price"),
-                        rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
-                        rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null
-                );
+                EquipmentMaintenance em = extractEquipmentMaintenance(rs);
                 res.add(em);
             }
         }
@@ -57,18 +61,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                EquipmentMaintenance em = new EquipmentMaintenance(
-                        rs.getInt("id"),
-                        rs.getInt("equipment_id"),
-                        rs.getInt("maintenance_id"),
-                        rs.getInt("technician_id"),
-                        rs.getString("description"),
-                        Result.fromCode(rs.getInt("result")),
-                        rs.getString("repair_name"),
-                        rs.getFloat("repair_price"),
-                        rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
-                        rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null
-                );
+                EquipmentMaintenance em = extractEquipmentMaintenance(rs);
                 res.add(em);
             }
         } catch (SQLException e) {
@@ -82,10 +75,10 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         Equipment equipment = null;
         try (Connection conn = JdbcUtils.getConn()) {
             // Truy vấn để lấy thông tin thiết bị dựa trên id của bản ghi bảo trì
-            String sql = "SELECT e.*, m.id AS maintenance_id " +
-                    "FROM equipment e " +
-                    "LEFT JOIN equipment_maintenance m ON e.id = m.equipment_id " +
-                    "WHERE m.id = ?";
+            String sql = "SELECT e.*, m.id AS maintenance_id "
+                    + "FROM equipment e "
+                    + "LEFT JOIN equipment_maintenance m ON e.id = m.equipment_id "
+                    + "WHERE m.id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setInt(1, id); // Thiết lập giá trị tham số cho id của bản ghi bảo trì
             ResultSet rs = stm.executeQuery();
@@ -113,8 +106,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
     @Override
     public boolean addEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result, repair_name, repair_price, inspection_date)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result, repair_name, repair_price, inspection_date)"
+                    + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setInt(1, em.getEquipmentId());
             stm.setInt(2, em.getMaintenanceId());
@@ -137,9 +130,9 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
     @Override
     public boolean updateEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "UPDATE equipment_maintenance" +
-            " SET equipment_id = ?, maintenance_id = ?, technician_id = ?, description = ?, result = ?, repair_name = ?, repair_price = ?, inspection_date = ? " +
-            " WHERE id = ?";
+            String sql = "UPDATE equipment_maintenance"
+                    + " SET equipment_id = ?, maintenance_id = ?, technician_id = ?, description = ?, result = ?, repair_name = ?, repair_price = ?, inspection_date = ? "
+                    + " WHERE id = ?";
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setInt(1, em.getEquipmentId());
             stm.setInt(2, em.getMaintenanceId());
@@ -173,11 +166,11 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         }
     }
 
-
     @Override
     public List<EquipmentMaintenance> getEquipmentsMaintenanceByEMId(String kw, int maintenanceId, int page, int pageSize) throws SQLException {
-        if (page < 1)
+        if (page < 1) {
             page = 1;
+        }
 
         List<EquipmentMaintenance> maintainanceEquipments = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
@@ -187,7 +180,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             if (kw != null && !kw.isEmpty()) {
                 sql += " AND (e.name LIKE ?)";
             }
-            sql +=  " LIMIT ?, ?";
+            sql += " LIMIT ?, ?";
 
             PreparedStatement stm = conn.prepareStatement(sql);
             stm.setInt(1, maintenanceId);
@@ -205,23 +198,11 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
 
             // Nếu có kết quả, tạo đối tượng Equipment từ dữ liệu trả về
             while (rs.next()) {
-                EquipmentMaintenance maintainanceEquipment = new EquipmentMaintenance(
-                        rs.getInt("id"),
-                        rs.getInt("equipment_id"),
-                        rs.getInt("maintenance_id"),
-                        rs.getInt("technician_id"),
-                        rs.getString("description"),
-                        Result.fromCode(rs.getInt("result")),
-                        rs.getString("repair_name"),
-                        rs.getFloat("repair_price"),
-                        rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
-                        rs.getTimestamp("created_date") != null ? rs.getTimestamp("created_date").toLocalDateTime() : null
-                );
-
+                EquipmentMaintenance maintainanceEquipment = extractEquipmentMaintenance(rs);
                 maintainanceEquipments.add(maintainanceEquipment);
             }
         }
-        System.out.println("E size:"+maintainanceEquipments.size());
+        System.out.println("E size:" + maintainanceEquipments.size());
         return maintainanceEquipments;
     }
 
