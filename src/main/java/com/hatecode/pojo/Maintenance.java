@@ -1,5 +1,6 @@
 package com.hatecode.pojo;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class Maintenance {
@@ -8,23 +9,27 @@ public class Maintenance {
     private String description;
     private Date startDateTime;
     private Date endDateTime;
+    private boolean isActive;
     private Date createdAt;
 
     public Maintenance() {
         super();
     }
+
     public Maintenance(
             int id,
             String title,
             String description,
-            Date startDatetime,
-            Date endDatetime,
-            Date createdAt) {
+            Timestamp startDatetime,
+            Timestamp endDatetime,
+            boolean isActive,
+            Timestamp createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.startDateTime = startDatetime;
         this.endDateTime = endDatetime;
+        this.isActive = isActive;
         this.createdAt = createdAt;
     }
 
@@ -75,4 +80,14 @@ public class Maintenance {
     public void setcreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+
 }

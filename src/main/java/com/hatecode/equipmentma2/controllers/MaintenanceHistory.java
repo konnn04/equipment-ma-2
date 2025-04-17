@@ -179,9 +179,9 @@ public class MaintenanceHistory {
     public void fetchEquipmentByEMId(int id, String kw) throws SQLException {
         List<EquipmentMaintenance> equipments;
         if (kw != null && !kw.isEmpty())
-            equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(kw, id, 1, PAGE_SIZE);
+            equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(kw, id);
         else
-            equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(null, id, 1, PAGE_SIZE);
+            equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(null, id);
 
         this.equipmentsTableViewTable.setItems(FXCollections.observableList(equipments));
     }

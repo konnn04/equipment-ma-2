@@ -4,6 +4,7 @@
  */
 package com.hatecode.pojo;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -21,6 +22,7 @@ public class EquipmentMaintenance {
     private float repairPrice;
     private Date inspectionDate;
     private Date createdAt;
+    private boolean isActive;
 
     public EquipmentMaintenance() {
     }
@@ -35,7 +37,8 @@ public class EquipmentMaintenance {
             String repairName,
             float repairPrice,
             Date inspectionDate,
-            Date createdAt) {
+            Date createdAt,
+            boolean isActive) {
         this.id = id;
         this.equipmentId = equipmentId;
         this.maintenanceId = maintenanceId;
@@ -46,6 +49,7 @@ public class EquipmentMaintenance {
         this.repairPrice = repairPrice;
         this.inspectionDate = inspectionDate;
         this.createdAt = createdAt;
+        this.isActive = isActive;
     }
 
     public Date getcreatedAt() {
@@ -126,5 +130,13 @@ public class EquipmentMaintenance {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

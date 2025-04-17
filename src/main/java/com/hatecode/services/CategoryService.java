@@ -24,4 +24,5 @@ public interface CategoryService {
     boolean addCategory(Category cate) throws SQLException;
     boolean updateCategory(Category cate) throws SQLException;
     boolean deleteCategory(int id) throws SQLException;
+    boolean deleteCategory(Category cate) throws SQLException;
 }

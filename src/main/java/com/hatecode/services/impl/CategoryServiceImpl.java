@@ -15,6 +15,23 @@ import java.util.List;
 
 
 public class CategoryServiceImpl implements CategoryService {
+    private final Connection externalConn;
+    private boolean isTestingConnect = false;
+
+    public CategoryServiceImpl() {
+        this.externalConn = null;
+    }
+
+    public CategoryServiceImpl(Connection conn) {
+        this.externalConn = conn;
+        this.isTestingConnect = true;
+    }
+
+    private Connection getConnection() throws SQLException {
+        if (externalConn != null) return externalConn;
+        return JdbcUtils.getConn();
+    }
+
     // Chuyển RS thành đối tượng Category
     public static Category extractCategory(ResultSet rs) throws SQLException {
         return new Category(
@@ -27,24 +44,29 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Category> getCategories() throws SQLException {
         List<Category> res = new ArrayList<>();
-        String sql = "SELECT * FROM category";
-        try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareStatement(sql);
-            try (ResultSet rs = stm.executeQuery()) {
-                while (rs.next()) {
-                    res.add(extractCategory(rs));
-                }
+        String sql = "SELECT * FROM category WHERE is_active=true";
+        Connection conn = getConnection();
+        try (PreparedStatement stm = conn.prepareStatement(sql);
+             ResultSet rs = stm.executeQuery()) {
+            while (rs.next()) {
+                res.add(extractCategory(rs));
             }
+        }
+        if (!isTestingConnect) {
+            conn.close();
         }
         return res;
     }
 
     @Override
     public List<Category> getCategories(String query) throws SQLException {
+        if (query == null || query.isEmpty()) {
+            query = "";
+        }
         List<Category> res = new ArrayList<>();
-        String sql = "SELECT * FROM category WHERE name LIKE ?";
-        try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareStatement(sql);
+        String sql = "SELECT * FROM category WHERE name LIKE ? AND is_active=true";
+        Connection conn = getConnection();
+        try (PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setString(1, "%" + query + "%");
             try (ResultSet rs = stm.executeQuery()) {
                 while (rs.next()) {
@@ -52,92 +74,120 @@ public class CategoryServiceImpl implements CategoryService {
                 }
             }
         }
+        if (!isTestingConnect) {
+            conn.close();
+        }
         return res;
     }
 
     @Override
     public Category getCategoryById(int id) throws SQLException {
-        String sql = "SELECT * FROM category WHERE id = ?";
-        try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareStatement(sql);
+        String sql = "SELECT * FROM category WHERE id = ? AND is_active=true";
+        Connection conn = getConnection();
+        try ( PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setInt(1, id);
             try (ResultSet rs = stm.executeQuery()) {
                 if (rs.next()) {
                     return extractCategory(rs);
                 }
             }
-            return null;
         }
+        if (!isTestingConnect) {
+            conn.close();
+        }
+        return null;
     }
 
     @Override
     public List<Equipment> getEquipmentByCategory(int id) throws SQLException {
         List<Equipment> res = new ArrayList<>();
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT * FROM equipment e " +
-                    "WHERE category = ?";
-            PreparedStatement stm = conn.prepareCall(sql);
+        Connection conn = getConnection();
+        String sql = "SELECT * FROM equipment e " +
+                "WHERE category_id = ? AND is_active=true";
+        try (PreparedStatement stm = conn.prepareCall(sql)) {
             stm.setInt(1, id);
             try (ResultSet rs = stm.executeQuery()) {
                 while (rs.next()) {
                     res.add(EquipmentServiceImpl.extractEquipment(rs));
                 }
             }
-            return res;
         }
+        if (!isTestingConnect) {
+            conn.close();
+        }
+        return res;
     }
 
     @Override
     public boolean addCategory(Category cate) throws SQLException {
-        // Kiểm tra danh mục không null và tên không rỗng
         if (cate == null || cate.getName() == null || cate.getName().isEmpty()) {
             throw new IllegalArgumentException("Category name cannot be null or empty");
         }
         // Tiến hành thêm vào CSDL
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "INSERT INTO category (name, is_active) VALUES (?, ?)";
-            PreparedStatement stm = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        Connection conn = getConnection();
+        String sql = "INSERT INTO category (name, is_active) VALUES (?, ?)";
+        int rowsAffected = 0;
+        try (PreparedStatement stm = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stm.setString(1, cate.getName());
             stm.setBoolean(2, cate.isActive());
-            int rowsAffected = stm.executeUpdate();
-            return rowsAffected > 0;
+            rowsAffected = stm.executeUpdate();
+            try (ResultSet rs = stm.getGeneratedKeys()) {
+                if (rs.next()) {
+                    cate.setId(rs.getInt(1));
+                }
+            }
         }
+        if (!isTestingConnect) {
+            conn.close();
+        }
+        return rowsAffected > 0;
     }
 
     @Override
     public boolean updateCategory(Category cate) throws SQLException {
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "UPDATE category SET name = ?, is_active = ? WHERE id = ?";
-            PreparedStatement stm = conn.prepareStatement(sql);
+        if (cate == null || cate.getName() == null || cate.getName().isEmpty()) {
+            throw new IllegalArgumentException("Category name cannot be null or empty");
+        }
+        Connection conn = getConnection();
+        String sql = "UPDATE category SET name = ?, is_active = ? WHERE id = ? AND is_active=true";
+        int rowsAffected = 0;
+        try (PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setString(1, cate.getName());
             stm.setBoolean(2, cate.isActive());
             stm.setInt(3, cate.getId());
-
-            int rowsAffected = stm.executeUpdate();
-            return rowsAffected > 0;
+            rowsAffected = stm.executeUpdate();
         }
+        if (!isTestingConnect) {
+            conn.close();
+        }
+        return rowsAffected > 0;
     }
+
+
 
     @Override
     public boolean deleteCategory(int id) throws SQLException {
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "UPDATE is_active = false WHERE id = ?";
-            PreparedStatement stm = conn.prepareStatement(sql);
+        String sql = "DELETE FROM category WHERE id = ? AND is_active=true";
+        Connection conn = getConnection();
+        int rowsAffected = 0;
+        try (PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setInt(1, id);
-            int rowsAffected = stm.executeUpdate();
-            return rowsAffected > 0;
+            rowsAffected = stm.executeUpdate();
         }
+        if (!isTestingConnect) {
+            conn.close();
+        }
+        return rowsAffected > 0;
     }
 
-//    @Override
-//    public boolean hardDeleteCategory(int id) throws SQLException {
-//        try (Connection conn = JdbcUtils.getConn()) {
-//            String sql = "DELETE FROM category WHERE id = ?";
-//            PreparedStatement stm = conn.prepareStatement(sql);
-//            stm.setInt(1, id);
-//            int rowsAffected = stm.executeUpdate();
-//            return rowsAffected > 0;
-//        }
-//    }
-
+    @Override
+    public boolean deleteCategory(Category cate) throws SQLException {
+        if (cate == null) {
+            throw new IllegalArgumentException("Category cannot be null");
+        }
+        if (cate.getId() <= 0) {
+            throw new IllegalArgumentException("Category ID must be greater than 0");
+        }
+        return this.deleteCategory(cate.getId());
+    }
 }

@@ -77,4 +77,8 @@ public class Category {
     public String toString() {
         return this.name;
     }
+
+    public void setId(int anInt) {
+        this.id = anInt;
+    }
 }

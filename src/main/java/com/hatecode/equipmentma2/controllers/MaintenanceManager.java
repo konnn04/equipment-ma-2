@@ -34,7 +34,7 @@ public class MaintenanceManager {
         maintenanceTable.setItems(FXCollections.observableList(maintenances));
         maintenanceQueryTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                List<Maintenance> filteredMaintenances = maintenanceService.getMaintenances(newValue, 0, 100, null, null);
+                List<Maintenance> filteredMaintenances = maintenanceService.getMaintenances(newValue);
                 maintenanceTable.setItems(FXCollections.observableList(filteredMaintenances));
             } catch (SQLException e) {
                 e.printStackTrace();

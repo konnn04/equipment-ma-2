@@ -1,5 +1,6 @@
 package com.hatecode.services.impl;
 
+import com.hatecode.pojo.Category;
 import com.hatecode.services.UserService;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.Maintenance;
@@ -10,188 +11,169 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MaintenanceServiceImpl implements MaintenanceService {
-    UserService us = new UserServiceImpl();
+    private final Connection externalConn;
+    private boolean isConnectTesting = false;
+    public MaintenanceServiceImpl() {
+        this.externalConn = null;
+    }
+
+    public MaintenanceServiceImpl(Connection conn) {
+        this.externalConn = conn;
+    }
+
+    private Connection getConnection() throws SQLException {
+        if (externalConn != null) return externalConn;
+        return JdbcUtils.getConn();
+    }
+
+    public static Maintenance extractMaintenance(ResultSet rs) throws SQLException {
+        return new Maintenance(
+                rs.getInt("id"),
+                rs.getString("title"),
+                rs.getString("description"),
+                rs.getTimestamp("start_datetime"),
+                rs.getTimestamp("end_datetime"),
+                rs.getBoolean("is_active"),
+                rs.getTimestamp("created_at")
+        );
+    }
+
+    private List<Maintenance> getMaintenances(String query, List<Maintenance> res, String sql) throws SQLException {
+        Connection conn = getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(sql);) {
+            stmt.setString(1, "%" + query + "%");
+            stmt.setString(2, "%" + query + "%");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                res.add(extractMaintenance(rs));
+            }
+        }
+        if (!isConnectTesting) {
+            conn.close();
+        }
+        return res;
+    }
 
     @Override
     public List<Maintenance> getMaintenances() throws SQLException {
         List<Maintenance> maintenances = new ArrayList<>();
-        try (Connection conn = JdbcUtils.getConn()) {
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM maintenance");
-
+        Connection conn = getConnection();
+        String sql = "SELECT * FROM maintenance where is_active=true";
+        try (Statement stm = conn.createStatement()) {
+            ResultSet rs = stm.executeQuery(sql);
             while (rs.next()) {
-                Maintenance maintenance = new Maintenance(
-                        rs.getInt("id"),
-                        rs.getString("title"),
-                        rs.getString("description"),
-                        rs.getTimestamp("start_datetime"),
-                        rs.getTimestamp("end_datetime"),
-                        rs.getTimestamp("created_at")
-                );
-                maintenances.add(maintenance);
+                maintenances.add(extractMaintenance(rs));
             }
+        }
+        if (!isConnectTesting) {
+            conn.close();
         }
         return maintenances;
     }
 
     @Override
-    public List<Maintenance> getMaintenances(String query, int page, int pageSize, String key, String value) throws SQLException {
-        /* Kiểm tra và xử lý các tham số đầu vào */
-        query = query.trim();
-        if (query == null || query.isEmpty()) query = "";
-        page = Math.max(1, page);
-        pageSize = Math.max(1, pageSize);
-        List<Maintenance> res = new ArrayList<>();
-
-        try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT * FROM maintenance  WHERE title LIKE ? OR description LIKE ? LIMIT ?, ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, "%" + query + "%");
-            stmt.setString(2, "%" + query + "%");
-            stmt.setInt(3, (page - 1) * pageSize);
-            stmt.setInt(4, pageSize);
-
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Maintenance maintenance = new Maintenance(
-                        rs.getInt("id"),
-                        rs.getString("title"),
-                        rs.getString("description"),
-                        rs.getTimestamp("start_datetime"),
-                        rs.getTimestamp("end_datetime"),
-                        rs.getTimestamp("created_at")
-                );
-                res.add(maintenance);
-            }
+    public List<Maintenance> getMaintenances(String query, String key, String value) throws SQLException {
+        if (query == null || query.isEmpty()) {
+            query = "";
         }
-        return res;
+        List<Maintenance> res = new ArrayList<>();
+        String sql = "SELECT * FROM maintenance  WHERE (title LIKE ? OR description LIKE ?) AND is_active=true";
+        if (key != null && value != null) {
+            sql += " AND " + key + " = " + value;
+        }
+        return getMaintenances(query, res, sql);
     }
-
 
     @Override
     public List<Maintenance> getMaintenances(String query) throws SQLException {
-        List<Maintenance> res = new ArrayList<>();
-
-        if (query == null) {
+        if (query == null || query.isEmpty()) {
             query = "";
         }
-
-        String sql = "SELECT * FROM maintenance WHERE 1=1";
-
-        if (!query.isEmpty()) {
-            sql += " AND (title LIKE CONCAT('%',?,'%') OR description LIKE CONCAT('%',?,'%')";
-
-            try {
-                Integer.parseInt(query);
-                sql += " OR id = ?";
-            } catch (NumberFormatException e) {
-                // Không làm gì nếu query không phải số
-            }
-            sql += ")";
-        }
-
-        try (Connection conn = JdbcUtils.getConn();
-             PreparedStatement stm = conn.prepareStatement(sql)) {
-
-            int paramIndex = 1;
-
-            if (!query.isEmpty()) {
-                stm.setString(paramIndex++, query);
-                stm.setString(paramIndex++, query);
-
-                try {
-                    int id = Integer.parseInt(query);
-                    stm.setInt(paramIndex++, id);
-                } catch (NumberFormatException e) {
-                    // Bỏ qua nếu query không phải số
-                }
-            }
-
-            try (ResultSet rs = stm.executeQuery()) {
-                while (rs.next()) {
-                    Maintenance m = new Maintenance(
-                            rs.getInt("id"),
-                            rs.getString("title"),
-                            rs.getString("description"),
-                            rs.getTimestamp("start_datetime"),
-                            rs.getTimestamp("end_datetime"),
-                            rs.getTimestamp("created_at")
-                    );
-                    res.add(m);
-                }
-            }
-        }
-        return res;
+        List<Maintenance> res = new ArrayList<>();
+        String sql = "SELECT * FROM maintenance WHERE title LIKE ? OR description LIKE ? AND is_active=true";
+        return getMaintenances(query, res, sql);
     }
-
-
 
     @Override
     public Maintenance getMantenanceById(int id) throws SQLException {
         Maintenance maintenance = null;
-        String sql = "SELECT * FROM Maintenance WHERE id = ?";
-
-        try (Connection conn = JdbcUtils.getConn();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        String sql = "SELECT * FROM Maintenance WHERE id = ? AND is_active=true";
+        Connection conn = getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
-
             if (rs.next()) {
-                maintenance = new Maintenance(
-                        rs.getInt("id"),
-                        rs.getString("title"),
-                        rs.getString("description"),
-                        rs.getTimestamp("start_datetime"),
-                        rs.getTimestamp("end_datetime"),
-                        rs.getTimestamp("created_at")
-                );
+                maintenance = extractMaintenance(rs);
             }
         }
-
+        if (!isConnectTesting) {
+            conn.close();
+        }
         return maintenance;
     }
 
     @Override
     public boolean addMantenance(Maintenance maintenance) throws SQLException {
-        String sql = "INSERT INTO Maintenance (title, description, start_datetime, end_datetime) VALUES (?, ?, ? ,?)";
-        try (Connection conn = JdbcUtils.getConn();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, maintenance.getTitle());
-            stmt.setString(2, maintenance.getDescription());
-            stmt.setTimestamp(3, (Timestamp)maintenance.getStartDateTime());
-            stmt.setTimestamp(4, (Timestamp) maintenance.getEndDateTime());
-        return stmt.executeUpdate() > 0;
+        if (maintenance == null) {
+            return false;
         }
-    }
-
-    @Override
-    public boolean updateMantenance(Maintenance maintenance) throws SQLException {
-        String sql = "UPDATE Maintenance SET title = ?, description = ?, start_datetime = ?, end_datetime = ? WHERE id = ?";
-
-        try (Connection conn = JdbcUtils.getConn();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        if (maintenance.getStartDateTime().after(maintenance.getEndDateTime())) {
+            throw new IllegalArgumentException("Start date cannot be after end date");
+        }
+        String sql = "INSERT INTO Maintenance (title, description, start_datetime, end_datetime) VALUES (?, ?, ? ,?)";
+        Connection conn = getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
-            stmt.setTimestamp(3, (Timestamp)maintenance.getStartDateTime());
+            stmt.setTimestamp(3, (Timestamp) maintenance.getStartDateTime());
             stmt.setTimestamp(4, (Timestamp) maintenance.getEndDateTime());
-            stmt.setInt(5, maintenance.getId());
-
+            if (!isConnectTesting) {
+                conn.close();
+            }
             return stmt.executeUpdate() > 0;
         }
     }
 
     @Override
-    public boolean deleteMantenance(int id) throws SQLException {
-        String sql = "DELETE FROM Maintenance WHERE id = ?";
-
+    public boolean updateMantenance(Maintenance maintenance) throws SQLException {
+        if (maintenance == null) {
+            return false;
+        }
+        if (maintenance.getStartDateTime().after(maintenance.getEndDateTime())) {
+            throw new IllegalArgumentException("Start date cannot be after end date");
+        }
+        String sql = "UPDATE Maintenance SET title = ?, description = ?, start_datetime = ?, end_datetime = ? WHERE id = ? AND is_active=true";
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maintenance.getTitle());
+            stmt.setString(2, maintenance.getDescription());
+            stmt.setTimestamp(3, (Timestamp)maintenance.getStartDateTime());
+            stmt.setTimestamp(4, (Timestamp) maintenance.getEndDateTime());
+            stmt.setInt(5, maintenance.getId());
+            if (!isConnectTesting) {
+                conn.close();
+            }
+            return stmt.executeUpdate() > 0;
+        }
+    }
 
+    @Override
+    public boolean deleteMantenance(Maintenance maintenance) throws SQLException {
+        if (maintenance == null || maintenance.getId() <= 0) {
+            return false;
+        }
+        return deleteMantenanceById(maintenance.getId());
+    }
+
+    @Override
+    public boolean deleteMantenanceById(int id) throws SQLException {
+        String sql = "UPDATE Maintenance SET is_active = false WHERE id = ? AND is_active=true";
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-
+            if (!isConnectTesting) {
+                conn.close();
+            }
             return stmt.executeUpdate() > 0;
         }
     }

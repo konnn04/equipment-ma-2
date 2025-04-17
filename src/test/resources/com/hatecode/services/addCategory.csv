@@ -1,6 +1,0 @@
-Name, is_active, expected
-"Test Category 1", true, true
-"Test Category 2", true, true
-"Test Category 3", true, true
-"Test Category 1", true, false
-"", false, false
