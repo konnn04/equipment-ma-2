@@ -127,8 +127,4 @@ public class UpdateEquipment {
 //                                                 LocalDateTime createdDate, boolean isActive){
 //
 //    }
-
-
-
-
 }
