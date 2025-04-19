@@ -1,13 +1,15 @@
 package com.hatecode.services;
 
 import com.hatecode.pojo.Maintenance;
+import com.hatecode.pojo.MaintenanceStatus;
+
 import java.sql.SQLException;
 import java.util.List;
 
 public interface MaintenanceService {
     List<Maintenance> getMaintenances() throws SQLException;
     List<Maintenance> getMaintenances(String query) throws SQLException;
-    List<Maintenance> getMaintenances(String query, String key, String value) throws SQLException;
+    List<Maintenance> getMaintenances(String query, MaintenanceStatus status)  throws SQLException;
     Maintenance getMantenanceById(int id) throws SQLException;
     boolean addMantenance(Maintenance maintenance) throws SQLException;
     boolean updateMantenance(Maintenance maintenance) throws SQLException;

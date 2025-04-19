@@ -1,16 +1,15 @@
 package com.hatecode.pojo;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Maintenance {
     private int id;
     private String title;
     private String description;
-    private Date startDateTime;
-    private Date endDateTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
     private boolean isActive;
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     public Maintenance() {
         super();
@@ -20,10 +19,10 @@ public class Maintenance {
             int id,
             String title,
             String description,
-            Timestamp startDatetime,
-            Timestamp endDatetime,
+            LocalDateTime startDatetime,
+            LocalDateTime endDatetime,
             boolean isActive,
-            Timestamp createdAt) {
+            LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -31,6 +30,17 @@ public class Maintenance {
         this.endDateTime = endDatetime;
         this.isActive = isActive;
         this.createdAt = createdAt;
+    }
+
+    public Maintenance(
+            String title,
+            String description,
+            LocalDateTime startDatetime,
+            LocalDateTime endDatetime) {
+        this.title = title;
+        this.description = description;
+        this.startDateTime = startDatetime;
+        this.endDateTime = endDatetime;
     }
 
     public int getId() {
@@ -57,27 +67,27 @@ public class Maintenance {
         this.description = description;
     }
 
-    public Date getStartDateTime() {
+    public LocalDateTime getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(Date startDateTime) {
+    public void setStartDateTime(LocalDateTime startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public Date getEndDateTime() {
+    public LocalDateTime getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(Date endDateTime) {
+    public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 
-    public Date getcreatedAt() {
+    public LocalDateTime getcreatedAt() {
         return createdAt;
     }
 
-    public void setcreatedAt(Date createdAt) {
+    public void setcreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

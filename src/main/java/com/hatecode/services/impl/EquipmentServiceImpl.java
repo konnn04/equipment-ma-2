@@ -220,7 +220,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                     "regular_maintenance_day = ?, last_maintenance_time = ?, description = ? WHERE id = ?";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 setEquipmentStatementParameters(stm, e);
-                stm.setTimestamp(6, (Timestamp) e.getLastMaintenanceTime());
+                stm.setTimestamp(6, Timestamp.valueOf(e.getLastMaintenanceTime()) );
                 stm.setInt(8, e.getId());
 
                 return stm.executeUpdate() > 0;
@@ -248,7 +248,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                     "regular_maintenance_day = ?, last_maintenance_time = ?, description = ?, image_id = ? WHERE id = ?";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 setEquipmentStatementParameters(stm, equipment);
-                stm.setTimestamp(6, (Timestamp) equipment.getLastMaintenanceTime());
+                stm.setTimestamp(6,  Timestamp.valueOf(equipment.getLastMaintenanceTime()) );
                 stm.setInt(8, image.getId());
                 stm.setInt(9, equipment.getId());
 
@@ -357,10 +357,10 @@ public class EquipmentServiceImpl implements EquipmentService {
                 rs.getString("name"),
                 Status.fromId(rs.getInt("status")),
                 rs.getInt("category"),
-                rs.getTimestamp("created_at"),
+                rs.getTimestamp("created_at").toLocalDateTime(),
                 rs.getInt("image"),
                 rs.getInt("regular_maintenance_day"),
-                rs.getTimestamp("last_maintenance_time"),
+                rs.getTimestamp("last_maintenance_time").toLocalDateTime(),
                 rs.getString("description"),
                 rs.getBoolean("is_active")
         );

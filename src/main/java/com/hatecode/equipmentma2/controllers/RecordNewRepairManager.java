@@ -169,10 +169,10 @@ public class    RecordNewRepairManager {
         this.equipmentID.setText(String.valueOf(e.getEquipmentId()));
         User technician = userService.getUserById(e.getTechnicianId());
         this.EquipmentMaintenanceTechnician.setText(String.valueOf(technician.getLastName() + " " + technician.getFirstName()));
-        // Xử lý java.sql.Date
-        Date sqlDate = e.getInspectionDate();
-        if (sqlDate != null) {
-            this.inspectionDate.setValue(LocalDate.parse(sqlDate.toString()));
+        // Xử lý
+        LocalDateTime localDateTime = e.getInspectionDate();
+        if (localDateTime != null) {
+            this.inspectionDate.setValue(LocalDate.from(localDateTime));
         } else {
             this.inspectionDate.setValue(null); // hoặc set ngày mặc định nếu cần
         }

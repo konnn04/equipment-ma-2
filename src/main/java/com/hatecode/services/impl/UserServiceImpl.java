@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
         String sql = "SELECT u.*, i.* " +
                 "FROM user u " +
                 "JOIN image i " +
-                "ON u.avatar = i.id " +
+                "ON u.avatar_id = i.id " +
                 "WHERE u.id = ? ";
 
         try (Connection conn = JdbcUtils.getConn();
@@ -154,7 +154,7 @@ public class UserServiceImpl implements UserService {
                 String sqlImage = "INSERT INTO image (filename, created_at, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, image.getFilename());
-                    pstmt.setTimestamp(2, (Timestamp)image.getCreateDate());
+                    pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
                     pstmt.setString(3, image.getPath());
 
                     pstmt.executeUpdate();
@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
             }
 
             // 2. Thêm User
-            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar) " +
+            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar_id) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
                 pstmt.setString(1, user.getFirstName());
@@ -242,7 +242,7 @@ public class UserServiceImpl implements UserService {
 
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, newImage.getFilename());
-                    pstmt.setTimestamp(2, (Timestamp)newImage.getCreateDate());
+                    pstmt.setTimestamp(2, Timestamp.valueOf(newImage.getCreateDate()));
                     pstmt.setString(3, newImage.getPath());
                     if (newImage.getId() != 0) {
                         pstmt.setInt(4, newImage.getId());
@@ -260,7 +260,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
             String sql = "UPDATE User SET first_name = ?, last_name = ?,username = ?, password = ?, " +
-                    "email = ?, phone = ?, role = ?, is_active = ?, avatar = ? WHERE id = ?";
+                    "email = ?, phone = ?, role = ?, is_active = ?, avatar_id = ? WHERE id = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, user.getFirstName());
                 pstmt.setString(2, user.getLastName());
@@ -305,7 +305,7 @@ public class UserServiceImpl implements UserService {
     public User authenticateUser(String username, String password) throws SQLException {
         String sql ="SELECT u.*, i.id as avatarId, i.filename, i.created_at, i.path\n" +
                     "FROM User u\n" +
-                    "LEFT JOIN image i ON u.avatar = i.id\n" +
+                    "LEFT JOIN image i ON u.avatar_id = i.id\n" +
                     "WHERE username = ? and password = ?";
 
         try (Connection conn = JdbcUtils.getConn();

@@ -41,8 +41,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 Result.fromCode(rs.getInt("result")),
                 rs.getString("repair_name"),
                 rs.getFloat("repair_price"),
-                rs.getTimestamp("inspection_date"),
-                rs.getTimestamp("created_at"),
+                rs.getTimestamp("inspection_date").toLocalDateTime(),
+                rs.getTimestamp("created_at").toLocalDateTime(),
                 rs.getBoolean("is_active")
         );
     }
@@ -88,6 +88,9 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
 
     @Override
     public List<EquipmentMaintenance> getEquipmentMaintenance(Maintenance m) throws SQLException {
+        if (m == null || m.getId() <= 0) {
+            return getEquipmentMaintenance();
+        }
         List<EquipmentMaintenance> res = new ArrayList<>();
         String sql = "SELECT * FROM equipment_maintenance WHERE maintenance_id = ? AND is_active = true";
         Connection conn = getConnection();
@@ -106,9 +109,12 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
 
     @Override
     public Equipment getEquipmentByEquipmentMaintenance(int id) throws SQLException {
+        if (id <= 0) {
+            return null;
+        }
         Equipment equipment = null;
         try (Connection conn = getConnection()) {
-            String sql = "SELECT *, m.id AS maintenance_id " +
+            String sql = "SELECT *, m.id AS em_id " +
                     "FROM equipment e " +
                     "LEFT JOIN equipment_maintenance m ON e.id = m.equipment_id " +
                     "WHERE m.id = ? AND m.is_active = true";
@@ -136,7 +142,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             stm.setString(6, em.getRepairName());
             stm.setFloat(7, em.getRepairPrice());
             if (em.getInspectionDate() != null) {
-                stm.setTimestamp(8, (Timestamp) em.getInspectionDate());
+                stm.setTimestamp(8, Timestamp.valueOf(em.getInspectionDate()));
             } else {
                 stm.setNull(8, Types.TIMESTAMP);
             }
@@ -160,11 +166,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             stm.setInt(5, em.getResult().getCode());
             stm.setString(6, em.getRepairName());
             stm.setFloat(7, em.getRepairPrice());
-            if (em.getInspectionDate() != null) {
-                stm.setTimestamp(8, (Timestamp) em.getInspectionDate());
-            } else {
-                stm.setNull(8, Types.TIMESTAMP);
-            }
+            stm.setTimestamp(8, Timestamp.valueOf(em.getInspectionDate()));
             stm.setInt(9, em.getId());
             int rowsAffected = stm.executeUpdate();
             if (!isTestingConnect) {
@@ -205,7 +207,6 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         }
         return rowsAffected > 0;
     }
-
 
     @Override
     public List<EquipmentMaintenance> getEquipmentsMaintenanceByEMId(String kw, int maintenanceId) throws SQLException {

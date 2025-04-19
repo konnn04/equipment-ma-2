@@ -235,7 +235,7 @@ public class UserController implements Initializable {
                 String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
                 avatar = new com.hatecode.pojo.Image(
                         fileName,
-                        new Date(),
+                        LocalDateTime.now(),
                         imgUrl
                 );
             }
@@ -334,7 +334,7 @@ public class UserController implements Initializable {
                     }
                     currUserImg.setFilename(fileName);
                     currUserImg.setPath(imgUrl);
-                    currUserImg.setCreateDate(new Date());
+                    currUserImg.setCreateDate(LocalDateTime.now());
                 }
                 if (userService.updateUser(currentUser, currUserImg)) {
                     showInfoAlert("Thành công", "Cập nhật người dùng thành công");

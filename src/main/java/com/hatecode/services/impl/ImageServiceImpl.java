@@ -22,7 +22,7 @@ public class ImageServiceImpl implements ImageService {
                 Image image = new Image(
                         rs.getInt("id"),
                         rs.getString("filename"),
-                        rs.getTimestamp("create_date"),
+                        rs.getTimestamp("create_date").toLocalDateTime(),
                         rs.getString("path")
                 );
                 images.add(image);
@@ -47,7 +47,7 @@ public class ImageServiceImpl implements ImageService {
                 image = new Image(
                         rs.getInt("id"),
                         rs.getString("filename"),
-                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("created_at").toLocalDateTime(),
                         rs.getString("path")
                 );
             }
@@ -64,7 +64,7 @@ public class ImageServiceImpl implements ImageService {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
-            pstmt.setTimestamp(2, (Timestamp) (image.getCreateDate()));
+            pstmt.setTimestamp(2,Timestamp.valueOf(image.getCreateDate()));
             pstmt.setString(3, image.getPath());
 
             return pstmt.executeUpdate() > 0;
@@ -80,7 +80,7 @@ public class ImageServiceImpl implements ImageService {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
-            pstmt.setTimestamp(2, (Timestamp) (image.getCreateDate()));
+            pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
             pstmt.setString(3, image.getPath());
             pstmt.setInt(4, image.getId());
 
@@ -91,12 +91,9 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public boolean deleteImage(int id) throws SQLException {
         String sql = "DELETE FROM Image WHERE id = ?";
-
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, id);
-
             return pstmt.executeUpdate() > 0;
         }
     }

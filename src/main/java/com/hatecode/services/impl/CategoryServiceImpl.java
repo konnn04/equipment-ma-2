@@ -2,6 +2,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
+import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.CategoryService;
 
@@ -38,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
                 rs.getInt("id"),
                 rs.getString("name"),
                 rs.getBoolean("is_active"),
-                rs.getTimestamp("created_at")
+                rs.getTimestamp("created_at").toLocalDateTime()
         );
     }
     @Override
@@ -121,7 +122,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean addCategory(Category cate) throws SQLException {
         if (cate == null || cate.getName() == null || cate.getName().isEmpty()) {
-            throw new IllegalArgumentException("Category name cannot be null or empty");
+            throw new IllegalArgumentException(ExceptionMessage.CATEGORY_NAME_EMPTY);
         }
         // Tiến hành thêm vào CSDL
         Connection conn = getConnection();
@@ -136,6 +137,11 @@ public class CategoryServiceImpl implements CategoryService {
                     cate.setId(rs.getInt(1));
                 }
             }
+        } catch (Exception e) {
+            if (e.getMessage().contains("Unique index or primary key violation")) {
+                throw new SQLException(ExceptionMessage.CATEGORY_NAME_DUPLICATE);
+            }
+            throw e;
         }
         if (!isTestingConnect) {
             conn.close();
@@ -146,9 +152,21 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean updateCategory(Category cate) throws SQLException {
         if (cate == null || cate.getName() == null || cate.getName().isEmpty()) {
-            throw new IllegalArgumentException("Category name cannot be null or empty");
+            throw new IllegalArgumentException(ExceptionMessage.CATEGORY_NAME_EMPTY);
         }
         Connection conn = getConnection();
+        // Kiểm tra xem name của cate đã tồn tại trong CSDL hay chưa
+        String checkSql = "SELECT * FROM category WHERE name = ? AND is_active=true";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            checkStmt.setString(1, cate.getName());
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next()) {
+                    throw new SQLException(ExceptionMessage.CATEGORY_NAME_DUPLICATE);
+                }
+            }
+        }
+
+        // Tiến hành cập nhật vào CSDL
         String sql = "UPDATE category SET name = ?, is_active = ? WHERE id = ? AND is_active=true";
         int rowsAffected = 0;
         try (PreparedStatement stm = conn.prepareStatement(sql)) {
@@ -156,6 +174,11 @@ public class CategoryServiceImpl implements CategoryService {
             stm.setBoolean(2, cate.isActive());
             stm.setInt(3, cate.getId());
             rowsAffected = stm.executeUpdate();
+        } catch (SQLException e) {
+            if (e.getMessage().contains("Duplicate entry")) {
+                throw new SQLException(ExceptionMessage.CATEGORY_NAME_DUPLICATE);
+            }
+            throw e;
         }
         if (!isTestingConnect) {
             conn.close();
@@ -183,10 +206,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean deleteCategory(Category cate) throws SQLException {
         if (cate == null) {
-            throw new IllegalArgumentException("Category cannot be null");
+            throw new IllegalArgumentException(ExceptionMessage.CATEGORY_NULL);
         }
         if (cate.getId() <= 0) {
-            throw new IllegalArgumentException("Category ID must be greater than 0");
+            throw new IllegalArgumentException(ExceptionMessage.CATEGORY_ID_NULL);
         }
         return this.deleteCategory(cate.getId());
     }

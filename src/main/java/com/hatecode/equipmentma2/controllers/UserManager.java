@@ -393,7 +393,7 @@ public class UserManager {
                 String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
                 avatar = new com.hatecode.pojo.Image(
                         fileName,
-                        new Date(),
+                        LocalDateTime.now(),
                         imgUrl
                 );
             }

@@ -4,8 +4,8 @@
  */
 package com.hatecode.pojo;
 
-import java.sql.Timestamp;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 /**
  *
@@ -20,8 +20,8 @@ public class EquipmentMaintenance {
     private Result result;
     private String repairName;
     private float repairPrice;
-    private Date inspectionDate;
-    private Date createdAt;
+    private LocalDateTime inspectionDate;
+    private LocalDateTime createdAt;
     private boolean isActive;
 
     public EquipmentMaintenance() {
@@ -36,8 +36,8 @@ public class EquipmentMaintenance {
             Result result,
             String repairName,
             float repairPrice,
-            Date inspectionDate,
-            Date createdAt,
+            LocalDateTime inspectionDate,
+            LocalDateTime createdAt,
             boolean isActive) {
         this.id = id;
         this.equipmentId = equipmentId;
@@ -52,19 +52,19 @@ public class EquipmentMaintenance {
         this.isActive = isActive;
     }
 
-    public Date getcreatedAt() {
+    public LocalDateTime getcreatedAt() {
         return createdAt;
     }
 
-    public void setcreatedAt(Date createdAt) {
+    public void setcreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getInspectionDate() {
+    public LocalDateTime getInspectionDate() {
         return inspectionDate;
     }
 
-    public void setInspectionDate(Date inspectionDate) {
+    public void setInspectionDate(LocalDateTime inspectionDate) {
         this.inspectionDate = inspectionDate;
     }
 

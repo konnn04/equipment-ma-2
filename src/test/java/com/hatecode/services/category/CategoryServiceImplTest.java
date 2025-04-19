@@ -1,8 +1,9 @@
-package com.hatecode.services;
+package com.hatecode.services.category;
 
 import com.hatecode.pojo.Category;
+import com.hatecode.services.CategoryService;
 import com.hatecode.services.impl.CategoryServiceImpl;
-import com.hatecode.utils.JdbcUtils;
+import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.TestDBUtils;
 import org.junit.jupiter.api.*;
 
@@ -81,9 +82,12 @@ public class CategoryServiceImplTest {
         boolean result1 = categoryService.addCategory(category1);
         // Assert
         assertTrue(result1);
-        SQLException exception =  assertThrows(SQLException.class, () -> {
+        Exception exception =  assertThrows(SQLException.class, () -> {
             categoryService.addCategory(category2);
         });
+        // Verify
+        assertEquals(ExceptionMessage.CATEGORY_NAME_DUPLICATE, exception.getMessage());
+        assertEquals(6, categoryService.getCategories().size());
     }
 
     @Test
@@ -91,38 +95,45 @@ public class CategoryServiceImplTest {
         // Initialize
         Category category = new Category("", true);
         // Act
-        assertThrows(IllegalArgumentException.class, () -> {
+         Exception e = assertThrows(IllegalArgumentException.class, () -> {
             categoryService.addCategory(category);
         });
+        // Verify
+        assertEquals(ExceptionMessage.CATEGORY_NAME_EMPTY, e.getMessage());
     }
 
     @Test
     public void testUpdateCategory_Success() throws SQLException {
         // Initialize
-        Category category = new Category("Test Category", true);
-        categoryService.addCategory(category);
+        Category category = categoryService.getCategoryById(5);
         // Act
         category.setName("Updated Test 5");
         boolean result = categoryService.updateCategory(category);
         // Assert
         assertTrue(result);
+        // Verify
+        assertEquals(5, categoryService.getCategories().size());
+        assertEquals(category.getName(), categoryService.getCategoryById(5).getName());
     }
 
     @Test
     public void testUpdateCategory_DuplicateName() throws SQLException {
+        //
         // Initialize
         Category category1 = categoryService.getCategoryById(1);
         // Act
         category1.setName("Category 2"); // Same name as existing category 2
         // Assert
-        SQLException exception = assertThrows(SQLException.class, () -> {
+        Exception e = assertThrows(SQLException.class, () -> {
             categoryService.updateCategory(category1);
         });
+        // Verify
+        assertEquals(ExceptionMessage.CATEGORY_NAME_DUPLICATE, e.getMessage());
     }
 
     @Test
-    public void testGetCategories() throws SQLException {
-        // Assert
+    public void testGetCategories_Success() throws SQLException {
+        // Assert and Act
         assertEquals(5, categoryService.getCategories().size());
     }
 
@@ -136,6 +147,13 @@ public class CategoryServiceImplTest {
         assertEquals(6, categoryService.getCategories().size());
         // Verify
         assertEquals(category.getName(), categoryService.getCategoryById(7).getName());
+    }
+
+    @Test
+    public void testGetCategories_ByQuery() throws SQLException {
+        // Assert
+        String query = "Category 1";
+        assertEquals(1, categoryService.getCategories(query).size());
     }
 
     @Test
@@ -166,6 +184,11 @@ public class CategoryServiceImplTest {
         // Assert
         assertTrue(result1);
         assertTrue(result2);
+        // Verify
+        assertNull(categoryService.getCategoryById(1));
+        assertNull(categoryService.getCategoryById(2));
+        assertEquals(3, categoryService.getCategories().size());
+
     }
 
     @Test
@@ -184,10 +207,12 @@ public class CategoryServiceImplTest {
     public void testDeleteCategory_EmptyId() throws SQLException {
         // Initialize
         Category category = new Category("", true);
-        // Act
-        assertThrows(IllegalArgumentException.class, () -> {
+        // Act and Assert
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
             categoryService.deleteCategory(category);
         });
+        // Verify
+        assertEquals(ExceptionMessage.CATEGORY_ID_NULL, e.getMessage());
     }
 
     @Test
@@ -211,5 +236,4 @@ public class CategoryServiceImplTest {
         assertNotNull(result);
         assertEquals(0, result.size());
     }
-
 }
