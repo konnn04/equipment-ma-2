@@ -131,6 +131,18 @@ public class CategoryServiceImplTest {
     }
 
     @Test
+    public void testUpdateCategory_EmptyName() {
+        // Initialize
+        Category category = new Category("", true);
+        // Act
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            categoryService.updateCategory(category);
+        });
+        // Verify
+        assertEquals(ExceptionMessage.CATEGORY_NAME_EMPTY, e.getMessage());
+    }
+
+    @Test
     public void testGetCategories_Success() throws SQLException {
         // Assert and Act
         assertEquals(5, categoryService.getCategories().size());
