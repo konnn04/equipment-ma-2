@@ -4,14 +4,14 @@ import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.Status;
 import com.hatecode.pojo.Image;
-import com.hatecode.services.interfaces.CloundinaryServices;
+import com.hatecode.services.CloundinaryService;
 import com.hatecode.services.impl.CategoryServiceImpl;
-import com.hatecode.services.impl.CloundinaryServicesImpl;
+import com.hatecode.services.impl.CloundinaryServiceImpl;
 import com.hatecode.services.impl.EquipmentServiceImpl;
 import com.hatecode.services.impl.ImageServiceImpl;
-import com.hatecode.services.interfaces.CategoryService;
-import com.hatecode.services.interfaces.EquipmentService;
-import com.hatecode.services.interfaces.ImageService;
+import com.hatecode.services.CategoryService;
+import com.hatecode.services.EquipmentService;
+import com.hatecode.services.ImageService;
 import com.hatecode.utils.AlertBox;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -223,7 +223,7 @@ public class EquipmentManager {
                 categoryService.getCategoryById(selectedEquipment.getCategoryId()));
         statusEquipmentText.setText(selectedEquipment.getStatus().getDescription());
         equipmentDescriptionTextField.setText(selectedEquipment.getDescription());
-        lastMaintenanceDateTextField.setText(selectedEquipment.getLastMaintenanceTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        lastMaintenanceDateTextField.setText(selectedEquipment.getLastMaintenanceTime().toString());
         regularMaintenanceTimeTextField.setText(selectedEquipment.getRegularMaintenanceDay() + "");
 
         Image image = imageService.getImageById(selectedEquipment.getImageId());
@@ -350,11 +350,11 @@ public class EquipmentManager {
             try{
                 Image uploadImage = null;
                 if (equipmentImage.getImage() != null) {
-                    CloundinaryServices cloundinaryServices = new CloundinaryServicesImpl();
+                    CloundinaryService cloundinaryService = new CloundinaryServiceImpl();
                     File file = new File( equipmentImage.getImage().getUrl().replace("file:", ""));
                     uploadImage = new Image(
                             file.getName(),
-                            cloundinaryServices.uploadImage(file)
+                            cloundinaryService.uploadImage(file)
                     );
                     ImageService imageService = new ImageServiceImpl();
                     imageService.addImage(uploadImage);
@@ -390,11 +390,11 @@ public class EquipmentManager {
                 try {
                     /* Kiểm tra ảnh có cập nhật hay không */
                     if (isImageChanged) {
-                        CloundinaryServices cloundinaryServices = new CloundinaryServicesImpl();
+                        CloundinaryService cloundinaryService = new CloundinaryServiceImpl();
                         File file  = new File(equipmentImage.getImage().getUrl());
                         Image image = new Image(
                                 file.getName(),
-                                cloundinaryServices.uploadImage(file)
+                                cloundinaryService.uploadImage(file)
                         );
                         selectedEquipment.setImageId(image.getId());
                     }
@@ -441,7 +441,7 @@ public class EquipmentManager {
                     regularMaintenanceTimeTextField.setText("0");
                 }
                 if (selectedEquipment != null) {
-                    nextMaintenanceDatePicker.setValue(selectedEquipment.getLastMaintenanceTime().plusDays(value).toLocalDate());
+//                    nextMaintenanceDatePicker.setValue(selectedEquipment.getLastMaintenanceTime().plusDays(value).toLocalDate());
                 }
             } catch (NumberFormatException e) {
                 regularMaintenanceTimeTextField.setText("0");

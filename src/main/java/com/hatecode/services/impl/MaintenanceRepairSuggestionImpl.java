@@ -2,7 +2,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.MaintenanceRepairSuggestion;
-import com.hatecode.services.interfaces.MaintenanceRepairSuggestionService;
+import com.hatecode.services.MaintenanceRepairSuggestionService;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
                         rs.getString("name"),
                         rs.getString("description"),
                         rs.getFloat("suggest_price"),
-                        rs.getTimestamp("created_date").toLocalDateTime()
+                        rs.getTimestamp("created_at").toLocalDateTime()
                 );
                 maintenanceRepairSuggestions.add(maintenanceRepairSuggestion);
             }
@@ -50,7 +50,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
                         rs.getString("name"),
                         rs.getString("description"),
                         rs.getFloat("suggest_price"),
-                        rs.getTimestamp("created_date").toLocalDateTime()
+                        rs.getTimestamp("created_at").toLocalDateTime()
                 );
             }
         }

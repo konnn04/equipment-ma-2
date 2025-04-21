@@ -2,7 +2,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Image;
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.services.interfaces.ImageService;
+import com.hatecode.services.ImageService;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class ImageServiceImpl implements ImageService {
                 image = new Image(
                         rs.getInt("id"),
                         rs.getString("filename"),
-                        rs.getTimestamp("created_date").toLocalDateTime(),
+                        rs.getTimestamp("created_at").toLocalDateTime(),
                         rs.getString("path")
                 );
             }
@@ -58,13 +58,13 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean addImage(Image image) throws SQLException {
-        String sql = "INSERT INTO Image (filename, created_date, path) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Image (filename, created_at, path) VALUES (?, ?, ?)";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
-            pstmt.setTimestamp(2, Timestamp.    valueOf(image.getCreateDate()));
+            pstmt.setTimestamp(2,Timestamp.valueOf(image.getCreateDate()));
             pstmt.setString(3, image.getPath());
 
             return pstmt.executeUpdate() > 0;
@@ -74,7 +74,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean updateImage(Image image) throws SQLException {
-        String sql = "UPDATE Image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
+        String sql = "UPDATE Image SET filename = ?, created_at = ?, path = ? WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -91,12 +91,9 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public boolean deleteImage(int id) throws SQLException {
         String sql = "DELETE FROM Image WHERE id = ?";
-
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, id);
-
             return pstmt.executeUpdate() > 0;
         }
     }

@@ -2,7 +2,7 @@ package com.hatecode.equipmentma2.controllers;
 
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
-import com.hatecode.services.interfaces.MaintenanceService;
+import com.hatecode.services.MaintenanceService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Label;
@@ -34,7 +34,7 @@ public class MaintenanceManager {
         maintenanceTable.setItems(FXCollections.observableList(maintenances));
         maintenanceQueryTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                List<Maintenance> filteredMaintenances = maintenanceService.getMaintenances(newValue, 0, 100, null, null);
+                List<Maintenance> filteredMaintenances = maintenanceService.getMaintenances(newValue);
                 maintenanceTable.setItems(FXCollections.observableList(filteredMaintenances));
             } catch (SQLException e) {
                 e.printStackTrace();

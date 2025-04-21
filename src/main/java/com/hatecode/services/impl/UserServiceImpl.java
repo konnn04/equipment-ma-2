@@ -4,14 +4,13 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Role;
-import com.hatecode.services.interfaces.ImageService;
-import com.hatecode.utils.ExtractImageIdUtils;
+import com.hatecode.services.ImageService;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
 
 import java.io.File;
 
-import com.hatecode.services.interfaces.UserService;
+import com.hatecode.services.UserService;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
-    private final CloundinaryServicesImpl cloudiServices = new CloundinaryServicesImpl();
+    private final CloundinaryServiceImpl cloudiServices = new CloundinaryServiceImpl();
 
     @Override
     public List<User> getUsers(String kw, int roleId) throws SQLException {
@@ -90,7 +89,7 @@ public class UserServiceImpl implements UserService {
         String sql = "SELECT u.*, i.* " +
                 "FROM user u " +
                 "JOIN image i " +
-                "ON u.avatar = i.id " +
+                "ON u.avatar_id = i.id " +
                 "WHERE u.id = ? ";
 
         try (Connection conn = JdbcUtils.getConn();
@@ -142,6 +141,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean addUser(User user) throws SQLException {
+
         Connection conn = null;
         try {
             conn = JdbcUtils.getConn();
@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
                 ImageService imageService = new ImageServiceImpl();
                 Image image = imageService.getImageById(user.getAvatarId());
 
-                String sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
+                String sqlImage = "INSERT INTO image (filename, created_at, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, image.getFilename());
                     pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
             }
 
             // 2. Thêm User
-            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar) " +
+            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar_id) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
                 pstmt.setString(1, user.getFirstName());
@@ -232,12 +232,12 @@ public class UserServiceImpl implements UserService {
             if (newImage != null) {
                 String sqlImage = "";
                 if (newImage.getId() != 0) {
-                    sqlImage = "UPDATE image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
+                    sqlImage = "UPDATE image SET filename = ?, created_at = ?, path = ? WHERE id = ?";
                     ImageService imageService = new ImageServiceImpl();
                     Image oldImage = imageService.getImageById(newImage.getId());
                     this.deleteUserImage(oldImage.getPath());
                 } else {
-                    sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
+                    sqlImage = "INSERT INTO image (filename, created_at, path) VALUES (?, ?, ?)";
                 }
 
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
@@ -260,7 +260,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
             String sql = "UPDATE User SET first_name = ?, last_name = ?,username = ?, password = ?, " +
-                    "email = ?, phone = ?, role = ?, is_active = ?, avatar = ? WHERE id = ?";
+                    "email = ?, phone = ?, role = ?, is_active = ?, avatar_id = ? WHERE id = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, user.getFirstName());
                 pstmt.setString(2, user.getLastName());
@@ -303,9 +303,9 @@ public class UserServiceImpl implements UserService {
     // https://res.cloudinary.com/dg66aou8q/image/upload/v1743086605/dysaruyl1ye7xejpakbp.png
     @Override
     public User authenticateUser(String username, String password) throws SQLException {
-        String sql ="SELECT u.*, i.id as avatarId, i.filename, i.created_date, i.path\n" +
+        String sql ="SELECT u.*, i.id as avatarId, i.filename, i.created_at, i.path\n" +
                     "FROM User u\n" +
-                    "LEFT JOIN image i ON u.avatar = i.id\n" +
+                    "LEFT JOIN image i ON u.avatar_id = i.id\n" +
                     "WHERE username = ? and password = ?";
 
         try (Connection conn = JdbcUtils.getConn();

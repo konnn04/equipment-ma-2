@@ -7,10 +7,10 @@ import com.hatecode.services.impl.EquipmentMaintenanceServiceImpl;
 import com.hatecode.services.impl.EquipmentServiceImpl;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
 import com.hatecode.services.impl.UserServiceImpl;
-import com.hatecode.services.interfaces.EquipmentMaintenanceService;
-import com.hatecode.services.interfaces.EquipmentService;
-import com.hatecode.services.interfaces.MaintenanceService;
-import com.hatecode.services.interfaces.UserService;
+import com.hatecode.services.EquipmentMaintenanceService;
+import com.hatecode.services.EquipmentService;
+import com.hatecode.services.MaintenanceService;
+import com.hatecode.services.UserService;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -179,9 +179,9 @@ public class MaintenanceHistory {
     public void fetchEquipmentByEMId(int id, String kw) throws SQLException {
         List<EquipmentMaintenance> equipments;
         if (kw != null && !kw.isEmpty())
-            equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(kw, id, 1, PAGE_SIZE);
+            equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(kw, id);
         else
-            equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(null, id, 1, PAGE_SIZE);
+            equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(null, id);
 
         this.equipmentsTableViewTable.setItems(FXCollections.observableList(equipments));
     }

@@ -8,24 +8,39 @@ public class Maintenance {
     private String description;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
-    private LocalDateTime createdDate;
+    private boolean isActive;
+    private LocalDateTime createdAt;
 
     public Maintenance() {
         super();
     }
+
     public Maintenance(
             int id,
             String title,
             String description,
             LocalDateTime startDatetime,
             LocalDateTime endDatetime,
-            LocalDateTime createdDate) {
+            boolean isActive,
+            LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.startDateTime = startDatetime;
         this.endDateTime = endDatetime;
-        this.createdDate = createdDate;
+        this.isActive = isActive;
+        this.createdAt = createdAt;
+    }
+
+    public Maintenance(
+            String title,
+            String description,
+            LocalDateTime startDatetime,
+            LocalDateTime endDatetime) {
+        this.title = title;
+        this.description = description;
+        this.startDateTime = startDatetime;
+        this.endDateTime = endDatetime;
     }
 
     public int getId() {
@@ -68,11 +83,21 @@ public class Maintenance {
         this.endDateTime = endDateTime;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public LocalDateTime getcreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
+    public void setcreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+
 }
