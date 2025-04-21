@@ -1,10 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.hatecode.services.impl;
 
 import com.hatecode.pojo.*;
+import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.EquipmentMaintenanceService;
 
@@ -12,23 +9,33 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author ADMIN
- */
 public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceService {
     private final Connection externalConn;
     private boolean isTestingConnect = false;
+
     public EquipmentMaintenanceServiceImpl() {
         this.externalConn = null;
     }
+
     public EquipmentMaintenanceServiceImpl(Connection conn) {
         this.externalConn = conn;
         this.isTestingConnect = true;
     }
 
     private Connection getConnection() throws SQLException {
-        if (externalConn != null) return externalConn;
-        return JdbcUtils.getConn();
+        return externalConn != null ? externalConn : JdbcUtils.getConn();
+    }
+
+    // Generic method to execute database operations with proper connection handling
+    private <T> T executeQuery(ThrowingFunction<Connection, T> dbOperation) throws SQLException {
+        Connection conn = getConnection();
+        try {
+            return dbOperation.apply(conn);
+        } finally {
+            if (!isTestingConnect && conn != null) {
+                conn.close();
+            }
+        }
     }
 
     public static EquipmentMaintenance extractEquipmentMaintenance(ResultSet rs) throws SQLException {
@@ -38,30 +45,36 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 rs.getInt("maintenance_id"),
                 rs.getInt("technician_id"),
                 rs.getString("description"),
-                Result.fromCode(rs.getInt("result")),
+                rs.getInt("result") == 0 ? null : Result.fromCode(rs.getInt("result")),
                 rs.getString("repair_name"),
                 rs.getFloat("repair_price"),
-                rs.getTimestamp("inspection_date").toLocalDateTime(),
+                rs.getTimestamp("inspection_date") == null ? null : rs.getTimestamp("inspection_date").toLocalDateTime(),
                 rs.getTimestamp("created_at").toLocalDateTime(),
                 rs.getBoolean("is_active")
         );
     }
 
+    private void validateEquipmentMaintenance(EquipmentMaintenance em) {
+        if (em == null) {
+            throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL);
+        }
+        if (em.getEquipmentId() <= 0 || em.getMaintenanceId() <= 0 || em.getTechnicianId() <= 0) {
+            throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_NOT_INVALID);
+        }
+    }
+
     @Override
     public List<EquipmentMaintenance> getEquipmentMaintenance() throws SQLException {
-        List<EquipmentMaintenance> res = new ArrayList<>();
-        Connection conn = getConnection();
-        String sql = "SELECT * FROM equipment_maintenance WHERE is_active = true";
-        try (PreparedStatement stm = conn.prepareStatement(sql)) {
-            ResultSet rs = stm.executeQuery();
-            while (rs.next()) {
-                res.add(extractEquipmentMaintenance(rs));
+        return executeQuery(conn -> {
+            List<EquipmentMaintenance> result = new ArrayList<>();
+            try (PreparedStatement stm = conn.prepareStatement("SELECT * FROM equipment_maintenance WHERE is_active = true")) {
+                ResultSet rs = stm.executeQuery();
+                while (rs.next()) {
+                    result.add(extractEquipmentMaintenance(rs));
+                }
             }
-        }
-        if (!isTestingConnect) {
-            conn.close();
-        }
-        return res;
+            return result;
+        });
     }
 
     @Override
@@ -69,21 +82,20 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         if (query == null || query.isEmpty()) {
             return getEquipmentMaintenance();
         }
-        List<EquipmentMaintenance> res = new ArrayList<>();
-        Connection conn = getConnection();
-        String sql = "SELECT * FROM equipment_maintenance WHERE is_active = true AND (description LIKE ? OR repair_name LIKE ?)";
-        try (PreparedStatement stm = conn.prepareStatement(sql)) {
-            stm.setString(1, "%" + query + "%");
-            stm.setString(2, "%" + query + "%");
-            ResultSet rs = stm.executeQuery();
-            while (rs.next()) {
-                res.add(extractEquipmentMaintenance(rs));
+
+        return executeQuery(conn -> {
+            List<EquipmentMaintenance> result = new ArrayList<>();
+            String sql = "SELECT * FROM equipment_maintenance WHERE is_active = true AND (description LIKE ? OR repair_name LIKE ?)";
+            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+                stm.setString(1, "%" + query + "%");
+                stm.setString(2, "%" + query + "%");
+                ResultSet rs = stm.executeQuery();
+                while (rs.next()) {
+                    result.add(extractEquipmentMaintenance(rs));
+                }
             }
-        }
-        if (!isTestingConnect) {
-            conn.close();
-        }
-        return res;
+            return result;
+        });
     }
 
     @Override
@@ -91,139 +103,194 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         if (m == null || m.getId() <= 0) {
             return getEquipmentMaintenance();
         }
-        List<EquipmentMaintenance> res = new ArrayList<>();
-        String sql = "SELECT * FROM equipment_maintenance WHERE maintenance_id = ? AND is_active = true";
-        Connection conn = getConnection();
-        try (PreparedStatement stm = conn.prepareStatement(sql)) {
-            stm.setInt(1, m.getId());
-            ResultSet rs = stm.executeQuery();
-            while (rs.next()) {
-                res.add(extractEquipmentMaintenance(rs));
+
+        return executeQuery(conn -> {
+            List<EquipmentMaintenance> result = new ArrayList<>();
+            String sql = "SELECT * FROM equipment_maintenance WHERE maintenance_id = ? AND is_active = true";
+            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+                stm.setInt(1, m.getId());
+                ResultSet rs = stm.executeQuery();
+                while (rs.next()) {
+                    result.add(extractEquipmentMaintenance(rs));
+                }
             }
+            return result;
+        });
+    }
+
+    @Override
+    public EquipmentMaintenance getEquipmentMaintenanceById(int id) throws SQLException {
+        if (id <= 0) {
+            return null;
         }
-        if (!isTestingConnect) {
-            conn.close();
-        }
-        return res;
+        return executeQuery(conn -> {
+            EquipmentMaintenance em = null;
+            String sql = "SELECT * FROM equipment_maintenance WHERE id = ? AND is_active = true";
+            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+                stm.setInt(1, id);
+                ResultSet rs = stm.executeQuery();
+                if (rs.next()) {
+                    em = extractEquipmentMaintenance(rs);
+                }
+            }
+            return em;
+        });
     }
 
     @Override
     public Equipment getEquipmentByEquipmentMaintenance(int id) throws SQLException {
         if (id <= 0) {
-            return null;
+            throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL);
         }
-        Equipment equipment = null;
-        try (Connection conn = getConnection()) {
+
+        return executeQuery(conn -> {
+            Equipment equipment = null;
             String sql = "SELECT *, m.id AS em_id " +
                     "FROM equipment e " +
                     "LEFT JOIN equipment_maintenance m ON e.id = m.equipment_id " +
                     "WHERE m.id = ? AND m.is_active = true";
-            PreparedStatement stm = conn.prepareStatement(sql);
-            stm.setInt(1, id);
-            ResultSet rs = stm.executeQuery();
-            if (rs.next()) {
-                equipment = EquipmentServiceImpl.extractEquipment(rs);
+            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+                stm.setInt(1, id);
+                ResultSet rs = stm.executeQuery();
+                if (rs.next()) {
+                    equipment = EquipmentServiceImpl.extractEquipment(rs);
+                }
             }
-        return equipment;
-        }
+            return equipment;
+        });
     }
 
     @Override
     public boolean addEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
-        try (Connection conn = getConnection()) {
+        validateEquipmentMaintenance(em);
+        return executeQuery(conn -> {
+            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description)" +
+                    " VALUES (?, ?, ?, ?)";
+            try (PreparedStatement stm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                stm.setInt(1, em.getEquipmentId());
+                stm.setInt(2, em.getMaintenanceId());
+                stm.setInt(3, em.getTechnicianId());
+                stm.setString(4, em.getDescription());
+
+                int rowsAffected = stm.executeUpdate();
+                try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        em.setId(generatedKeys.getInt(1));
+                    } else {
+                        throw new SQLException("Creating equipment maintenance failed, no ID obtained.");
+                    }
+                }
+                return rowsAffected > 0;
+            }
+        });
+    }
+
+    @Override
+    public boolean addEquipmentMaintenanceFull(EquipmentMaintenance em) throws SQLException {
+        validateEquipmentMaintenance(em);
+
+        return executeQuery(conn -> {
             String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result, repair_name, repair_price, inspection_date)" +
                     " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement stm = conn.prepareStatement(sql);
-            stm.setInt(1, em.getEquipmentId());
-            stm.setInt(2, em.getMaintenanceId());
-            stm.setInt(3, em.getTechnicianId());
-            stm.setString(4, em.getDescription());
-            stm.setInt(5, em.getResult().getCode());
-            stm.setString(6, em.getRepairName());
-            stm.setFloat(7, em.getRepairPrice());
-            if (em.getInspectionDate() != null) {
-                stm.setTimestamp(8, Timestamp.valueOf(em.getInspectionDate()));
-            } else {
-                stm.setNull(8, Types.TIMESTAMP);
+            try (PreparedStatement stm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                stm.setInt(1, em.getEquipmentId());
+                stm.setInt(2, em.getMaintenanceId());
+                stm.setInt(3, em.getTechnicianId());
+                stm.setString(4, em.getDescription());
+                stm.setInt(5, em.getResult().getCode());
+                stm.setString(6, em.getRepairName());
+                stm.setFloat(7, em.getRepairPrice());
+                if (em.getInspectionDate() != null) {
+                    stm.setTimestamp(8, Timestamp.valueOf(em.getInspectionDate()));
+                } else {
+                    stm.setNull(8, Types.TIMESTAMP);
+                }
+                int rowsAffected = stm.executeUpdate();
+                try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        em.setId(generatedKeys.getInt(1));
+                    } else {
+                        throw new SQLException("Creating equipment maintenance failed, no ID obtained.");
+                    }
+                }
+                return rowsAffected > 0;
             }
-
-            int rowsAffected = stm.executeUpdate();
-            return rowsAffected > 0;
-        }
+        });
     }
 
     @Override
     public boolean updateEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
-        Connection conn = getConnection();
-        String sql = "UPDATE equipment_maintenance" +
-                " SET equipment_id = ?, maintenance_id = ?, technician_id = ?, description = ?, result = ?, repair_name = ?, repair_price = ?, inspection_date = ? " +
-                " WHERE id = ?";
-        try (PreparedStatement stm = conn.prepareStatement(sql)) {
-            stm.setInt(1, em.getEquipmentId());
-            stm.setInt(2, em.getMaintenanceId());
-            stm.setInt(3, em.getTechnicianId());
-            stm.setString(4, em.getDescription());
-            stm.setInt(5, em.getResult().getCode());
-            stm.setString(6, em.getRepairName());
-            stm.setFloat(7, em.getRepairPrice());
-            stm.setTimestamp(8, Timestamp.valueOf(em.getInspectionDate()));
-            stm.setInt(9, em.getId());
-            int rowsAffected = stm.executeUpdate();
-            if (!isTestingConnect) {
-                conn.close();
+        validateEquipmentMaintenance(em);
+        return executeQuery(conn -> {
+            String sql = "UPDATE equipment_maintenance" +
+                    " SET equipment_id = ?, maintenance_id = ?, technician_id = ?, description = ?, result = ?, repair_name = ?, repair_price = ?, inspection_date = ? " +
+                    " WHERE id = ?";
+            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+                stm.setInt(1, em.getEquipmentId());
+                stm.setInt(2, em.getMaintenanceId());
+                stm.setInt(3, em.getTechnicianId());
+                stm.setString(4, em.getDescription());
+                stm.setInt(5, em.getResult().getCode());
+                stm.setString(6, em.getRepairName());
+                stm.setFloat(7, em.getRepairPrice());
+                stm.setTimestamp(8, Timestamp.valueOf(em.getInspectionDate()));
+                stm.setInt(9, em.getId());
+                return stm.executeUpdate() > 0;
             }
-            return rowsAffected > 0;
-        }
+        });
     }
 
     @Override
     public boolean deleteEquipmentMaintenance(int id) throws SQLException {
-        String sql = "DELETE FROM equipment_maintenance WHERE id = ?";
-        Connection conn = getConnection();
-        int rowsAffected = 0;
-        try (PreparedStatement stm = conn.prepareStatement(sql)) {
-            stm.setInt(1, id);
-            rowsAffected = stm.executeUpdate();
-        } finally {
-            if (!isTestingConnect) {
-                conn.close();
-            }
+        if (id <= 0) {
+            throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL);
         }
-        return rowsAffected > 0;
+
+        return executeQuery(conn -> {
+            String sql = "DELETE FROM equipment_maintenance WHERE id = ? AND is_active = true";
+            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+                stm.setInt(1, id);
+                return stm.executeUpdate() > 0;
+            }
+        });
     }
 
     @Override
     public boolean deleteEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
-        Connection conn = getConnection();
-        String sql = "DELETE FROM equipment_maintenance WHERE id = ?";
-        int rowsAffected;
-        try (PreparedStatement stm = conn.prepareStatement(sql)) {
-            stm.setInt(1, em.getId());
-            rowsAffected = stm.executeUpdate();
-        } finally {
-            if (!isTestingConnect) {
-                conn.close();
-            }
+        if (em == null) {
+            throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL);
         }
-        return rowsAffected > 0;
+        return deleteEquipmentMaintenance(em.getId());
     }
 
     @Override
     public List<EquipmentMaintenance> getEquipmentsMaintenanceByEMId(String kw, int maintenanceId) throws SQLException {
-        List<EquipmentMaintenance> maintenanceEquipments = new ArrayList<>();
-        String sql = "SELECT em.* FROM equipment_maintenance em JOIN equipment e ON em.equipment_id = e.id WHERE em.maintenance_id = ? AND em.is_active = true";
-        if (kw != null && !kw.isEmpty()) {
-            sql += " AND (e.name LIKE ?)";
-        }
-        Connection conn = getConnection();
-        try (PreparedStatement stm = conn.prepareStatement(sql)) {
-            stm.setInt(1, maintenanceId);
-            stm.setString(2, "%" + kw + "%");
-            ResultSet rs = stm.executeQuery();
-            while (rs.next()) {
-                maintenanceEquipments.add(extractEquipmentMaintenance(rs));
+        return executeQuery(conn -> {
+            List<EquipmentMaintenance> maintenanceEquipments = new ArrayList<>();
+            String sql = "SELECT em.* FROM equipment_maintenance em JOIN equipment e ON em.equipment_id = e.id WHERE em.maintenance_id = ? AND em.is_active = true";
+            if (kw != null && !kw.isEmpty()) {
+                sql += " AND (e.name LIKE ? OR em.description LIKE ? OR em.repair_name LIKE ?)";
             }
-        }
-        return maintenanceEquipments;
+
+            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+                stm.setInt(1, maintenanceId);
+                if (kw != null && !kw.isEmpty()) {
+                    stm.setString(2, "%" + kw + "%");
+                    stm.setString(3, "%" + kw + "%");
+                    stm.setString(4, "%" + kw + "%");
+                }
+                ResultSet rs = stm.executeQuery();
+                while (rs.next()) {
+                    maintenanceEquipments.add(extractEquipmentMaintenance(rs));
+                }
+            }
+            return maintenanceEquipments;
+        });
+    }
+
+    // Functional interface for SQL operations that can throw SQLException
+    @FunctionalInterface
+    private interface ThrowingFunction<T, R> {
+        R apply(T t) throws SQLException;
     }
 }

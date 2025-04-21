@@ -52,6 +52,40 @@ public class EquipmentMaintenance {
         this.isActive = isActive;
     }
 
+    public EquipmentMaintenance(
+            int equipmentId,
+            int maintenanceId,
+            int technicianId,
+            String description) {
+        this.equipmentId = equipmentId;
+        this.maintenanceId = maintenanceId;
+        this.technicianId = technicianId;
+        this.description = description;
+    }
+
+    public EquipmentMaintenance(
+            int equipmentId,
+            int maintenanceId,
+            int technicianId,
+            String description,
+            Result result,
+            String repairName,
+            float repairPrice,
+            LocalDateTime inspectionDate,
+            LocalDateTime createdAt,
+            boolean isActive) {
+        this.equipmentId = equipmentId;
+        this.maintenanceId = maintenanceId;
+        this.technicianId = technicianId;
+        this.description = description;
+        this.result = result;
+        this.repairName = repairName;
+        this.repairPrice = repairPrice;
+        this.inspectionDate = inspectionDate;
+        this.createdAt = createdAt;
+        this.isActive = isActive;
+    }
+
     public LocalDateTime getcreatedAt() {
         return createdAt;
     }

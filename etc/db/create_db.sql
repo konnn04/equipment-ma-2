@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `Equipment_Maintenance` (
 	`description` text NOT NULL,
 	`result` int,
 	`repair_name` nvarchar(255),
-	`repair_price` int NOT NULL CHECK (repair_price >= 0),
+	`repair_price` int CHECK (repair_price >= 0),
 	`inspection_date` timestamp,
 	`is_active` boolean NOT NULL DEFAULT '1',
 	`created_at` timestamp NOT NULL default current_timestamp,

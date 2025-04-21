@@ -1,7 +1,6 @@
-package com.hatecode.services.category;
+package com.hatecode.services;
 
 import com.hatecode.pojo.Category;
-import com.hatecode.services.CategoryService;
 import com.hatecode.services.impl.CategoryServiceImpl;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.TestDBUtils;
@@ -157,9 +156,23 @@ public class CategoryServiceImplTest {
     }
 
     @Test
+    public void testGetCategories_ByQuery_NotFound() throws SQLException {
+        // Assert
+        String query = "Category 100";
+        assertEquals(0, categoryService.getCategories(query).size());
+    }
+
+    @Test
+    public void testGetCategory_ByQuery_Empty() throws SQLException {
+        // Assert
+        String query = "";
+        assertEquals(5, categoryService.getCategories(query).size());
+    }
+
+    @Test
     public void testGetCategoryById_NotFound() throws SQLException {
         // Act
-        Category category = categoryService.getCategoryById(100);
+        Category category = categoryService.getCategoryById(-1);
         // Assert
         assertNull(category);
     }
