@@ -89,7 +89,7 @@ public class CloudinaryServiceTestSuite {
     @Test
     void testGetImageUrl_GeneratesUrlCorrectly() throws SQLException {
         Map<String, String> config = new HashMap<>();
-        config.put("cloud_name", "demo"); // Bắt buộc
+        config.put("cloud_name", "demo");
         config.put("api_key", "fake_key");
         config.put("api_secret", "fake_secret");
 

@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class DeleteUserTestSuite {
     UserService services = new UserServiceImpl();
-    
+
     @Test
     public void testDeleteNonExistentUser(){
         try {
@@ -38,17 +38,17 @@ public class DeleteUserTestSuite {
         } catch (SQLException ex) {
             Logger.getLogger(DeleteUserTestSuite.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-    
+
     @Test
     public void testDeleteUserWithCustomImage(){
         try{
             // Với người dùng có avatar khác với avatar mặc định đảm bảo xóa cả 2
-            User u = services.getUserById(37);
-            boolean result = services.deleteUser(37);
+            User u = services.getUserById(58);
+            boolean result = services.deleteUser(58);
             assertTrue(result);
-            
+
             ImageService imgService = new ImageServiceImpl();
             Image img = imgService.getImageById(u.getAvatarId());
             assertNull(img,"Image hasn't been deleted yet!!!");
@@ -57,15 +57,15 @@ public class DeleteUserTestSuite {
             Logger.getLogger(DeleteUserTestSuite.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @Test
     public void testDeleteUserWithDefaultImage(){
         try{
             // Với người dùng có avatar mặc định đảm bảo chỉ xóa người dùng không xóa ảnh
-            User u = services.getUserById(39);
-            boolean result = services.deleteUser(39);
+            User u = services.getUserById(59);
+            boolean result = services.deleteUser(59);
             assertTrue(result);
-            
+
             ImageService imgService = new ImageServiceImpl();
             Image img = imgService.getImageById(u.getAvatarId());
             assertNotNull(img,"Image has been deleted!!!");

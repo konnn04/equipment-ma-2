@@ -1,6 +1,8 @@
-userID,firstName,lastName,username,password,email,phone,roleId,isActive,expectedOutput
-1,John,Doe,johndoe,123456,john.doe@example.com,0909123456,1,true,true
-9999,Ghost,User,ghost,abc123,ghost@example.com,0999999999,2,true,false
-1,,Doe,johndoe,123456,john.doe@example.com,0909123456,1,true,false
-2,Tony,Stark,johndoe, 123456,new@example.com,0908888888,1,true,false
-1,John,Doe,johndoe,123456,john.doe@example.com,0909123456,99,true,false
+id,firstName,lastName,username,password,email,phone,roleId,isActive,expectedResult
+1,John,Doe,john123,pass123,john@example.com,0909123456,1,true,true
+2,Anna,Smith,anna123,pass456,annaexample.com,0909123456,1,true,false
+3,Mike,Jordan,john123,pass789,mike@example.com,0909345678,1,true,false
+9999,Alice,Wu,alicewu,pass999,alice@example.com,0909765432,1,true,false
+4,Linda,Lee,lindalee,pass321,linda@example.com,0909000000,100,true,false
+5,,Nguyen,missingname,pass321,missing@example.com,0909999999,1,true,false
+6,Missing,,missing2,pass654,missing2@example.com,0909111111,1,true,false

@@ -11,6 +11,7 @@ import com.hatecode.pojo.User;
 import java.io.File;
 
 import com.hatecode.services.interfaces.UserService;
+import com.hatecode.utils.EmailValidator;
 import com.hatecode.utils.PasswordUtils;
 
 import java.sql.*;
@@ -21,8 +22,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
+
     private final CloundinaryServicesImpl cloudiServices = new CloundinaryServicesImpl();
-    
+
     public static User extractUser(ResultSet rs) throws SQLException {
         return new User(
                 rs.getInt("id"),
@@ -135,6 +137,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean addUser(User user, Image image) throws SQLException {
+        if (EmailValidator.isValidEmail(user.getEmail()) == false
+                || user.getRole() == null
+                || user.getFirstName() == null
+                || user.getLastName() == null
+                || user.getPhone() == null
+                || user.getPassword() == null) {
+            return false;
+        }
+
         Connection conn = null;
         try {
             conn = JdbcUtils.getConn();
@@ -143,7 +154,7 @@ public class UserServiceImpl implements UserService {
                 String sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, image.getFilename());
-                    pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
+                    pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
                     pstmt.setString(3, image.getPath());
                     System.out.println(image.getFilename());
 
@@ -218,6 +229,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateUser(User user, Image newImage) throws SQLException {
+        if (EmailValidator.isValidEmail(user.getEmail()) == false
+                || user.getRole() == null
+                || user.getFirstName() == null
+                || user.getLastName() == null
+                || user.getPhone() == null
+                || user.getPassword() == null) {
+            return false;
+        }
+
         Connection conn = null;
         try {
             conn = JdbcUtils.getConn();
@@ -236,7 +256,7 @@ public class UserServiceImpl implements UserService {
 
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, newImage.getFilename());
-                    pstmt.setTimestamp(2, Timestamp.valueOf(newImage.getCreateDate()));
+                    pstmt.setTimestamp(2, Timestamp.valueOf(newImage.getCreatedAt()));
                     pstmt.setString(3, newImage.getPath());
                     if (newImage.getId() != 0) {
                         pstmt.setInt(4, newImage.getId());
@@ -266,7 +286,11 @@ public class UserServiceImpl implements UserService {
                 pstmt.setBoolean(8, user.isActive());
                 pstmt.setInt(9, newImgId);
                 pstmt.setInt(10, user.getId());
-                pstmt.executeUpdate();
+                int rowsAffected = pstmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    conn.rollback();
+                    return false; // Không tồn tại user có id => false
+                }
             }
 
             conn.commit(); // Commit transaction
@@ -274,6 +298,7 @@ public class UserServiceImpl implements UserService {
         } catch (SQLException e) {
             if (conn != null) {
                 conn.rollback(); // Rollback nếu có lỗi
+                return false;
             }
             throw e;
         } finally {

@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageServiceImpl implements ImageService {
-    
+
+
+
     public static Image extractImage(ResultSet rs) throws SQLException{
         return new Image(
                 rs.getInt("id"),
@@ -60,7 +62,7 @@ public class ImageServiceImpl implements ImageService {
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
-            pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
+            pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
             pstmt.setString(3, image.getPath());
 
             return pstmt.executeUpdate() > 0;
@@ -69,7 +71,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean updateImage(Image image) throws SQLException {
-        if (image.getFilename() == null || image.getCreateDate() == null || image.getPath() == null)
+        if (image.getFilename() == null || image.getCreatedAt() == null || image.getPath() == null)
             throw new IllegalArgumentException("Image fields must not be null.");
 
         String sql = "UPDATE Image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
@@ -77,10 +79,24 @@ public class ImageServiceImpl implements ImageService {
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
-            pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
+            pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
             pstmt.setString(3, image.getPath());
             pstmt.setInt(4, image.getId());
 
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    public boolean updateImage(Connection conn, Image image) throws SQLException {
+        if (image.getFilename() == null || image.getCreatedAt() == null || image.getPath() == null)
+            throw new IllegalArgumentException("Image fields must not be null.");
+
+        String sql = "UPDATE Image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, image.getFilename());
+            pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
+            pstmt.setString(3, image.getPath());
+            pstmt.setInt(4, image.getId());
             return pstmt.executeUpdate() > 0;
         }
     }
@@ -108,7 +124,7 @@ public class ImageServiceImpl implements ImageService {
                     Image img = new Image();
                     img.setId(rs.getInt("id"));
                     img.setFilename(rs.getString("filename"));
-                    img.setCreateDate(rs.getTimestamp("created_date").toLocalDateTime());
+                    img.setCreatedAt(rs.getTimestamp("created_date").toLocalDateTime());
                     img.setPath(rs.getString("path"));
                     return img;
                 }

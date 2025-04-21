@@ -4,94 +4,78 @@ import com.hatecode.pojo.Image;
 import com.hatecode.services.impl.ImageServiceImpl;
 import com.hatecode.services.interfaces.ImageService;
 import com.hatecode.utils.JdbcUtils;
-import org.junit.jupiter.api.BeforeAll;
+import com.hatecode.utils.TestDBUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 public class UpdateImageTestSuite {
-    ImageService imageService;
+
+    private Connection conn;
+    private ImageService imageService;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
+        conn = TestDBUtils.createIsolatedConnection();
         imageService = new ImageServiceImpl();
+
+        // Insert sample image
+        String sql = "INSERT INTO Image (filename, path) VALUES ('test_img', 'test_img.jpg')";
+        try (Statement statement = conn.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+
+    @AfterEach
+    void tearDown() throws SQLException {
+        if (conn != null && !conn.isClosed()) {
+            JdbcUtils.resetTestConnection();
+            conn.close();
+        }
     }
 
     @Test
     void testUpdateImage_Success() throws Exception {
-        Image image = new Image(4, "updated.png", java.time.LocalDateTime.now(), "/images/updated.png");
+        Image image = new Image(1, "test_updated_img", LocalDateTime.now(), "/images/updated.png");
 
-        Connection mockConn = Mockito.mock(Connection.class);
-        PreparedStatement mockStmt = Mockito.mock(PreparedStatement.class);
+        boolean result = imageService.updateImage(this.conn,image);
+        assertTrue(result);
 
-        // Khi gọi prepareStatement thì trả về mockStmt
-        Mockito.when(mockConn.prepareStatement(Mockito.anyString())).thenReturn(mockStmt);
-
-        // Khi gọi executeUpdate thì giả lập là có 1 dòng được cập nhật
-        Mockito.when(mockStmt.executeUpdate()).thenReturn(1);
-
-        // Dùng MockedStatic để giả lập phương thức static JdbcUtils.getConn()
-        try (MockedStatic<JdbcUtils> mockedStatic = Mockito.mockStatic(JdbcUtils.class)) {
-            mockedStatic.when(JdbcUtils::getConn).thenReturn(mockConn);
-
-            // Act
-            boolean result = imageService.updateImage(image);
-
-            // Assert
-            assertTrue(result);
-            Mockito.verify(mockStmt).setString(1, image.getFilename());
-            Mockito.verify(mockStmt).setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
-            Mockito.verify(mockStmt).setString(3, image.getPath());
-            Mockito.verify(mockStmt).setInt(4, image.getId());
-        }
+        PreparedStatement stm = conn.prepareStatement("SELECT * FROM Image WHERE id = ?");
+        stm.setInt(1, 1);
+        ResultSet rs = stm.executeQuery();
+        assertTrue(rs.next());
+        assertEquals("test_updated_img", rs.getString("filename"));
+        assertEquals("/images/updated.png", rs.getString("path"));
     }
-    
+
     @Test
-    void testUpdateImage_NotFound() throws Exception{
-        // Arrange
-        Image image = new Image(99, "nope.png", java.time.LocalDateTime.now(), "/images/nope.png");
+    void testUpdateImage_NotFound() throws Exception {
+        // Không tồn tại ID 999
+        Image image = new Image(999, "nonexistent_img", LocalDateTime.now(), "/images/none.png");
 
-        Connection mockConn = Mockito.mock(Connection.class);
-        PreparedStatement mockStmt = Mockito.mock(PreparedStatement.class);
-
-        Mockito.when(mockConn.prepareStatement(Mockito.anyString())).thenReturn(mockStmt);
-        Mockito.when(mockStmt.executeUpdate()).thenReturn(0); // không có dòng nào được cập nhật
-
-        try (MockedStatic<JdbcUtils> mockedStatic = Mockito.mockStatic(JdbcUtils.class)) {
-            mockedStatic.when(JdbcUtils::getConn).thenReturn(mockConn);
-
-            // Act
-            boolean result = imageService.updateImage(image);
-            // Assert
-            assertFalse(result);
-        }
+        boolean result = imageService.updateImage(this.conn,image);
+        assertFalse(result);
     }
 
     @Test
     void testUpdateImage_NullPath_ShouldThrowIllegalArgumentException() {
         Image image = new Image(1, "file.jpg", LocalDateTime.now(), null);
         assertThrows(IllegalArgumentException.class, () -> {
-            imageService.updateImage(image);
+            imageService.updateImage(this.conn,image);
         });
     }
 
     @Test
     void testUpdateImage_NullDate_ShouldThrowIllegalArgumentException() {
-        Image image = new Image(1, "file.jpg", null,"error.png");
+        Image image = new Image(1, "file.jpg", null, "/images/error.png");
         assertThrows(IllegalArgumentException.class, () -> {
             imageService.updateImage(image);
         });
     }
-    
 }

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class Image {
     private int id;
     private String filename;
-    private LocalDateTime createDate;
+    private LocalDateTime createdAt;
     private String path;
 
     public Image() {
@@ -16,16 +16,16 @@ public class Image {
         this.path = path;
     }
 
-    public Image(String filename, LocalDateTime createDate, String path) {
+    public Image(String filename, LocalDateTime createdAt, String path) {
         this.filename = filename;
-        this.createDate = createDate;
+        this.createdAt = createdAt;
         this.path = path;
     }
 
-    public Image(int id, String filename, LocalDateTime createDate, String path) {
+    public Image(int id, String filename, LocalDateTime createdAt, String path) {
         this.id = id;
         this.filename = filename;
-        this.createDate = createDate;
+        this.createdAt = createdAt;
         this.path = path;
     }
 
@@ -46,12 +46,12 @@ public class Image {
         this.filename = filename;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getPath() {
