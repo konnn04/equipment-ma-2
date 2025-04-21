@@ -8,6 +8,8 @@ import com.hatecode.pojo.Image;
 import com.hatecode.services.impl.ImageServiceImpl;
 import com.hatecode.services.interfaces.ImageService;
 import com.hatecode.utils.JdbcUtils;
+import com.hatecode.utils.TestDBUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,79 +18,59 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-/**
- *
- * @author ADMIN
- */
-@ExtendWith(MockitoExtension.class)
+
 public class DeleteImageTestSuite {
-    ImageService imageService;
+    private Connection conn;
+    private ImageService imageService;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
+        conn = TestDBUtils.createIsolatedConnection();
         imageService = new ImageServiceImpl();
+
+        // Insert sample image
+        String sql = "INSERT INTO Image (filename, path) VALUES ('test_img', 'test_img.jpg')";
+        try (Statement statement = conn.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+
+    @AfterEach
+    void tearDown() throws SQLException {
+        if (conn != null && !conn.isClosed()) {
+            JdbcUtils.resetTestConnection();
+            conn.close();
+        }
     }
 
     @Test
     void testDeleteImage_IdExists_ShouldReturnTrue() throws Exception {
-        int id = 1;
-
-        Connection mockConn = mock(Connection.class);
-        PreparedStatement mockStmt = mock(PreparedStatement.class);
-
-        when(mockConn.prepareStatement(anyString())).thenReturn(mockStmt);
-        when(mockStmt.executeUpdate()).thenReturn(1); // 1 dòng bị xóa
-
-        try (MockedStatic<JdbcUtils> mocked = mockStatic(JdbcUtils.class)) {
-            mocked.when(JdbcUtils::getConn).thenReturn(mockConn);
-
-            ImageServiceImpl service = new ImageServiceImpl();
-            boolean result = service.deleteImage(id);
-
-            assertTrue(result);
-            verify(mockStmt).setInt(1, id);
-        }
+        int id = 2;
+        boolean result = imageService.deleteImage(conn,id);
+        assertTrue(result);
     }
 
     @Test
     void testDeleteImage_IdDoesNotExist_ShouldReturnFalse() throws Exception {
         int id = 99;
+        boolean result = imageService.deleteImage(conn,id);
+        assertFalse(result);
 
-        Connection mockConn = mock(Connection.class);
-        PreparedStatement mockStmt = mock(PreparedStatement.class);
-
-        when(mockConn.prepareStatement(anyString())).thenReturn(mockStmt);
-        when(mockStmt.executeUpdate()).thenReturn(0); // Không dòng nào bị xóa
-
-        try (MockedStatic<JdbcUtils> mocked = mockStatic(JdbcUtils.class)) {
-            mocked.when(JdbcUtils::getConn).thenReturn(mockConn);
-
-            ImageServiceImpl service = new ImageServiceImpl();
-            boolean result = service.deleteImage(id);
-
-            assertFalse(result);
-            verify(mockStmt).setInt(1, id);
-        }
     }
 
     @Test
     void testDeleteImage_InvalidId_ShouldReturnFalseOrThrow() throws Exception {
         int invalidId = -1;
 
-        // Có thể bạn muốn xử lý ném lỗi IllegalArgumentException
-        ImageServiceImpl service = new ImageServiceImpl();
-
         assertThrows(IllegalArgumentException.class, () -> {
-            service.deleteImage(invalidId);
+            imageService.deleteImage(conn,invalidId);
         });
     }
 }

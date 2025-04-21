@@ -9,15 +9,17 @@ import com.hatecode.pojo.Role;
 import com.hatecode.pojo.User;
 import com.hatecode.services.impl.UserServiceImpl;
 import com.hatecode.services.interfaces.UserService;
+
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.hatecode.utils.ExceptionMessage;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import com.hatecode.utils.JdbcUtils;
+import com.hatecode.utils.TestDBUtils;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,17 +29,20 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author ADMIN
  */
 public class AddUserTestSuite {
-
-    UserService services = new UserServiceImpl();
-
-    @BeforeAll
-    public static void setUp() throws SQLException {
-        System.out.println("SET UP");
+    private UserService services;
+    private Connection conn;
+    @BeforeEach
+    public void setUp() throws SQLException {
+        conn = TestDBUtils.createIsolatedConnection();
+        services = new UserServiceImpl();
     }
 
-    @AfterAll
-    public static void tearDown() throws SQLException {
-        System.out.println("TEAR DOWN");
+    @AfterEach
+    void tearDown() throws SQLException {
+        if (conn != null && !conn.isClosed()) {
+            JdbcUtils.resetTestConnection();
+            conn.close();
+        }
     }
 
     @ParameterizedTest
@@ -62,7 +67,7 @@ public class AddUserTestSuite {
         user.setAvatarId(avatarId);
 
         try {
-            boolean result = services.addUser(user, null);
+            boolean result = services.addUser(conn,user, null);
             assertEquals(expectedOutput, result);
         } catch (SQLException ex) {
             Logger.getLogger(AddUserTestSuite.class.getName()).log(Level.SEVERE, null, ex);
@@ -83,7 +88,7 @@ public class AddUserTestSuite {
         user.setAvatarId(1);
         user.setEmail(null);
         
-        boolean result = services.addUser(user, null);
+        boolean result = services.addUser(conn, user, null);
         assertFalse(result, "Hàm addUser phải trả về false nếu thiếu thông tin bắt buộc");
 
         // Kiểm tra trong DB không có user với username này
@@ -106,7 +111,7 @@ public class AddUserTestSuite {
 
         Image testImage = new Image(null,LocalDateTime.now(),"error.png");
 
-        boolean result = services.addUser(user, testImage);
+        boolean result = services.addUser(conn, user, testImage);
         assertFalse(result, "Hàm addUser phải trả về false nếu thiếu thông tin bắt buộc");
 
         User fetchedUser = services.getUserByUsername("rollback_user_error");

@@ -196,9 +196,81 @@ public class UserServiceImpl implements UserService {
             return true;
         } catch (SQLException e) {
             if (conn != null) {
+                conn.rollback();// Rollback nếu có lỗi
+            }
+            return false;
+        } finally {
+            if (conn != null) {
+                conn.setAutoCommit(true);
+            }
+        }
+    }
+
+    @Override
+    public boolean addUser(Connection conn, User user, Image image) throws SQLException {
+        if (EmailValidator.isValidEmail(user.getEmail()) == false
+                || user.getRole() == null
+                || user.getFirstName() == null
+                || user.getLastName() == null
+                || user.getPhone() == null
+                || user.getPassword() == null) {
+            return false;
+        }
+
+//        Connection conn = null;
+        try {
+//            conn = JdbcUtils.getConn();
+            conn.setAutoCommit(false); // Bắt đầu transaction
+            if (image != null) { // Trường hợp có chọn ảnh
+                String sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
+                try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
+                    pstmt.setString(1, image.getFilename());
+                    pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
+                    pstmt.setString(3, image.getPath());
+                    System.out.println(image.getFilename());
+
+                    pstmt.executeUpdate();
+
+                    // Lấy ID vừa tạo
+                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            image.setId(rs.getInt(1));
+                        }
+                    }
+                }
+            }
+
+            // 2. Thêm User
+            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
+                pstmt.setString(1, user.getFirstName());
+                pstmt.setString(2, user.getLastName());
+                pstmt.setString(3, user.getUsername());
+                pstmt.setString(4, user.getPassword());
+                pstmt.setString(5, user.getEmail());
+                pstmt.setString(6, user.getPhone());
+                pstmt.setInt(7, user.getRole().getId());
+                pstmt.setBoolean(8, user.isActive());
+
+                // Set image_id hoặc null
+                if (image != null) {
+                    pstmt.setInt(9, image.getId());
+                } else {
+                    pstmt.setInt(9, 1);
+                }
+
+                pstmt.executeUpdate();
+            }
+
+            conn.commit(); // Commit transaction
+            return true;
+        } catch (SQLException e) {
+            if (conn != null) {
                 conn.rollback(); // Rollback nếu có lỗi
             }
-            throw e;
+            return false;
+//            throw e;
         } finally {
             if (conn != null) {
                 conn.setAutoCommit(true);

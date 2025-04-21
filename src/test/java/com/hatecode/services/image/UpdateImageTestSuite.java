@@ -70,12 +70,4 @@ public class UpdateImageTestSuite {
             imageService.updateImage(this.conn,image);
         });
     }
-
-    @Test
-    void testUpdateImage_NullDate_ShouldThrowIllegalArgumentException() {
-        Image image = new Image(1, "file.jpg", null, "/images/error.png");
-        assertThrows(IllegalArgumentException.class, () -> {
-            imageService.updateImage(image);
-        });
-    }
 }

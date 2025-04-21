@@ -3,6 +3,7 @@ package com.hatecode.services.interfaces;
 import com.hatecode.pojo.Image;
 import com.hatecode.pojo.User;
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public interface UserService {
     User getUserById(int id) throws SQLException;
     User getUserByUsername(String username) throws SQLException;
     boolean addUser(User user, Image image) throws SQLException;
+    public boolean addUser(Connection conn, User user, Image image) throws SQLException;
     boolean updateUser(User user) throws SQLException;
     boolean updateUser(User user, Image newImage) throws SQLException;
     boolean deleteUser(int id) throws SQLException;

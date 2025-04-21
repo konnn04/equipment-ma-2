@@ -39,6 +39,19 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    public List<Image> getImages(Connection conn) throws SQLException {
+        List<Image> images = new ArrayList<>();
+        Statement stm = conn.createStatement();
+        ResultSet rs = stm.executeQuery("SELECT * FROM Image");
+
+        while (rs.next()) {
+            Image image = extractImage(rs);
+            images.add(image);
+        }
+        return images;
+    }
+
+    @Override
     public Image getImageById(int id) throws SQLException {
         Image image = null;
         String sql = "SELECT * FROM Image WHERE id = ?";
@@ -107,6 +120,19 @@ public class ImageServiceImpl implements ImageService {
         String sql = "DELETE FROM Image WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    @Override
+    public boolean deleteImage(Connection conn, int id) throws SQLException {
+        if (id <= 0) throw new IllegalArgumentException("ID must be positive");
+        String sql = "DELETE FROM Image WHERE id = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
 
