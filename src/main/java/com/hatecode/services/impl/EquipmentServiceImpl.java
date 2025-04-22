@@ -9,11 +9,28 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.hatecode.services.impl.EquipmentMaintenanceServiceImpl.extractEquipmentMaintenance;
+
 
 public class EquipmentServiceImpl implements EquipmentService {
-
+    private final Connection externalConn;
+    private boolean isTestingConnect = false;
 
     private final ImageService imageService = new ImageServiceImpl();
+
+    public EquipmentServiceImpl() {
+        this.externalConn = null;
+    }
+
+    public EquipmentServiceImpl(Connection externalConn) {
+        this.externalConn = externalConn;
+        this.isTestingConnect = true;
+    }
+
+    private Connection getConnection() throws SQLException {
+        if (externalConn != null) return externalConn;
+        return JdbcUtils.getConn();
+    }
 
     // Chuyển RS thành đối tượng Equipment
     public static Equipment extractEquipment(ResultSet rs) throws SQLException {
@@ -23,9 +40,12 @@ public class EquipmentServiceImpl implements EquipmentService {
                 rs.getString("name"),
                 Status.fromId(rs.getInt("status")),
                 rs.getInt("category_id"),
+                rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
                 rs.getInt("image_id"),
                 rs.getInt("regular_maintenance_day"),
-                rs.getString("description")
+                rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,
+                rs.getString("description"),
+                rs.getBoolean("is_active")
         );
     }
 
@@ -38,7 +58,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                 "LEFT JOIN Category c ON e.category_id = c.id " +
                 "WHERE e.id = ?";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setInt(1, id);
             try (ResultSet rs = stm.executeQuery()) {
                 if (rs.next()) {
@@ -60,12 +80,12 @@ public class EquipmentServiceImpl implements EquipmentService {
     public List<Equipment> getEquipments() throws SQLException {
         List<Equipment> equipments = new ArrayList<>();
         String sql = "SELECT e.* FROM equipment e";
-        try (Connection conn = JdbcUtils.getConn();
+        try (Connection conn = getConnection();
              PreparedStatement stm = conn.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
 
             while (rs.next()) {
-                equipments.add(extractFullEquipmentFromResultSet(rs));
+                equipments.add(extractEquipment(rs));
             }
 
             return equipments;
@@ -92,7 +112,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         pageSize = Math.max(1, pageSize);
         List<Equipment> equipments = new ArrayList<>();
 
-        try (Connection conn = JdbcUtils.getConn()) {
+        try (Connection conn = getConnection()) {
             StringBuilder sqlBuilder = new StringBuilder(
                     "SELECT e.* FROM equipment e WHERE (e.code LIKE ? OR e.name LIKE ?) ");
 
@@ -118,7 +138,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
                 try (ResultSet rs = stm.executeQuery()) {
                     while (rs.next()) {
-                        equipments.add(extractFullEquipmentFromResultSet(rs));
+                        equipments.add(extractEquipment(rs));
                     }
                 }
             }
@@ -136,13 +156,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public List<EquipmentMaintenance> getEquipmentMaintainances(int id) throws SQLException {
         List<EquipmentMaintenance> maintenanceList = new ArrayList<>();
-        try (Connection conn = JdbcUtils.getConn()) {
+        try (Connection conn = getConnection()) {
             String sql = "SELECT * FROM equipment_maintenance WHERE equipment_id = ?";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setInt(1, id);
                 try (ResultSet rs = stm.executeQuery()) {
                     while (rs.next()) {
-                        maintenanceList.add(extractMaintenanceFromResultSet(rs));
+                        maintenanceList.add(extractEquipmentMaintenance(rs));
                     }
                 }
             }
@@ -164,7 +184,7 @@ public class EquipmentServiceImpl implements EquipmentService {
             throw new SQLException("Regular maintenance day must be greater than zero");
         }
 
-        try (Connection conn = JdbcUtils.getConn()) {
+        try (Connection conn = getConnection()) {
             String sql = "INSERT INTO Equipment (code, name, status, category_id, regular_maintenance_day, description, image_id) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
@@ -195,7 +215,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         boolean success = false;
 
         try {
-            conn = JdbcUtils.getConn();
+            conn = getConnection();
             conn.setAutoCommit(false);
 
             // Thêm hình ảnh trước
@@ -249,7 +269,7 @@ public class EquipmentServiceImpl implements EquipmentService {
             throw new SQLException("Regular maintenance day must be greater than zero");
         }
 
-        try (Connection conn = JdbcUtils.getConn()) {
+        try (Connection conn = getConnection()) {
             String sql = "UPDATE equipment SET code = ?, name = ?, status = ?, category_id = ?, " +
                     "regular_maintenance_day = ?, description = ?, last_maintenance_time = ?  WHERE id = ?";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
@@ -282,7 +302,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         boolean success = false;
 
         try {
-            conn = JdbcUtils.getConn();
+            conn = getConnection();
             conn.setAutoCommit(false);
             // Cập nhật hình ảnh
             imageService.addImage(image_id);
@@ -330,7 +350,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     public boolean deleteEquipment(int id) throws SQLException {
         String sql = "UPDATE equipment SET is_active = 0 WHERE id = ?";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setInt(1, id);
             if (stm.executeUpdate() > 0)
                 return true;
@@ -350,7 +370,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     public boolean hardDeleteEquipment(int id) throws SQLException {
         String sql = "DELETE FROM equipment WHERE id = ?";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setInt(1, id);
                 if (stm.executeUpdate() > 0)
                     return true;
@@ -371,7 +391,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         List<Object> distinctValues = new ArrayList<>();
         String sql = "SELECT DISTINCT " + columnName + " FROM equipment";
 
-        try (Connection conn = JdbcUtils.getConn();
+        try (Connection conn = getConnection();
              PreparedStatement stm = conn.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
 
@@ -416,45 +436,6 @@ public class EquipmentServiceImpl implements EquipmentService {
                 rs.getInt("image_id"),
                 rs.getInt("regular_maintenance_day"),
                 rs.getString("description")
-        );
-    }
-
-    /**
-     * Extract full equipment data including dates from ResultSet
-     */
-    private static Equipment extractFullEquipmentFromResultSet(ResultSet rs) throws SQLException {
-        return new Equipment(
-                rs.getInt("id"),
-                rs.getString("code"),
-                rs.getString("name"),
-                Status.fromId(rs.getInt("status")),
-                rs.getInt("category_id"),
-                rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
-                rs.getInt("image_id"),
-                rs.getInt("regular_maintenance_day"),
-                rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,
-                rs.getString("description"),
-                rs.getBoolean("is_active")
-        );
-    }
-
-    /**
-     * Extract maintenance data from ResultSet
-     */
-    private static EquipmentMaintenance extractMaintenanceFromResultSet(ResultSet rs) throws SQLException {
-        return new EquipmentMaintenance(
-                rs.getInt("id"),
-                rs.getInt("equipment_id"),
-                rs.getInt("maintenance_id"),
-                rs.getInt("technician_id"),
-                rs.getString("description"),
-                Result.fromCode(rs.getInt("result")),
-                rs.getString("repair_name"),
-                rs.getFloat("repair_price"),
-                rs.getTimestamp("inspection_date") != null ? rs.getTimestamp("inspection_date").toLocalDateTime() : null,
-                rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
-                rs.getBoolean("is_active")
-//                rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null
         );
     }
 }

@@ -19,7 +19,6 @@ public class CategoryServiceImplTest {
 
     @BeforeEach
     void setupTestData() throws SQLException {
-        conn = TestDBUtils.createIsolatedConnection();
         categoryService = new CategoryServiceImpl(conn);
         // Khởi tạo dữ liệu mẫu
         String sql = """
@@ -50,7 +49,9 @@ public class CategoryServiceImplTest {
 
     @AfterEach
     void clearTestChanges() throws SQLException {
-        if (conn != null) conn.close();
+        if (conn != null && !conn.isClosed()) {
+            conn.close();
+        }
     }
 
     @Test

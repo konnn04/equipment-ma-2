@@ -2,8 +2,8 @@ package com.hatecode.services.cloudinary;
 
 import com.cloudinary.Cloudinary;
 import com.hatecode.config.AppConfig;
-import com.hatecode.services.impl.CloundinaryServicesImpl;
-import com.hatecode.services.interfaces.CloundinaryServices;
+import com.hatecode.services.CloundinaryService;
+import com.hatecode.services.impl.CloudinaryServiceImpl;
 import org.junit.After;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,19 +17,20 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CloudinaryServiceTestSuite {
-    private CloundinaryServices service;
+    private CloundinaryService cloundinaryService;
     private String uploadedUrl;
     @BeforeEach
     void setUp() {
+        // Config Cloudinary for testing
         Map<String, String> config = new HashMap<>();
         config.put("cloud_name", AppConfig.CLOUD_NAME);
         config.put("api_key", AppConfig.API_KEY);
         config.put("api_secret", AppConfig.API_SECRET);
         Cloudinary cloudinary = new Cloudinary(config);
-        service = new CloundinaryServicesImpl(cloudinary);
+        cloundinaryService = new CloudinaryServiceImpl(cloudinary);
         File file = new File("src/test/resources/com/hatecode/services/cloudinary/sample.png");
         try{
-            uploadedUrl = service.uploadImage(file);
+            uploadedUrl = cloundinaryService.uploadImage(file);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -39,7 +40,7 @@ public class CloudinaryServiceTestSuite {
     void tearDown(){
         try{
             if(!uploadedUrl.isEmpty() && uploadedUrl != null){
-                boolean result = service.deleteImage(uploadedUrl);
+                boolean result = cloundinaryService.deleteImage(uploadedUrl);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -50,7 +51,7 @@ public class CloudinaryServiceTestSuite {
     @Test
     void testUploadImage_Success() throws SQLException {
         File file = new File("src/test/resources/com/hatecode/services/cloudinary/sample_2.png"); // file ảnh test có sẵn
-        String url = service.uploadImage(file);
+        String url = cloundinaryService.uploadImage(file);
         assertNotNull(url);
         assertTrue(url.contains("res.cloudinary.com"));
     }
@@ -58,9 +59,9 @@ public class CloudinaryServiceTestSuite {
     @Test
     void testDeleteImage_Success() throws SQLException {
         File file = new File("src/test/resources/com/hatecode/services/cloudinary/sample.png");
-        String uploadedUrl = service.uploadImage(file);
+        String uploadedUrl = cloundinaryService.uploadImage(file);
         assertNotNull(uploadedUrl);
-        boolean result = service.deleteImage(uploadedUrl);
+        boolean result = cloundinaryService.deleteImage(uploadedUrl);
         assertTrue(result);
     }
 
@@ -68,7 +69,7 @@ public class CloudinaryServiceTestSuite {
     void testDeleteImage_InvalidPublicId_ReturnsFalse() throws SQLException {
         String fakeUrl = "https://res.cloudinary.com/demo/image/upload/v1234567/invalid_id.jpg";
 
-        boolean result = service.deleteImage(fakeUrl);
+        boolean result = cloundinaryService.deleteImage(fakeUrl);
 
         assertFalse(result);
     }
@@ -76,14 +77,14 @@ public class CloudinaryServiceTestSuite {
     @Test
     void testExtractPublicIdFromUrl() {
         String url = "https://res.cloudinary.com/demo/image/upload/v1234567/somefolder/my_image.png";
-        String extracted = CloundinaryServicesImpl.extractPublicIdFromUrl(url);
+        String extracted = CloudinaryServiceImpl.extractPublicIdFromUrl(url);
         assertEquals("my_image", extracted);
     }
 
     @Test
     void testGetImageUrl() throws SQLException {
         String publicId = "sample";
-        String url = service.getImageUrl(publicId);
+        String url = cloundinaryService.getImageUrl(publicId);
         assertNotNull(url);
         assertTrue(url.contains(publicId));
     }

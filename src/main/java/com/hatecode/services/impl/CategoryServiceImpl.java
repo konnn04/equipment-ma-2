@@ -5,6 +5,7 @@ import com.hatecode.pojo.Equipment;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.CategoryService;
+import com.mysql.cj.util.TestUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,23 +14,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class CategoryServiceImpl implements CategoryService {
-    private final Connection externalConn;
-    private boolean isTestingConnect = false;
+    private TestDBUtils testDBUtils;
 
-    public CategoryServiceImpl() {
-        this.externalConn = null;
-    }
+    public CategoryServiceImpl() {}
 
-    public CategoryServiceImpl(Connection conn) {
-        this.externalConn = conn;
-        this.isTestingConnect = true;
+    public CategoryServiceImpl(TestUtils testDBUtils) {
+        this.testDBUtils = testDBUtils;
     }
 
     private Connection getConnection() throws SQLException {
-        if (externalConn != null) return externalConn;
+        if (testDBUtils != null) {
+            return testDBUtils.getConnection();
+        }
         return JdbcUtils.getConn();
     }
 

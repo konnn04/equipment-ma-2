@@ -67,7 +67,9 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @AfterEach
     void clearTestChanges() throws SQLException {
-        if (conn != null) conn.close();
+        if (conn != null && !conn.isClosed()) {
+            conn.close();
+        }
     }
 
     /* =============================================================================

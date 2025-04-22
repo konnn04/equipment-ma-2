@@ -3,11 +3,11 @@ package com.hatecode.pojo;
 import java.util.List;
 
 public enum Status {
-    INACTIVE (1, "Không hoạt động"),
-    ACTIVE (2, "Đang hoạt động"),
-    UNDER_MAINTENANCE (3, "Đang bảo trì"),
-    BROKEN (4, "Đã hỏng"),
-    LIQUIDATED (5, "Đã thanh lý");
+    INACTIVE (1, "Inactive"),
+    ACTIVE (2, "Inactive"),
+    UNDER_MAINTENANCE (3, "Under maintenance"),
+    BROKEN (4, "Broken"),
+    LIQUIDATED (5, "Liquidated");
 
     private int id;
     private String description;

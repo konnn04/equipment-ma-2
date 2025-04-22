@@ -6,7 +6,7 @@ import com.hatecode.pojo.Status;
 import com.hatecode.pojo.Image;
 import com.hatecode.services.CloundinaryService;
 import com.hatecode.services.impl.CategoryServiceImpl;
-import com.hatecode.services.impl.CloundinaryServiceImpl;
+import com.hatecode.services.impl.CloudinaryServiceImpl;
 import com.hatecode.services.impl.EquipmentServiceImpl;
 import com.hatecode.services.impl.ImageServiceImpl;
 import com.hatecode.services.CategoryService;
@@ -23,7 +23,6 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -350,7 +349,7 @@ public class EquipmentManager {
             try{
                 Image uploadImage = null;
                 if (equipmentImage.getImage() != null) {
-                    CloundinaryService cloundinaryService = new CloundinaryServiceImpl();
+                    CloundinaryService cloundinaryService = new CloudinaryServiceImpl();
                     File file = new File( equipmentImage.getImage().getUrl().replace("file:", ""));
                     uploadImage = new Image(
                             file.getName(),
@@ -390,7 +389,7 @@ public class EquipmentManager {
                 try {
                     /* Kiểm tra ảnh có cập nhật hay không */
                     if (isImageChanged) {
-                        CloundinaryService cloundinaryService = new CloundinaryServiceImpl();
+                        CloundinaryService cloundinaryService = new CloudinaryServiceImpl();
                         File file  = new File(equipmentImage.getImage().getUrl());
                         Image image = new Image(
                                 file.getName(),

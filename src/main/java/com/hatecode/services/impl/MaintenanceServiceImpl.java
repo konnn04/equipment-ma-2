@@ -1,8 +1,5 @@
 package com.hatecode.services.impl;
-
-import com.hatecode.pojo.Category;
 import com.hatecode.pojo.MaintenanceStatus;
-import com.hatecode.services.UserService;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.Maintenance;
@@ -108,7 +105,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     }
 
     @Override
-    public Maintenance getMantenanceById(int id) throws SQLException {
+    public Maintenance getMaintenanceById(int id) throws SQLException {
         Maintenance maintenance = null;
         String sql = "SELECT * FROM Maintenance WHERE id = ? AND is_active=true";
         Connection conn = getConnection();
@@ -126,7 +123,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     }
 
     @Override
-    public boolean addMantenance(Maintenance maintenance) throws SQLException {
+    public boolean addMaintenance(Maintenance maintenance) throws SQLException {
         if (maintenance == null) {
             return false;
         }
@@ -159,7 +156,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     }
 
     @Override
-    public boolean updateMantenance(Maintenance maintenance) throws SQLException {
+    public boolean updateMaintenance(Maintenance maintenance) throws SQLException {
         if (maintenance == null) {
             return false;
         }
@@ -189,15 +186,15 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     }
 
     @Override
-    public boolean deleteMantenance(Maintenance maintenance) throws SQLException {
+    public boolean deleteMaintenance(Maintenance maintenance) throws SQLException {
         if (maintenance == null || maintenance.getId() <= 0) {
             return false;
         }
-        return deleteMantenanceById(maintenance.getId());
+        return deleteMaintenanceById(maintenance.getId());
     }
 
     @Override
-    public boolean deleteMantenanceById(int id) throws SQLException {
+    public boolean deleteMaintenanceById(int id) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
         }

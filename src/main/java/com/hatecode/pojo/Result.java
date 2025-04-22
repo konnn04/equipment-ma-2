@@ -4,10 +4,10 @@ import java.util.List;
 
 public enum Result {
     // Enum values
-    NORMALLY(1, "Bình thường"),
-    NEED_REPAIR(2, "Cần sửa chữa"),
-    BROKEN(3, "Hỏng"),
-    NEEDS_DISPOSAL(4, "Cần thanh lý");
+    NORMALLY(1, "Normally"),
+    NEED_REPAIR(2, "Need repair"),
+    BROKEN(3, "Broken"),
+    NEEDS_DISPOSAL(4, "Needs disposal");
 
     private final int code;
     private final String name;

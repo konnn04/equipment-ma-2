@@ -4,7 +4,6 @@ import com.hatecode.pojo.Maintenance;
 import com.hatecode.pojo.MaintenanceStatus;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
 import com.hatecode.utils.ExceptionMessage;
-import com.hatecode.utils.Format;
 import com.hatecode.utils.TestDBUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,11 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,7 +53,9 @@ public class MaintenanceServiceImplTest {
 
     @AfterEach
     void clearTestChanges() throws SQLException {
-        if (conn != null) conn.close();
+        if (conn != null && !conn.isClosed()) {
+            conn.close();
+        }
     }
 
     /* =============================================================================
@@ -130,7 +127,7 @@ public class MaintenanceServiceImplTest {
     @Test
     void testGetMaintenanceById_Success() throws SQLException {
         // Act
-        Maintenance maintenance = maintenanceService.getMantenanceById(1);
+        Maintenance maintenance = maintenanceService.getMaintenanceById(1);
         // Assert
         assertNotNull(maintenance);
         assertEquals("Maintenance #1 - Regular", maintenance.getTitle());
@@ -139,7 +136,7 @@ public class MaintenanceServiceImplTest {
     @Test
     void testGetMaintenanceById_NotFound() throws SQLException {
         // Act
-        Maintenance maintenance = maintenanceService.getMantenanceById(999);
+        Maintenance maintenance = maintenanceService.getMaintenanceById(999);
         // Assert
         assertNull(maintenance);
     }
@@ -156,7 +153,7 @@ public class MaintenanceServiceImplTest {
                 LocalDateTime.of(2025, 9, 20, 18, 0)
         );
         // Act
-        boolean result = maintenanceService.addMantenance(maintenance);
+        boolean result = maintenanceService.addMaintenance(maintenance);
         // Assert
         assertTrue(result, "Failed to add maintenance");
     }
@@ -172,7 +169,7 @@ public class MaintenanceServiceImplTest {
         );
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            maintenanceService.addMantenance(maintenance);
+            maintenanceService.addMaintenance(maintenance);
         });
         assertEquals(ExceptionMessage.MAINTENANCE_START_DATE_INVALID, e.getMessage(), "Start date must be before end date");
     }
@@ -188,7 +185,7 @@ public class MaintenanceServiceImplTest {
         );
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            maintenanceService.addMantenance(maintenance);
+            maintenanceService.addMaintenance(maintenance);
         });
         assertEquals(ExceptionMessage.MAINTENANCE_NAME_EMPTY, e.getMessage(), "Title cannot be empty");
     }
@@ -200,24 +197,24 @@ public class MaintenanceServiceImplTest {
     void testUpdateMaintenance_Success() throws SQLException {
         // Arrange
         String newTitle = "Maintenance #1 - Updated";
-        Maintenance maintenance = maintenanceService.getMantenanceById(1);
+        Maintenance maintenance = maintenanceService.getMaintenanceById(1);
         maintenance.setTitle(newTitle);
         // Act
-        boolean result = maintenanceService.updateMantenance(maintenance);
+        boolean result = maintenanceService.updateMaintenance(maintenance);
         // Assert
         assertTrue(result, "Failed to update maintenance");
-        assertEquals(newTitle, maintenanceService.getMantenanceById(1).getTitle(), "Message: Title not updated");
+        assertEquals(newTitle, maintenanceService.getMaintenanceById(1).getTitle(), "Message: Title not updated");
     }
 
     @Test
     void testUpdateMaintenance_InvalidStartDate() throws SQLException {
         // Arrange
-        Maintenance maintenance = maintenanceService.getMantenanceById(1);
+        Maintenance maintenance = maintenanceService.getMaintenanceById(1);
         maintenance.setStartDateTime(LocalDateTime.of(2025, 9, 20, 18, 0));
         maintenance.setEndDateTime(LocalDateTime.of(2025, 8, 1, 8, 0));
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            maintenanceService.updateMantenance(maintenance);
+            maintenanceService.updateMaintenance(maintenance);
         });
         assertEquals(ExceptionMessage.MAINTENANCE_START_DATE_INVALID, e.getMessage(), "Start date must be before end date");
     }
@@ -225,11 +222,11 @@ public class MaintenanceServiceImplTest {
     @Test
     void testUpdateMaintenance_EmptyTitle() throws SQLException {
         // Arrange
-        Maintenance maintenance = maintenanceService.getMantenanceById(1);
+        Maintenance maintenance = maintenanceService.getMaintenanceById(1);
         maintenance.setTitle("");
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            maintenanceService.updateMantenance(maintenance);
+            maintenanceService.updateMaintenance(maintenance);
         });
         assertEquals(ExceptionMessage.MAINTENANCE_NAME_EMPTY, e.getMessage(), "Title cannot be empty");
     }
@@ -245,7 +242,7 @@ public class MaintenanceServiceImplTest {
         );
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            maintenanceService.updateMantenance(maintenance);
+            maintenanceService.updateMaintenance(maintenance);
         });
         assertEquals(ExceptionMessage.MAINTENANCE_ID_NULL, e.getMessage(), "Title already exists");
     }
@@ -256,27 +253,27 @@ public class MaintenanceServiceImplTest {
     @Test
     void testDeleteMaintenance_Success() throws SQLException {
         // Arrange
-        Maintenance maintenance = maintenanceService.getMantenanceById(1);
+        Maintenance maintenance = maintenanceService.getMaintenanceById(1);
         // Act
-        boolean result = maintenanceService.deleteMantenance(maintenance);
+        boolean result = maintenanceService.deleteMaintenance(maintenance);
         // Assert
         assertTrue(result, "Failed to delete maintenance");
-        assertNull(maintenanceService.getMantenanceById(1), "Maintenance should be deleted");
+        assertNull(maintenanceService.getMaintenanceById(1), "Maintenance should be deleted");
     }
 
     @Test
     void testDeleteMaintenanceById_Success() throws SQLException {
         // Act
-        boolean result = maintenanceService.deleteMantenanceById(1);
+        boolean result = maintenanceService.deleteMaintenanceById(1);
         // Assert
         assertTrue(result, "Failed to delete maintenance");
-        assertNull(maintenanceService.getMantenanceById(1), "Maintenance should be deleted");
+        assertNull(maintenanceService.getMaintenanceById(1), "Maintenance should be deleted");
     }
 
     @Test
     void testDeleteMaintenanceById_NotFound() throws SQLException {
         // Act
-        boolean result = maintenanceService.deleteMantenanceById(999);
+        boolean result = maintenanceService.deleteMaintenanceById(999);
         // Assert
         assertFalse(result, "Maintenance should not be found");
     }

@@ -9,9 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageServiceImpl implements ImageService {
+    private final Connection externalConn;
+    private boolean isTestingConnect = false;
 
+    public ImageServiceImpl() {
+        this.externalConn = null;
+    }
 
+    public ImageServiceImpl(Connection conn) {
+        this.externalConn = conn;
+        this.isTestingConnect = true;
+    }
 
+    private Connection getConnection() throws SQLException {
+        if (externalConn != null) return externalConn;
+        return JdbcUtils.getConn();
+    }
+    
     public static Image extractImage(ResultSet rs) throws SQLException{
         return new Image(
                 rs.getInt("id"),
@@ -25,7 +39,7 @@ public class ImageServiceImpl implements ImageService {
     public List<Image> getImages() throws SQLException {
         List<Image> images = new ArrayList<>();
 
-        try (Connection conn = JdbcUtils.getConn()) {
+        try (Connection conn = getConnection()) {
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT * FROM Image");
 
@@ -56,7 +70,7 @@ public class ImageServiceImpl implements ImageService {
         Image image = null;
         String sql = "SELECT * FROM Image WHERE id = ?";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
@@ -72,7 +86,7 @@ public class ImageServiceImpl implements ImageService {
     public boolean addImage(Image image) throws SQLException {
         String sql = "INSERT INTO Image (filename, created_at, path) VALUES (?, ?, ?)";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
             pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
@@ -89,7 +103,7 @@ public class ImageServiceImpl implements ImageService {
 
         String sql = "UPDATE Image SET filename = ?, created_at = ?, path = ? WHERE id = ?";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
             pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
@@ -119,7 +133,7 @@ public class ImageServiceImpl implements ImageService {
         if (id <= 0) throw new IllegalArgumentException("ID must be positive");
         String sql = "DELETE FROM Image WHERE id = ?";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
 
@@ -143,7 +157,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Image getImageByPath(String path) throws SQLException {
         String sql = "SELECT * FROM image WHERE path = ?";
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setString(1, path);
             try (ResultSet rs = stm.executeQuery()) {
                 if (rs.next()) {

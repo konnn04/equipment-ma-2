@@ -1,24 +1,41 @@
 package com.hatecode.services.impl;
 
-//import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Role;
 import com.hatecode.services.ImageService;
+import com.hatecode.utils.EmailValidator;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
 
 import java.io.File;
 
 import com.hatecode.services.UserService;
+import com.hatecode.utils.PasswordUtils;
+
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
-    private final CloundinaryServiceImpl cloudiServices = new CloundinaryServiceImpl();
+    private final Connection externalConn;
+    private boolean isConnectTesting = false;
+    private final CloudinaryServiceImpl cloudiServices = new CloudinaryServiceImpl();
+    
+    public UserServiceImpl() {
+        this.externalConn = null;
+    }
+    
+    public UserServiceImpl(Connection conn) {
+        this.externalConn = conn;
+        this.isConnectTesting = true;
+    }
+    
+    private Connection getConnection() throws SQLException {
+        if (externalConn != null) return externalConn;
+        return JdbcUtils.getConn();
+    }
 
     public static User extractUser(ResultSet rs) throws SQLException {
         return new User(
@@ -59,7 +76,7 @@ public class UserServiceImpl implements UserService {
             sql += "AND u.role = ? ";
         }
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
 
             int paramIndex = 1;
 
@@ -93,10 +110,10 @@ public class UserServiceImpl implements UserService {
         String sql = "SELECT u.*, i.* "
                 + "FROM user u "
                 + "JOIN image i "
-                + "ON u.avatar = i.id "
+                + "ON u.avatar_id = i.id "
                 + "WHERE u.id = ? ";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
             user = getUser(user, pstmt);
@@ -121,7 +138,7 @@ public class UserServiceImpl implements UserService {
                 + "FROM user u\n"
                 + "WHERE u.username = ?";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, username);
             user = getUser(user, pstmt);
@@ -143,18 +160,15 @@ public class UserServiceImpl implements UserService {
 
         Connection conn = null;
         try {
-            conn = JdbcUtils.getConn();
+            conn = getConnection();
             conn.setAutoCommit(false); // Bắt đầu transaction
             if (image != null) { // Trường hợp có chọn ảnh
-                String sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
+                String sqlImage = "INSERT INTO image (filename, created_at, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, image.getFilename());
                     pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
                     pstmt.setString(3, image.getPath());
-                    System.out.println(image.getFilename());
-
                     pstmt.executeUpdate();
-
                     // Lấy ID vừa tạo
                     try (ResultSet rs = pstmt.getGeneratedKeys()) {
                         if (rs.next()) {
@@ -165,7 +179,7 @@ public class UserServiceImpl implements UserService {
             }
 
             // 2. Thêm User
-            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar) "
+            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar_id) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
                 pstmt.setString(1, user.getFirstName());
@@ -214,10 +228,10 @@ public class UserServiceImpl implements UserService {
 
 //        Connection conn = null;
         try {
-//            conn = JdbcUtils.getConn();
+//            conn = getConnection();
             conn.setAutoCommit(false); // Bắt đầu transaction
             if (image != null) { // Trường hợp có chọn ảnh
-                String sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
+                String sqlImage = "INSERT INTO image (filename, created_at, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, image.getFilename());
                     pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
@@ -236,7 +250,7 @@ public class UserServiceImpl implements UserService {
             }
 
             // 2. Thêm User
-            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar) "
+            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar_id) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
                 pstmt.setString(1, user.getFirstName());
@@ -278,7 +292,7 @@ public class UserServiceImpl implements UserService {
         String sql = "UPDATE User SET first_name = ?, last_name = ?, username = ?, password = ?, "
                 + "email = ?, phone = ?, role = ?, is_active = ? WHERE id = ?";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, user.getFirstName());
             pstmt.setString(2, user.getLastName());
@@ -307,18 +321,18 @@ public class UserServiceImpl implements UserService {
 
         Connection conn = null;
         try {
-            conn = JdbcUtils.getConn();
+            conn = getConnection();
             conn.setAutoCommit(false); // Bắt đầu transaction
             int newImgId = 1;
             if (newImage != null) {
                 String sqlImage = "";
                 if (newImage.getId() != 0) {
-                    sqlImage = "UPDATE image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
+                    sqlImage = "UPDATE image SET filename = ?, created_at = ?, path = ? WHERE id = ?";
                     ImageService imageService = new ImageServiceImpl();
                     Image oldImage = imageService.getImageById(newImage.getId());
                     this.deleteUserImage(oldImage.getPath());
                 } else {
-                    sqlImage = "INSERT INTO image (filename, created_date, path) VALUES (?, ?, ?)";
+                    sqlImage = "INSERT INTO image (filename, created_at, path) VALUES (?, ?, ?)";
                 }
 
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
@@ -341,7 +355,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
             String sql = "UPDATE User SET first_name = ?, last_name = ?,username = ?, password = ?, "
-                    + "email = ?, phone = ?, role = ?, is_active = ?, avatar = ? WHERE id = ?";
+                    + "email = ?, phone = ?, role = ?, is_active = ?, avatar_id = ? WHERE id = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, user.getFirstName());
                 pstmt.setString(2, user.getLastName());
@@ -379,7 +393,7 @@ public class UserServiceImpl implements UserService {
     public boolean deleteUser(int id) throws SQLException, NullPointerException {
         Connection conn = null;
         try {
-            conn = JdbcUtils.getConn();
+            conn = getConnection();
             conn.setAutoCommit(false);
 
             User u = getUserById(id);
@@ -440,12 +454,12 @@ public class UserServiceImpl implements UserService {
     // https://res.cloudinary.com/dg66aou8q/image/upload/v1743086605/dysaruyl1ye7xejpakbp.png
     @Override
     public User authenticateUser(String username, String password) throws SQLException {
-        String sql = "SELECT u.*, i.id as avatarId, i.filename, i.created_date, i.path\n"
+        String sql = "SELECT u.*, i.id as avatarId, i.filename, i.created_at, i.path\n"
                 + "FROM User u\n"
-                + "LEFT JOIN image i ON u.avatar = i.id\n"
+                + "LEFT JOIN image i ON u.avatar_id = i.id\n"
                 + "WHERE username = ?";
 
-        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {

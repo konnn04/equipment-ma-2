@@ -224,44 +224,44 @@ public class UserController implements Initializable {
     }
 
     private void createNewUser() throws NoSuchAlgorithmException, InvalidKeySpecException, SQLException {
-        try {
-            String salt = PasswordUtils.generateSalt();
-            String hashedPassword = PasswordUtils.hashPassword(passwordField.getText(), salt);
-            Role selectedRole = roleComboBox.getSelectionModel().getSelectedItem();
-            UserService services = new UserServiceImpl();
-            com.hatecode.pojo.Image avatar = null;
-            if (selectedAvatarFile != null) {
-                String imgUrl = services.uploadUserImage(selectedAvatarFile);
-                String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
-                avatar = new com.hatecode.pojo.Image(
-                        fileName,
-                        new Date(),
-                        imgUrl
-                );
-            }
-
-            this.currentUser = new User(
-                    firstNameField.getText(),
-                    lastNameField.getText(),
-                    usernameField.getText(),
-                    hashedPassword,
-                    emailField.getText(),
-                    phoneField.getText(),
-                    selectedRole,
-                    isActiveCheckBox.isSelected(),
-                    avatar.getId()
-            );
-            if (services.addUser(currentUser)) {
-                showInfoAlert("Succesfully", "Add new user Successfully");
-                loadUsers(null, 0);
-            } else {
-                showErrorAlert("Failed", "Error", "Failed to add new user");
-            }
-            clearForm();
-        } catch (Exception e) {
-            showErrorAlert("Error", "Error", "Failed when add user");
-            throw e;
-        }
+//        try {
+//            String salt = PasswordUtils.generateSalt();
+//            String hashedPassword = PasswordUtils.hashPassword(passwordField.getText(), salt);
+//            Role selectedRole = roleComboBox.getSelectionModel().getSelectedItem();
+//            UserService services = new UserServiceImpl();
+//            com.hatecode.pojo.Image avatar = null;
+//            if (selectedAvatarFile != null) {
+//                String imgUrl = services.uploadUserImage(selectedAvatarFile);
+//                String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
+//                avatar = new com.hatecode.pojo.Image(
+//                        fileName,
+//                        new Date(),
+//                        imgUrl
+//                );
+//            }
+//
+//            this.currentUser = new User(
+//                    firstNameField.getText(),
+//                    lastNameField.getText(),
+//                    usernameField.getText(),
+//                    hashedPassword,
+//                    emailField.getText(),
+//                    phoneField.getText(),
+//                    selectedRole,
+//                    isActiveCheckBox.isSelected(),
+//                    avatar.getId()
+//            );
+//            if (services.addUser(currentUser)) {
+//                showInfoAlert("Succesfully", "Add new user Successfully");
+//                loadUsers(null, 0);
+//            } else {
+//                showErrorAlert("Failed", "Error", "Failed to add new user");
+//            }
+//            clearForm();
+//        } catch (Exception e) {
+//            showErrorAlert("Error", "Error", "Failed when add user");
+//            throw e;
+//        }
     }
 
     private void clearForm() {
@@ -294,66 +294,66 @@ public class UserController implements Initializable {
     }
 
     private void saveUser() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
-        try {
-            UserService userService = new UserServiceImpl();
-
-            // Cập nhật thông tin từ form vào đối tượng user
-            currentUser.setFirstName(firstNameField.getText());
-            currentUser.setLastName(lastNameField.getText());
-            if (passwordField.getText().isEmpty() || passwordField.getText() == null) { // Không thay đổi mật khẩu
-                currentUser.setPassword(currentUser.getPassword());
-            } else { // Thay đổi mật khẩu
-                String salt = PasswordUtils.generateSalt();
-                String hashedPassword = PasswordUtils.hashPassword(passwordField.getText(), salt);
-                currentUser.setPassword(hashedPassword);
-            }
-            currentUser.setUsername(usernameField.getText());
-            currentUser.setEmail(emailField.getText());
-            currentUser.setPhone(phoneField.getText());
-            currentUser.setRole(roleComboBox.getSelectionModel().getSelectedItem());
-            currentUser.setActive(isActiveCheckBox.isSelected());
-
-
-            if (currentUser.getId() == 0) {
-                // Thêm mới
-                userService.addUser(currentUser);
-                showInfoAlert("Thành công", "Thêm người dùng thành công");
-            } else {
-                com.hatecode.pojo.Image currUserImg = null;
-                if (selectedAvatarFile != null) {
-                    UserService services = new UserServiceImpl();
-                    String imgUrl = services.uploadUserImage(selectedAvatarFile);
-                    ImageService imgServices = new ImageServiceImpl();
-                    String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
-                    // Nếu là hình mặc định thì tạo mới
-                    if (currentUser.getAvatarId() == 1) {
-                        currUserImg = new com.hatecode.pojo.Image();
-                        currUserImg.setId(0);
-                    } else {
-                        currUserImg = imgServices.getImageById(currentUser.getAvatarId());
-                    }
-                    currUserImg.setFilename(fileName);
-                    currUserImg.setPath(imgUrl);
-                    currUserImg.setCreateDate(new Date());
-                }
-                if (userService.updateUser(currentUser, currUserImg)) {
-                    showInfoAlert("Thành công", "Cập nhật người dùng thành công");
-                    loadUsers(null, 0);
-                }
-            }
-
-            // Làm mới danh sách
-            loadUsers(txtSearchUser.getText(),
-                    roles.getSelectionModel().getSelectedItem() != null ?
-                            roles.getSelectionModel().getSelectedItem().getId() : 0);
-
-        } catch (SQLException e) {
-            showErrorAlert("Lỗi", "Không thể lưu người dùng", e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            showErrorAlert("Lỗi", "Dữ liệu không hợp lệ", e.getMessage());
-            throw e;
-        }
+//        try {
+//            UserService userService = new UserServiceImpl();
+//
+//            // Cập nhật thông tin từ form vào đối tượng user
+//            currentUser.setFirstName(firstNameField.getText());
+//            currentUser.setLastName(lastNameField.getText());
+//            if (passwordField.getText().isEmpty() || passwordField.getText() == null) { // Không thay đổi mật khẩu
+//                currentUser.setPassword(currentUser.getPassword());
+//            } else { // Thay đổi mật khẩu
+//                String salt = PasswordUtils.generateSalt();
+//                String hashedPassword = PasswordUtils.hashPassword(passwordField.getText(), salt);
+//                currentUser.setPassword(hashedPassword);
+//            }
+//            currentUser.setUsername(usernameField.getText());
+//            currentUser.setEmail(emailField.getText());
+//            currentUser.setPhone(phoneField.getText());
+//            currentUser.setRole(roleComboBox.getSelectionModel().getSelectedItem());
+//            currentUser.setActive(isActiveCheckBox.isSelected());
+//
+//
+//            if (currentUser.getId() == 0) {
+//                // Thêm mới
+//                userService.addUser(currentUser);
+//                showInfoAlert("Thành công", "Thêm người dùng thành công");
+//            } else {
+//                com.hatecode.pojo.Image currUserImg = null;
+//                if (selectedAvatarFile != null) {
+//                    UserService services = new UserServiceImpl();
+//                    String imgUrl = services.uploadUserImage(selectedAvatarFile);
+//                    ImageService imgServices = new ImageServiceImpl();
+//                    String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
+//                    // Nếu là hình mặc định thì tạo mới
+//                    if (currentUser.getAvatarId() == 1) {
+//                        currUserImg = new com.hatecode.pojo.Image();
+//                        currUserImg.setId(0);
+//                    } else {
+//                        currUserImg = imgServices.getImageById(currentUser.getAvatarId());
+//                    }
+//                    currUserImg.setFilename(fileName);
+//                    currUserImg.setPath(imgUrl);
+//                    currUserImg.setCreateDate(new Date());
+//                }
+//                if (userService.updateUser(currentUser, currUserImg)) {
+//                    showInfoAlert("Thành công", "Cập nhật người dùng thành công");
+//                    loadUsers(null, 0);
+//                }
+//            }
+//
+//            // Làm mới danh sách
+//            loadUsers(txtSearchUser.getText(),
+//                    roles.getSelectionModel().getSelectedItem() != null ?
+//                            roles.getSelectionModel().getSelectedItem().getId() : 0);
+//
+//        } catch (SQLException e) {
+//            showErrorAlert("Lỗi", "Không thể lưu người dùng", e.getMessage());
+//            throw e;
+//        } catch (Exception e) {
+//            showErrorAlert("Lỗi", "Dữ liệu không hợp lệ", e.getMessage());
+//            throw e;
+//        }
     }
 
     private void setupDetailForm() {

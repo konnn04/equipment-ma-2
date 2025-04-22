@@ -10,9 +10,9 @@ public interface MaintenanceService {
     List<Maintenance> getMaintenances() throws SQLException;
     List<Maintenance> getMaintenances(String query) throws SQLException;
     List<Maintenance> getMaintenances(String query, MaintenanceStatus status)  throws SQLException;
-    Maintenance getMantenanceById(int id) throws SQLException;
-    boolean addMantenance(Maintenance maintenance) throws SQLException;
-    boolean updateMantenance(Maintenance maintenance) throws SQLException;
-    boolean deleteMantenance(Maintenance maintenance) throws SQLException;
-    boolean deleteMantenanceById(int id) throws SQLException;
+    Maintenance getMaintenanceById(int id) throws SQLException;
+    boolean addMaintenance(Maintenance maintenance) throws SQLException;
+    boolean updateMaintenance(Maintenance maintenance) throws SQLException;
+    boolean deleteMaintenance(Maintenance maintenance) throws SQLException;
+    boolean deleteMaintenanceById(int id) throws SQLException;
 }
