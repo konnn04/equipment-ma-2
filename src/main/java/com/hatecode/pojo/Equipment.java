@@ -4,7 +4,7 @@
  */
 package com.hatecode.pojo;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 /**
  * @author ADMIN
  */
@@ -14,10 +14,10 @@ public class Equipment {
     private String name;
     private Status status;
     private int categoryId;
-    private Date createdAt;
+    private LocalDateTime createdAt;
     private int imageId;
     private int regularMaintenanceDay;
-    private Date lastMaintenanceTime;
+    private LocalDateTime lastMaintenanceTime;
     private String description;
     private boolean isActive;
 
@@ -63,10 +63,10 @@ public class Equipment {
             String name,
             Status status,
             int categoryId,
-            Date createdAt,
+            LocalDateTime createdAt,
             int imageId,
             int regularMaintenanceDay,
-            Date lastMaintenanceTime,
+            LocalDateTime lastMaintenanceTime,
             String description,
             boolean isActive) {
         this.id = id;
@@ -110,11 +110,11 @@ public class Equipment {
         this.status = status;
     }
 
-    public Date getcreatedAt() {
+    public LocalDateTime getcreatedAt() {
         return createdAt;
     }
 
-    public void setcreatedAt(Date createdAt) {
+    public void setcreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -126,11 +126,11 @@ public class Equipment {
         this.regularMaintenanceDay = regularMaintenanceDay;
     }
 
-    public Date getLastMaintenanceTime() {
+    public LocalDateTime getLastMaintenanceTime() {
         return lastMaintenanceTime;
     }
 
-    public void setLastMaintenanceTime(Date lastMaintenanceTime) {
+    public void setLastMaintenanceTime(LocalDateTime lastMaintenanceTime) {
         this.lastMaintenanceTime = lastMaintenanceTime;
     }
 

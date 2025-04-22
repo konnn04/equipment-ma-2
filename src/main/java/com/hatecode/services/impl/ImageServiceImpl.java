@@ -2,7 +2,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Image;
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.services.interfaces.ImageService;
+import com.hatecode.services.ImageService;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -91,12 +91,9 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public boolean deleteImage(int id) throws SQLException {
         String sql = "DELETE FROM Image WHERE id = ?";
-
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, id);
-
             return pstmt.executeUpdate() > 0;
         }
     }

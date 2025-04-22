@@ -1,6 +1,6 @@
 package com.hatecode.pojo;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class User
 {
@@ -14,7 +14,7 @@ public class User
     private Role role;
     private boolean isActive;
     private int avatarId;
-    private Date created_date;
+    private LocalDateTime created_date;
 
     public User() {
     }

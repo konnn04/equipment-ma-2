@@ -2,10 +2,9 @@ package com.hatecode.services.impl;
 
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.MaintenanceRepairSuggestion;
-import com.hatecode.services.interfaces.MaintenanceRepairSuggestionService;
+import com.hatecode.services.MaintenanceRepairSuggestionService;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +76,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
         if (maintenanceRepairSuggestion.getSuggestPrice() < 0) {
             throw new SQLException("Suggested price cannot be negative");
         }
-        
+
         String sql = "UPDATE Maintenance_Repair_Suggestion SET name = ?, description = ?, suggest_price = ? WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn();

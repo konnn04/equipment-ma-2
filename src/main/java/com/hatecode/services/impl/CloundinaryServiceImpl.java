@@ -7,7 +7,7 @@ package com.hatecode.services.impl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.hatecode.config.AppConfig;
-import com.hatecode.services.interfaces.CloundinaryServices;
+import com.hatecode.services.CloundinaryService;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,11 +19,11 @@ import java.util.logging.Logger;
 /**
  * @author ADMIN
  */
-public class CloundinaryServicesImpl implements CloundinaryServices {
+public class CloundinaryServiceImpl implements CloundinaryService {
 
     private final Cloudinary cloudinary;
 
-    public CloundinaryServicesImpl() {
+    public CloundinaryServiceImpl() {
         this.cloudinary = new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", AppConfig.CLOUD_NAME,
                 "api_key", AppConfig.API_KEY,
@@ -45,7 +45,7 @@ public class CloundinaryServicesImpl implements CloundinaryServices {
             uploadResult = cloudinary.uploader().upload(imageFile, ObjectUtils.emptyMap());
             return uploadResult.get("secure_url").toString();
         } catch (IOException ex) {
-            Logger.getLogger(CloundinaryServicesImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CloundinaryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -57,7 +57,7 @@ public class CloundinaryServicesImpl implements CloundinaryServices {
             Map<?, ?> result = cloudinary.uploader().destroy(extractID, ObjectUtils.emptyMap());
             return "ok".equals(result.get("result"));
         } catch (IOException ex) {
-            Logger.getLogger(CloundinaryServicesImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CloundinaryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }

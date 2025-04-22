@@ -4,9 +4,9 @@ import com.hatecode.pojo.*;
 import com.hatecode.services.impl.EquipmentMaintenanceServiceImpl;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
 import com.hatecode.services.impl.UserServiceImpl;
-import com.hatecode.services.interfaces.EquipmentMaintenanceService;
-import com.hatecode.services.interfaces.MaintenanceService;
-import com.hatecode.services.interfaces.UserService;
+import com.hatecode.services.EquipmentMaintenanceService;
+import com.hatecode.services.MaintenanceService;
+import com.hatecode.services.UserService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
@@ -169,12 +169,10 @@ public class    RecordNewRepairManager {
         this.equipmentID.setText(String.valueOf(e.getEquipmentId()));
         User technician = userService.getUserById(e.getTechnicianId());
         this.EquipmentMaintenanceTechnician.setText(String.valueOf(technician.getLastName() + " " + technician.getFirstName()));
-        // Xử lý java.sql.Date
-        Date sqlDate = e.getInspectionDate();
-        if (sqlDate != null) {
-            // Chuyển đổi java.util.Date -> LocalDate
-            LocalDate localDate = sqlDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            this.inspectionDate.setValue(localDate);
+        // Xử lý
+        LocalDateTime localDateTime = e.getInspectionDate();
+        if (localDateTime != null) {
+            this.inspectionDate.setValue(LocalDate.from(localDateTime));
         } else {
             this.inspectionDate.setValue(null); // hoặc set ngày mặc định nếu cần
         }
@@ -204,8 +202,10 @@ public class    RecordNewRepairManager {
         // Cập nhật ngày kiểm tra
         if (inspectionDate.getValue() != null) {
             LocalDate localDate = inspectionDate.getValue();
-            Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            currentEquipmentMaintenance.setInspectionDate(date);
+            Instant instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+//            currentEquipmentMaintenance.setInspectionDate(
+//                    LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+//            );
         } else {
             currentEquipmentMaintenance.setInspectionDate(null);
         }

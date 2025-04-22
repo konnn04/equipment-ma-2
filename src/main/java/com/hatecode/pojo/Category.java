@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.hatecode.pojo;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 
 /**
@@ -14,7 +14,7 @@ public class Category {
     private int id;
     private String name;
     private Boolean isActive;
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     public Category() {
     }
@@ -23,7 +23,7 @@ public class Category {
             int id,
             String name,
             Boolean isActive,
-            Date createdAt) {
+            LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.isActive = isActive;
@@ -65,16 +65,20 @@ public class Category {
         isActive = active;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
     @Override
     public String toString() {
         return this.name;
+    }
+
+    public void setId(int anInt) {
+        this.id = anInt;
     }
 }
