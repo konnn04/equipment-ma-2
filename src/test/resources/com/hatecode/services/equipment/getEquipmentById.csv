@@ -1,0 +1,6 @@
+id,code,name,status,category,image,regular_maintenance_day,description
+1,ELEC001,Laptop,2,1,1,180,"Máy tính xách tay văn phòng"
+2,MACH001,"Máy khoan",3,2,1,90,"Máy khoan công nghiệp"
+3,VEH001,"Xe tải",4,3,1,365,"Xe tải giao hàng"
+4,FURN001,"Ghế văn phòng",2,4,1,30,"Ghế công thái học"
+5,TOOL001,"Bộ tua vít",1,5,1,30,"Bộ dụng cụ cơ bản"

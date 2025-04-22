@@ -1,6 +1,5 @@
 package com.hatecode.pojo;
 
-
 import java.time.LocalDateTime;
 
 public class MaintenanceRepairSuggestion {
@@ -20,6 +19,17 @@ public class MaintenanceRepairSuggestion {
             float suggestPrice,
             LocalDateTime createdAt) {
         this.id = id;
+        this.name = name;
+        this.description = description;
+        this.suggestPrice = suggestPrice;
+        this.createdAt = createdAt;
+    }
+
+    public MaintenanceRepairSuggestion(
+            String name,
+            String description,
+            float suggestPrice,
+            LocalDateTime createdAt) {
         this.name = name;
         this.description = description;
         this.suggestPrice = suggestPrice;

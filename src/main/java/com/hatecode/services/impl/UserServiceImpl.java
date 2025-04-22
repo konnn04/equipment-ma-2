@@ -154,7 +154,7 @@ public class UserServiceImpl implements UserService {
                 String sqlImage = "INSERT INTO image (filename, created_at, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, image.getFilename());
-                    pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreateDate()));
+                    pstmt.setTimestamp(2, new Timestamp(image.getCreateDate().getTime()));
                     pstmt.setString(3, image.getPath());
 
                     pstmt.executeUpdate();
@@ -242,7 +242,7 @@ public class UserServiceImpl implements UserService {
 
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, newImage.getFilename());
-                    pstmt.setTimestamp(2, Timestamp.valueOf(newImage.getCreateDate()));
+                    pstmt.setTimestamp(2, new Timestamp(newImage.getCreateDate().getTime()));
                     pstmt.setString(3, newImage.getPath());
                     if (newImage.getId() != 0) {
                         pstmt.setInt(4, newImage.getId());

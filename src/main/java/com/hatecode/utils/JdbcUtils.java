@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public class JdbcUtils {
 
     public static Supplier<Connection> connectionProvider = JdbcUtils::getConnection;
- 
+
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");

@@ -1,11 +1,11 @@
 package com.hatecode.pojo;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class Image {
     private int id;
     private String filename;
-    private LocalDateTime createDate;
+    private Date createDate;
     private String path;
 
     public Image() {
@@ -16,13 +16,13 @@ public class Image {
         this.path = path;
     }
 
-    public Image(String filename, LocalDateTime createDate, String path) {
+    public Image(String filename, Date createDate, String path) {
         this.filename = filename;
         this.createDate = createDate;
         this.path = path;
     }
 
-    public Image(int id, String filename, LocalDateTime createDate, String path) {
+    public Image(int id, String filename, Date createDate, String path) {
         this.id = id;
         this.filename = filename;
         this.createDate = createDate;
@@ -46,11 +46,11 @@ public class Image {
         this.filename = filename;
     }
 
-    public LocalDateTime getCreateDate() {
+    public Date getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
+    public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
