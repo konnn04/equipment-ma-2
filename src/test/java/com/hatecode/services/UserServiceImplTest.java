@@ -42,21 +42,21 @@ public class UserServiceImplTest {
         sampleUser.setRole(Role.fromId(1));
         sampleUser.setActive(true);
 
-        String sql = """
-INSERT INTO Image (filename, path)
-VALUES ('default_avatar.png','/images/default.png'),
-       ('test_avatar.png', '/images/test_avatar.png');
-
-INSERT INTO `User` (first_name, last_name, username, password, email, phone, role)
-VALUES ('Default', 'Image', 'defaultimg', 'password123', 'default@example.com', '0123456789', 1);
-
-INSERT INTO `User` (first_name, last_name, username, password, email, phone, role, avatar_id)
-VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '0123456781', 1, 1);
-""";
-        try (Connection conn = JdbcUtils.getConn();
-             Statement statement = conn.createStatement()) {
-            statement.executeUpdate(sql);
-        }
+//        String sql = """
+//INSERT INTO Image (filename, path)
+//VALUES ('default_avatar.png','/images/default.png'),
+//       ('test_avatar.png', '/images/test_avatar.png');
+//
+//INSERT INTO `User` (first_name, last_name, username, password, email, phone, role,avatar_id)
+//VALUES ('Default', 'Image', 'defaultimg', 'password123', 'default@example.com', '0123456789', 1,1);
+//
+//INSERT INTO `User` (first_name, last_name, username, password, email, phone, role, avatar_id)
+//VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '0123456781', 1, 1);
+//""";
+//        try (Connection conn = JdbcUtils.getConn();
+//             Statement statement = conn.createStatement()) {
+//            statement.executeUpdate(sql);
+//        }
     }
 
     @AfterEach

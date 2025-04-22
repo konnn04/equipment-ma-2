@@ -1,5 +1,5 @@
 firstName,lastName,username,password,email,phone,roleId,isActive,avatarId,expectedOutput
-John,Doe,johndoe,password123,john@example.com,123456789,1,true,1,true
+John,Doe,johndoe,password123,john@gmail.com,123456789,1,true,1,true
 Jane,Doe,johndoe,password123,jane@example.com,987654321,1,false,1,false
 Alice,Smith,alicesmith,password123,alice[at]example.com,5555555555,1,false,1,false
 Bob,Brown,bobbrown,password123,,4444444444,1,false,1,false
