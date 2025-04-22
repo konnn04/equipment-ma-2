@@ -58,6 +58,25 @@ public class Equipment {
     }
 
     public Equipment(
+            String code,
+            String name,
+            Status status,
+            int categoryId,
+            int imageId,
+            int regularMaintenanceDay,
+            String description,
+            LocalDateTime lastMaintenanceTime) {
+        this.code = code;
+        this.name = name;
+        this.status = status;
+        this.categoryId = categoryId;
+        this.imageId = imageId;
+        this.regularMaintenanceDay = regularMaintenanceDay;
+        this.description = description;
+        this.lastMaintenanceTime = lastMaintenanceTime;
+    }
+
+    public Equipment(
             int id,
             String code,
             String name,

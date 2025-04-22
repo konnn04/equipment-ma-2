@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
@@ -43,14 +44,6 @@
                 <Region prefHeight="64.0" prefWidth="881.0" HBox.hgrow="ALWAYS" />
                 <HBox alignment="CENTER_RIGHT" prefHeight="44.0" prefWidth="457.0">
                     <children>
-                        <Button mnemonicParsing="false" styleClass="secondary-button" text="Notis">
-                            <opaqueInsets>
-                                <Insets />
-                            </opaqueInsets>
-                            <HBox.margin>
-                                <Insets right="50.0" />
-                            </HBox.margin>
-                        </Button>
                         <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0">
                             <children>
                                 <Label fx:id="UIUsernameTextField" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="116.0" styleClass="" text="User name">
@@ -930,6 +923,193 @@
                     </AnchorPane>
                 </content>
             </Tab>
+         <Tab text="Notification">
+            <content>
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                     <BorderPane layoutX="173.0" layoutY="125.0" style="-fx-background-color: #FFFFFF;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <center>
+                           <SplitPane dividerPositions="0.2945492662473795" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                              <items>
+                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
+                                    <children>
+                                       <VBox layoutX="88.0" layoutY="53.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          <children>
+                                             <Label styleClass="" text="Notification List" VBox.vgrow="NEVER">
+                                                <font>
+                                                   <Font name="SF Pro Text Semibold" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+                                                </VBox.margin>
+                                             </Label>
+                                             <ListView prefWidth="200.0" style="-fx-background-color: #F5F5F7; -fx-border-radius: 10; -fx-background-radius: 10;" VBox.vgrow="ALWAYS">
+                                                <VBox.margin>
+                                                   <Insets left="10.0" right="10.0" />
+                                                </VBox.margin>
+                                             </ListView>
+                                          </children>
+                                       </VBox>
+                                    </children>
+                                 </AnchorPane>
+                                 <AnchorPane minHeight="0.0" minWidth="0.0" style="-fx-background-color: white;">
+                                    <children>
+                                       <VBox prefHeight="476.0" prefWidth="976.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                          <padding>
+                                             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                                          </padding>
+                                          <children>
+                                             <Label text="Reminder">
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" />
+                                                </VBox.margin>
+                                                <font>
+                                                   <Font name="SF Pro Text Bold" size="20.0" />
+                                                </font>
+                                             </Label>
+                                             <Label text="You Have a Scheduled Maintenance Coming Up">
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" />
+                                                </VBox.margin>
+                                                <font>
+                                                   <Font name="SF Pro Text Bold" size="20.0" />
+                                                </font>
+                                             </Label>
+                                             <Separator prefWidth="200.0" />
+                                             <Label text="A maintenance task has been scheduled for equipment under your responsibility. Please review the details and ensure all preparations are made in advance." wrapText="true">
+                                                <font>
+                                                   <Font name="SF Pro Text Medium" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="10.0" />
+                                                </VBox.margin>
+                                             </Label>
+                                             <Label text="Date:" underline="true" wrapText="true">
+                                                <font>
+                                                   <Font name="SF Pro Text Medium" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" />
+                                                </VBox.margin>
+                                             </Label>
+                                             <Label layoutX="35.0" layoutY="117.0" text="From April 23, 2025, 02:00 AM to April 23, 2025, 04:00 AM" wrapText="true">
+                                                <font>
+                                                   <Font name="SF Pro Text Regular" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="10.0" />
+                                                </VBox.margin>
+                                             </Label>
+                                             <Label text="Description: " underline="true" wrapText="true">
+                                                <font>
+                                                   <Font name="SF Pro Text Medium" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" />
+                                                </VBox.margin>
+                                             </Label>
+                                             <Label layoutX="35.0" layoutY="153.0" text="Routine inspection and servicing of the 3D Printer - Model XT400 to ensure optimal performance, safety compliance, and to prevent unexpected breakdowns." wrapText="true">
+                                                <font>
+                                                   <Font name="SF Pro Text Regular" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="10.0" />
+                                                </VBox.margin>
+                                             </Label>
+                                             <Label layoutX="35.0" layoutY="135.0" text="Requirement to be on Maintenance List:" underline="true" wrapText="true">
+                                                <font>
+                                                   <Font name="SF Pro Text Medium" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" />
+                                                </VBox.margin>
+                                             </Label>
+                                             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="- Power off and unplug the equipment by 08:45 AM" wrappingWidth="999.21630859375">
+                                                <font>
+                                                   <Font name="SF Pro Text Regular" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" />
+                                                </VBox.margin>
+                                             </Text>
+                                             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="- Clear the workspace around the equipment" wrappingWidth="999.21630859375">
+                                                <font>
+                                                   <Font name="SF Pro Text Regular" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" />
+                                                </VBox.margin>
+                                             </Text>
+                                             <Text layoutX="35.0" layoutY="255.0" strokeType="OUTSIDE" strokeWidth="0.0" text="- Report any current issues or unusual behavior before maintenance" wrappingWidth="999.21630859375">
+                                                <font>
+                                                   <Font name="SF Pro Text Regular" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" />
+                                                </VBox.margin>
+                                             </Text>
+                                             <Text layoutX="35.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" text="- Be available for follow-up testing if needed" wrappingWidth="999.21630859375">
+                                                <font>
+                                                   <Font name="SF Pro Text Regular" size="18.0" />
+                                                </font>
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" />
+                                                </VBox.margin>
+                                             </Text>
+                                             <HBox prefHeight="30.0" prefWidth="926.0">
+                                                <children>
+                                                   <Label text="Posted By:" underline="true" wrapText="true">
+                                                      <font>
+                                                         <Font name="SF Pro Text Medium" size="18.0" />
+                                                      </font>
+                                                      <HBox.margin>
+                                                         <Insets right="5.0" />
+                                                      </HBox.margin>
+                                                   </Label>
+                                                   <Label layoutX="10.0" layoutY="10.0" text="System Administrator" wrapText="true">
+                                                      <font>
+                                                         <Font name="SF Pro Text Medium" size="18.0" />
+                                                      </font>
+                                                   </Label>
+                                                </children>
+                                                <VBox.margin>
+                                                   <Insets top="10.0" />
+                                                </VBox.margin>
+                                             </HBox>
+                                             <HBox prefHeight="30.0" prefWidth="926.0">
+                                                <children>
+                                                   <Label text="Time:" underline="true" wrapText="true">
+                                                      <font>
+                                                         <Font name="SF Pro Text Medium" size="18.0" />
+                                                      </font>
+                                                      <HBox.margin>
+                                                         <Insets right="5.0" />
+                                                      </HBox.margin>
+                                                   </Label>
+                                                   <Label layoutX="10.0" layoutY="10.0" text="09:00 AM | April 21, 2025" wrapText="true">
+                                                      <font>
+                                                         <Font name="SF Pro Text Medium" size="18.0" />
+                                                      </font>
+                                                   </Label>
+                                                </children>
+                                                <VBox.margin>
+                                                   <Insets top="5.0" />
+                                                </VBox.margin>
+                                             </HBox>
+                                          </children>
+                                       </VBox>
+                                       <Separator prefWidth="200.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+                                       <HBox alignment="CENTER_RIGHT" layoutX="14.0" layoutY="575.0" spacing="15.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+                                    </children>
+                                 </AnchorPane>
+                              </items>
+                           </SplitPane>
+                        </center>
+                     </BorderPane>
+                  </children>
+               </AnchorPane>
+            </content>
+         </Tab>
         </TabPane>
     </center>
     <bottom>

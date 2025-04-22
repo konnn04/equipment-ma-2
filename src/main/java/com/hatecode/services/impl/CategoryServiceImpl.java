@@ -13,48 +13,27 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class CategoryServiceImpl implements CategoryService {
-    private final Connection externalConn;
-    private boolean isTestingConnect = false;
-
-    public CategoryServiceImpl() {
-        this.externalConn = null;
-    }
-
-    public CategoryServiceImpl(Connection conn) {
-        this.externalConn = conn;
-        this.isTestingConnect = true;
-    }
-
-    private Connection getConnection() throws SQLException {
-        if (externalConn != null) return externalConn;
-        return JdbcUtils.getConn();
-    }
-
     // Chuyển RS thành đối tượng Category
     public static Category extractCategory(ResultSet rs) throws SQLException {
         return new Category(
                 rs.getInt("id"),
                 rs.getString("name"),
                 rs.getBoolean("is_active"),
-                rs.getTimestamp("created_at").toLocalDateTime()
-        );
+                rs.getTimestamp("created_at").toLocalDateTime());
     }
+
     @Override
     public List<Category> getCategories() throws SQLException {
         List<Category> res = new ArrayList<>();
         String sql = "SELECT * FROM category WHERE is_active=true";
-        Connection conn = getConnection();
-        try (PreparedStatement stm = conn.prepareStatement(sql);
-             ResultSet rs = stm.executeQuery()) {
+        
+        try (Connection conn = JdbcUtils.getConn();PreparedStatement stm = conn.prepareStatement(sql);
+            ) {
+            ResultSet rs = stm.executeQuery();
             while (rs.next()) {
                 res.add(extractCategory(rs));
             }
-        }
-        if (!isTestingConnect) {
-            conn.close();
         }
         return res;
     }
@@ -66,26 +45,21 @@ public class CategoryServiceImpl implements CategoryService {
         }
         List<Category> res = new ArrayList<>();
         String sql = "SELECT * FROM category WHERE name LIKE ? AND is_active=true";
-        Connection conn = getConnection();
-        try (PreparedStatement stm = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql);) {
             stm.setString(1, "%" + query + "%");
             try (ResultSet rs = stm.executeQuery()) {
                 while (rs.next()) {
                     res.add(extractCategory(rs));
                 }
             }
-        }
-        if (!isTestingConnect) {
-            conn.close();
-        }
+        } 
         return res;
     }
 
     @Override
     public Category getCategoryById(int id) throws SQLException {
         String sql = "SELECT * FROM category WHERE id = ? AND is_active=true";
-        Connection conn = getConnection();
-        try ( PreparedStatement stm = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql);) {
             stm.setInt(1, id);
             try (ResultSet rs = stm.executeQuery()) {
                 if (rs.next()) {
@@ -93,28 +67,23 @@ public class CategoryServiceImpl implements CategoryService {
                 }
             }
         }
-        if (!isTestingConnect) {
-            conn.close();
-        }
+
         return null;
     }
 
     @Override
     public List<Equipment> getEquipmentByCategory(int id) throws SQLException {
         List<Equipment> res = new ArrayList<>();
-        Connection conn = getConnection();
+
         String sql = "SELECT * FROM equipment e " +
                 "WHERE category_id = ? AND is_active=true";
-        try (PreparedStatement stm = conn.prepareCall(sql)) {
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql);) {
             stm.setInt(1, id);
             try (ResultSet rs = stm.executeQuery()) {
                 while (rs.next()) {
                     res.add(EquipmentServiceImpl.extractEquipment(rs));
                 }
             }
-        }
-        if (!isTestingConnect) {
-            conn.close();
         }
         return res;
     }
@@ -125,10 +94,10 @@ public class CategoryServiceImpl implements CategoryService {
             throw new IllegalArgumentException(ExceptionMessage.CATEGORY_NAME_EMPTY);
         }
         // Tiến hành thêm vào CSDL
-        Connection conn = getConnection();
         String sql = "INSERT INTO category (name, is_active) VALUES (?, ?)";
         int rowsAffected = 0;
-        try (PreparedStatement stm = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = JdbcUtils.getConn();
+                PreparedStatement stm = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stm.setString(1, cate.getName());
             stm.setBoolean(2, cate.isActive());
             rowsAffected = stm.executeUpdate();
@@ -143,9 +112,6 @@ public class CategoryServiceImpl implements CategoryService {
             }
             throw e;
         }
-        if (!isTestingConnect) {
-            conn.close();
-        }
         return rowsAffected > 0;
     }
 
@@ -154,10 +120,9 @@ public class CategoryServiceImpl implements CategoryService {
         if (cate == null || cate.getName() == null || cate.getName().isEmpty()) {
             throw new IllegalArgumentException(ExceptionMessage.CATEGORY_NAME_EMPTY);
         }
-        Connection conn = getConnection();
-        // Kiểm tra xem name của cate đã tồn tại trong CSDL hay chưa
         String checkSql = "SELECT * FROM category WHERE name = ? AND is_active=true";
-        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+        try (Connection conn = JdbcUtils.getConn();
+                PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
             checkStmt.setString(1, cate.getName());
             try (ResultSet rs = checkStmt.executeQuery()) {
                 if (rs.next()) {
@@ -169,7 +134,8 @@ public class CategoryServiceImpl implements CategoryService {
         // Tiến hành cập nhật vào CSDL
         String sql = "UPDATE category SET name = ?, is_active = ? WHERE id = ? AND is_active=true";
         int rowsAffected = 0;
-        try (PreparedStatement stm = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn();
+                PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setString(1, cate.getName());
             stm.setBoolean(2, cate.isActive());
             stm.setInt(3, cate.getId());
@@ -180,25 +146,18 @@ public class CategoryServiceImpl implements CategoryService {
             }
             throw e;
         }
-        if (!isTestingConnect) {
-            conn.close();
-        }
         return rowsAffected > 0;
     }
-
-
 
     @Override
     public boolean deleteCategory(int id) throws SQLException {
         String sql = "DELETE FROM category WHERE id = ? AND is_active=true";
-        Connection conn = getConnection();
+
         int rowsAffected = 0;
-        try (PreparedStatement stm = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn();
+                PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setInt(1, id);
             rowsAffected = stm.executeUpdate();
-        }
-        if (!isTestingConnect) {
-            conn.close();
         }
         return rowsAffected > 0;
     }

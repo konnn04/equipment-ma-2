@@ -5,11 +5,11 @@ import com.hatecode.pojo.MaintenanceRepairSuggestion;
 import com.hatecode.services.MaintenanceRepairSuggestionService;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggestionService {
-
+public class MaintenanceRepairSuggestionServiceImpl implements MaintenanceRepairSuggestionService {
     @Override
     public List<MaintenanceRepairSuggestion> getMaintenanceTypes() throws SQLException {
         List<MaintenanceRepairSuggestion> maintenanceRepairSuggestions = new ArrayList<>();
@@ -152,9 +152,9 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
         maintenanceType.setDescription(resultSet.getString("description"));
         maintenanceType.setSuggestPrice(resultSet.getFloat("suggest_price"));
 
-        Timestamp timestamp = resultSet.getTimestamp("created_date");
-        if (timestamp != null) {
-            maintenanceType.setcreatedAt(timestamp);
+        LocalDateTime time = resultSet.getTimestamp("created_at").toLocalDateTime();
+        if (time != null) {
+            maintenanceType.setcreatedAt(time);
         }
 
         return maintenanceType;

@@ -10,29 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceService {
-    private final Connection externalConn;
-    private boolean isTestingConnect = false;
-
-    public EquipmentMaintenanceServiceImpl() {
-        this.externalConn = null;
-    }
-
-    public EquipmentMaintenanceServiceImpl(Connection conn) {
-        this.externalConn = conn;
-        this.isTestingConnect = true;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return externalConn != null ? externalConn : JdbcUtils.getConn();
-    }
-
     // Generic method to execute database operations with proper connection handling
     private <T> T executeQuery(ThrowingFunction<Connection, T> dbOperation) throws SQLException {
-        Connection conn = getConnection();
+        Connection conn = JdbcUtils.getConn();
         try {
             return dbOperation.apply(conn);
         } finally {
-            if (!isTestingConnect && conn != null) {
+            if (conn != null) {
                 conn.close();
             }
         }

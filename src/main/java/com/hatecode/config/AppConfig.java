@@ -3,8 +3,7 @@ package com.hatecode.config;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class AppConfig {
-    private static Dotenv dotenv = Dotenv.load();
-
+    private static final Dotenv dotenv = Dotenv.load();
     public static final Integer PAGE_SIZE = 15;
 
     // Cloudinary configuration

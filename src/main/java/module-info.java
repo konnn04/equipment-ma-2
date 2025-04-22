@@ -13,8 +13,9 @@ module com.hatecode.equipmentma2 {
 
     requires java.desktop;
     requires mysql.connector.j;
-    requires dotenv.java;
-//    requires io.github.cdimascio.dotenv.java;
+    opens com.hatecode.config;
+//    requires dotenv.java;
+    requires io.github.cdimascio.dotenv.java;
     opens com.hatecode.equipmentma2 to javafx.fxml;
     exports com.hatecode.equipmentma2;
     exports com.hatecode.pojo;

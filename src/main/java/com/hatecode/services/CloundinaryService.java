@@ -16,3 +16,4 @@ public interface CloundinaryService {
     String uploadImage(File imageFile) throws SQLException;
     boolean deleteImage(String publicID) throws SQLException;
 }
+ 
