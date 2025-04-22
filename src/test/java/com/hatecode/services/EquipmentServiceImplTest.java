@@ -4,8 +4,7 @@ import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Status;
 import com.hatecode.services.impl.EquipmentServiceImpl;
-import com.hatecode.utils.TestDBUtils;
-
+import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
@@ -21,31 +20,23 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EquipmentServiceImplTest {
-    private static Connection conn;
-    private EquipmentService equipmentService;
-
     @BeforeEach
     void setupTestData() throws SQLException {
-        conn = TestDBUtils.createIsolatedConnection();
-        equipmentService = new EquipmentServiceImpl(conn);
-
+        // Reset database to clean state
+        JdbcUtils.resetDatabase();
         // Initialize test data
         String sql = """
                 
                 """;
-
-        try (Statement statement = conn.createStatement()) {
+        try (Connection conn = JdbcUtils.getConn(); // Use getConn() instead of getConnection()
+             Statement statement = conn.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @AfterEach
     void clearTestChanges() throws SQLException {
-        if (conn != null && !conn.isClosed()) {
-            conn.close();
-        }
+        JdbcUtils.closeConnection();
     }
 
     /* =============================================================================
@@ -53,6 +44,7 @@ public class EquipmentServiceImplTest {
      * ========================================================================== */
     @Test
     void testGetEquipments() throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Act
         List<Equipment> equipments = equipmentService.getEquipments();
 
@@ -81,6 +73,7 @@ public class EquipmentServiceImplTest {
             int imageId,
             int regularMaintenanceDay,
             String description) throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
 
         // Get the equipment from the service
         Equipment equipment = equipmentService.getEquipmentById(id);
@@ -112,6 +105,7 @@ public class EquipmentServiceImplTest {
             int imageId,
             int regularMaintenanceDay,
             String description) throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
 
         // Act
         Equipment equipment = equipmentService.getEquipmentById(id);
@@ -130,6 +124,7 @@ public class EquipmentServiceImplTest {
 
     @Test
     void testGetEquipmentById_NotFound() throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Act
         Equipment equipment = equipmentService.getEquipmentById(999);
 
@@ -139,6 +134,7 @@ public class EquipmentServiceImplTest {
 
     @Test
     void testGetEquipments_WithFilters() throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Act
         List<Equipment> filteredByName = equipmentService.getEquipments("Equipment 1", 1, 10, null, null);
         List<Equipment> filteredByCategory = equipmentService.getEquipments("", 1, 10, "category_id", "1");
@@ -171,6 +167,7 @@ public class EquipmentServiceImplTest {
                 regularMaintenanceDay,
                 description
         );
+        EquipmentService equipmentService = new EquipmentServiceImpl();
 
         // Act
         boolean result = equipmentService.addEquipment(e);
@@ -204,6 +201,7 @@ public class EquipmentServiceImplTest {
                 description,
                 lastMaintenanceTime
         );
+        EquipmentService equipmentService = new EquipmentServiceImpl();
 
         try {
             boolean result = equipmentService.addEquipment(e);
@@ -229,6 +227,7 @@ public class EquipmentServiceImplTest {
                 regularMaintenanceDay,
                 description
         );
+        EquipmentService equipmentService = new EquipmentServiceImpl();
 
         // Act & Assert
         assertThrows(SQLException.class, () -> equipmentService.addEquipment(e),
@@ -241,6 +240,7 @@ public class EquipmentServiceImplTest {
     void testAddEquipmentWithNotNullField(String code, String name, int status, int categoryId,
                                          int imageId, int regularMaintenanceDay,
                                          String description) {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         Equipment e = new Equipment(
                 Objects.equals(code, "null") ? null : code,
                 Objects.equals(name, "null") ? null : name,
@@ -261,6 +261,7 @@ public class EquipmentServiceImplTest {
     void testAddEquipmentWithImage(String code, String name, int status, int categoryId,
                                   int imageId, int regularMaintenanceDay,
                                   String description) {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Test adding a new equipment
         Equipment e = new Equipment(
                 code,
@@ -293,6 +294,7 @@ public class EquipmentServiceImplTest {
     })
     void testAddEquipmentWithInvalidData(String code, String name, int status, int categoryId,
                                         int imageId, int regularMaintenanceDay, String description) {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Arrange
         Equipment e = new Equipment(
                 "null".equals(code) ? null : code,
@@ -314,6 +316,7 @@ public class EquipmentServiceImplTest {
      * ========================================================================== */
     @Test
     void testUpdateEquipment() throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Arrange
         Equipment original = equipmentService.getEquipmentById(1);
         assertNotNull(original, "Test equipment should exist");
@@ -350,6 +353,7 @@ public class EquipmentServiceImplTest {
                                                            int categoryId, int imageId, int regularMaintenanceDay,
                                                            String description, LocalDateTime lastMaintenanceTime,
                                                            LocalDateTime createdAt, boolean isActive) {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Create an Equipment object with the provided parameters
         Equipment equipment = new Equipment(
                 id,
@@ -371,6 +375,7 @@ public class EquipmentServiceImplTest {
     
     @Test
     void testUpdateEquipment_NotFound() throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Arrange
         Equipment nonExistent = new Equipment(
                 999, // Non-existent ID
@@ -395,6 +400,7 @@ public class EquipmentServiceImplTest {
      * ========================================================================== */
     @Test
     void testDeleteEquipment() throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Arrange - ensure test ID exists
         int idToDelete = 21;
         
@@ -413,12 +419,14 @@ public class EquipmentServiceImplTest {
     @ParameterizedTest
     @CsvSource({"1"})
     void testDeleteEquipmentWithForeignKey(int id) {
-        assertThrows(SQLException.class, () -> equipmentService.hardDeleteEquipment(id), 
+        EquipmentService equipmentService = new EquipmentServiceImpl();
+        assertThrows(SQLException.class, () -> equipmentService.hardDeleteEquipment(id),
                 "Hard deletion should throw SQLException for equipment with foreign key references");
     }
     
     @Test
     void testDeleteEquipment_NotFound() throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Act
         boolean result = equipmentService.deleteEquipment(999);
         
@@ -430,7 +438,8 @@ public class EquipmentServiceImplTest {
     void testHardDeleteEquipment() throws SQLException {
         // This would typically require special setup to ensure no foreign key constraints
         // For now, we'll test with an ID that should be deletable in your test environment
-        
+        EquipmentService equipmentService = new EquipmentServiceImpl();
+
         try {
             // Act
             boolean result = equipmentService.hardDeleteEquipment(21);
@@ -452,6 +461,7 @@ public class EquipmentServiceImplTest {
     
     @Test
     void testHardDeleteEquipment_NotFound() {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Act & Assert
         assertThrows(SQLException.class, () -> equipmentService.hardDeleteEquipment(-1),
                     "Hard deletion should throw exception for invalid ID");
@@ -462,6 +472,7 @@ public class EquipmentServiceImplTest {
      * ========================================================================== */
     @Test
     void testGetDistinctValues() throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
         // Act
         List<Object> categories = equipmentService.getDistinctValues("category_id");
         List<Object> statuses = equipmentService.getDistinctValues("status");

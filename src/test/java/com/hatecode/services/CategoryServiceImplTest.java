@@ -3,9 +3,10 @@ package com.hatecode.services;
 import com.hatecode.pojo.Category;
 import com.hatecode.services.impl.CategoryServiceImpl;
 import com.hatecode.utils.ExceptionMessage;
-import com.hatecode.utils.TestDBUtils;
+import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.*;
-
+import com.hatecode.config.TestDatabaseConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,13 +14,13 @@ import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(TestDatabaseConfig.class)
 public class CategoryServiceImplTest {
-    private static Connection conn;
-    private CategoryService categoryService;
 
     @BeforeEach
     void setupTestData() throws SQLException {
-        categoryService = new CategoryServiceImpl(conn);
+        // Reset database to clean state
+        JdbcUtils.resetDatabase();
         // Khởi tạo dữ liệu mẫu
         String sql = """
                 INSERT INTO Category (name)
@@ -30,7 +31,7 @@ public class CategoryServiceImplTest {
                        ('Category 5');
                 INSERT INTO Category (name, is_active)
                 VALUES ('Category non-active', false);
-                
+
                 INSERT INTO Equipment (code, name, status, category_id, image_id, regular_maintenance_day, description)
                 VALUES ('C1E1', 'E1', 1, 1, 1, 30, 'Description 1'),
                        ('C1E2', 'E2', 1, 1, 1, 30, 'Description 2'),
@@ -39,23 +40,22 @@ public class CategoryServiceImplTest {
                        ('C2E2', 'E5', 1, 2, 1, 30, 'Description 5'),
                        ('C3E1', 'E6', 1, 3, 1, 30, 'Description 6');
                 """;
-                       
-        try (Statement statement = conn.createStatement()) {
+
+        try (Connection conn = JdbcUtils.getConn(); // Use getConn() instead of getConnection()
+                Statement statement = conn.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @AfterEach
     void clearTestChanges() throws SQLException {
-        if (conn != null && !conn.isClosed()) {
-            conn.close();
-        }
+        // Close the test connection
+        JdbcUtils.closeConnection();
     }
 
     @Test
     public void testAddCategory_Success() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         Category category1 = new Category("Test 1", true);
         Category category2 = new Category("Test 2", true);
@@ -75,6 +75,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testAddCategory_DuplicateName() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         Category category1 = new Category("Test Duplicate", true);
         Category category2 = new Category("Test Duplicate", true);
@@ -82,7 +83,7 @@ public class CategoryServiceImplTest {
         boolean result1 = categoryService.addCategory(category1);
         // Assert
         assertTrue(result1);
-        Exception exception =  assertThrows(SQLException.class, () -> {
+        Exception exception = assertThrows(SQLException.class, () -> {
             categoryService.addCategory(category2);
         });
         // Verify
@@ -91,11 +92,12 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void testAddCategory_EmptyName()  {
+    public void testAddCategory_EmptyName() {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         Category category = new Category("", true);
         // Act
-         Exception e = assertThrows(IllegalArgumentException.class, () -> {
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
             categoryService.addCategory(category);
         });
         // Verify
@@ -104,6 +106,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testUpdateCategory_Success() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         Category category = categoryService.getCategoryById(5);
         // Act
@@ -118,7 +121,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testUpdateCategory_DuplicateName() throws SQLException {
-        //
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         Category category1 = categoryService.getCategoryById(1);
         // Act
@@ -133,12 +136,14 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetCategories_Success() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Assert and Act
         assertEquals(5, categoryService.getCategories().size());
     }
 
     @Test
     public void testGetCategory_AfterAdd() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         Category category = new Category("Test", true);
         // Act
@@ -151,6 +156,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetCategories_ByQuery() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Assert
         String query = "Category 1";
         assertEquals(1, categoryService.getCategories(query).size());
@@ -158,6 +164,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetCategories_ByQuery_NotFound() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Assert
         String query = "Category 100";
         assertEquals(0, categoryService.getCategories(query).size());
@@ -165,6 +172,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetCategory_ByQuery_Empty() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Assert
         String query = "";
         assertEquals(5, categoryService.getCategories(query).size());
@@ -172,6 +180,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetCategoryById_NotFound() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Act
         Category category = categoryService.getCategoryById(-1);
         // Assert
@@ -180,6 +189,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetCategoryById_Success() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Act
         Category result = categoryService.getCategoryById(2);
         // Assert
@@ -190,6 +200,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testDeleteCategory_Success() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         Category category = categoryService.getCategoryById(1);
         // Act
@@ -207,6 +218,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testDeleteCategory_Fail() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         boolean result1 = categoryService.deleteCategory(6); // is_active = false
         boolean result2 = categoryService.deleteCategory(100); // not found
@@ -219,6 +231,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testDeleteCategory_EmptyId() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         Category category = new Category("", true);
         // Act and Assert
@@ -231,6 +244,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetEquipmentByCategory() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         int categoryId = 1;
         // Act
@@ -242,6 +256,7 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetEquipmentByCategory_NotFound() throws SQLException {
+        CategoryService categoryService = new CategoryServiceImpl();
         // Initialize
         int categoryId = 100;
         // Act

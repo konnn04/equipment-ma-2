@@ -12,10 +12,10 @@ import java.util.function.Supplier;
 
 public class JdbcUtils {
 
-    // Default test database configuration 
-    private static final String DEFAULT_USER = "root";
-    private static final String DEFAULT_PASSWORD = "Abc@123";
-    private static final String DEFAULT_DB_URL = "jdbc:mysql://localhost:3306/equipmentma2?allowMultiQueries=true";
+    // H2 in-memory database configuration
+    private static final String DEFAULT_USER = "sa";
+    private static final String DEFAULT_PASSWORD = "";
+    private static final String DEFAULT_DB_URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MYSQL";
     
     // Static connection supplier pattern like the main class
     public static Supplier<Connection> connectionProvider = JdbcUtils::getConnection;
@@ -28,38 +28,25 @@ public class JdbcUtils {
     
     static {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.h2.Driver");
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         }
     }
 
     /**
-     * Get a connection to the database
+     * Get a connection to the database - matches main version's interface
      */
     public static Connection getConn() throws SQLException {
         return connectionProvider.get();
     }
-
+    
     /**
-     * Configure test database connection parameters
+     * Cung cấp kết nối trực tiếp đến database test.
+     * Phương thức này tránh đệ quy khi được gọi từ TestDatabaseConfig.
      */
-    public static void configureTestDatabase(String testUser, String testPassword, String testDbUrl) {
-        user = testUser;
-        password = testPassword;
-        dbUrl = testDbUrl;
-        // Reset connection to ensure new settings are used
-        closeConnection();
-    }
-
-    /**
-     * Reset to default test configuration
-     */
-    public static void resetConfiguration() {
-        user = DEFAULT_USER;
-        password = DEFAULT_PASSWORD;
-        dbUrl = DEFAULT_DB_URL;
-        closeConnection();
+    public static Connection getDirectTestConnection() {
+        return getConnection();
     }
 
     /**
@@ -83,22 +70,12 @@ public class JdbcUtils {
      */
     public static void resetDatabase() {
         try {
-            Connection conn = getConnection();
+            closeConnection();
+            Connection conn = DriverManager.getConnection(dbUrl, user, password);
+            testConnection = conn;
             try (Statement stmt = conn.createStatement()) {
-                // Disable foreign key checks temporarily
-                stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
-
-                // Get all table names and drop them
-                List<String> tables = getAllTables(conn);
-                for (String tableName : tables) {
-                    stmt.execute("DROP TABLE IF EXISTS `" + tableName + "`");
-                }
-
-                // Re-enable foreign key checks
-                stmt.execute("SET FOREIGN_KEY_CHECKS = 1");
+                stmt.execute("DROP ALL OBJECTS");
             }
-
-            // Then reinitialize
             initializeDatabase();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to reset database", e);
@@ -106,31 +83,37 @@ public class JdbcUtils {
     }
 
     /**
-     * Gets a list of all tables in the current database.
-     */
-    private static List<String> getAllTables(Connection conn) throws SQLException {
-        List<String> tables = new ArrayList<>();
-        try (Statement stmt = conn.createStatement()) {
-            java.sql.ResultSet rs = stmt.executeQuery(
-                    "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()");
-            while (rs.next()) {
-                tables.add(rs.getString("TABLE_NAME"));
-            }
-        }
-        return tables;
-    }
-
-    /**
      * Initializes the database using the SQL script.
      */
-    private static void initializeDatabase() throws SQLException {
-        try (Statement stmt = testConnection.createStatement()) {
+    private static void initializeDatabase() throws SQLException { 
+        try {
             File sqlFile = new File("src/test/resources/com/hatecode/db/db.sql");
             if (!sqlFile.exists()) {
                 throw new RuntimeException("SQL file not found: " + sqlFile.getAbsolutePath());
             }
             String sql = new String(java.nio.file.Files.readAllBytes(sqlFile.toPath()));
-            stmt.execute(sql);
+    
+            // Split script into individual statements
+            String[] statements = sql.split(";");
+    
+            try (Statement stmt = testConnection.createStatement()) {
+                for (String statement : statements) {
+                    if (statement.trim().isEmpty()) continue;
+    
+                    try {
+                        stmt.execute(statement.trim());
+                    } catch (SQLException e) {
+                        // Skip errors about constraints or duplicates
+                        if (e.getMessage().contains("already exists") 
+                            || e.getMessage().contains("violation")
+                            || e.getMessage().contains("duplicate")) {
+                            // Xử lý các vi phạm ràng buộc - bỏ qua lỗi
+                            continue;
+                        }
+                        throw e;
+                    }
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException("Failed to initialize database", e);
         }

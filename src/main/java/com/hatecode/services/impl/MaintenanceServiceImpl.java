@@ -10,22 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MaintenanceServiceImpl implements MaintenanceService {
-    private final Connection externalConn;
-    private boolean isConnectTesting = false;
-    public MaintenanceServiceImpl() {
-        this.externalConn = null;
-    }
-
-    public MaintenanceServiceImpl(Connection conn) {
-        this.externalConn = conn;
-        this.isConnectTesting = true;
-    }
-
-    private Connection getConnection() throws SQLException {
-        if (externalConn != null) return externalConn;
-        return JdbcUtils.getConn();
-    }
-
     public static Maintenance extractMaintenance(ResultSet rs) throws SQLException {
         return new Maintenance(
                 rs.getInt("id"),
@@ -39,8 +23,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     }
 
     private List<Maintenance> getMaintenances(String query, List<Maintenance> res, String sql) throws SQLException {
-        Connection conn = getConnection();
-        try (PreparedStatement stmt = conn.prepareStatement(sql);) {
+
+        try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql);) {
             stmt.setString(1, "%" + query + "%");
             stmt.setString(2, "%" + query + "%");
             ResultSet rs = stmt.executeQuery();
@@ -48,26 +32,20 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 res.add(extractMaintenance(rs));
             }
         }
-        if (!isConnectTesting) {
-            conn.close();
-        }
         return res;
     }
 
     @Override
     public List<Maintenance> getMaintenances() throws SQLException {
         List<Maintenance> maintenances = new ArrayList<>();
-        Connection conn = getConnection();
         String sql = "SELECT * FROM maintenance where is_active=true";
-        try (Statement stm = conn.createStatement()) {
+        try (Connection conn = JdbcUtils.getConn();Statement stm = conn.createStatement()) {
             ResultSet rs = stm.executeQuery(sql);
             while (rs.next()) {
                 maintenances.add(extractMaintenance(rs));
             }
         }
-        if (!isConnectTesting) {
-            conn.close();
-        }
+
         return maintenances;
     }
 
@@ -108,16 +86,12 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     public Maintenance getMaintenanceById(int id) throws SQLException {
         Maintenance maintenance = null;
         String sql = "SELECT * FROM Maintenance WHERE id = ? AND is_active=true";
-        Connection conn = getConnection();
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 maintenance = extractMaintenance(rs);
             }
-        }
-        if (!isConnectTesting) {
-            conn.close();
         }
         return maintenance;
     }
@@ -134,9 +108,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_START_DATE_INVALID);
         }
         String sql = "INSERT INTO Maintenance (title, description, start_datetime, end_datetime) VALUES (?, ?, ? ,?)";
-        Connection conn = getConnection();
         int rowsAffected = 0;
-        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
             stmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
@@ -147,9 +120,6 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 if (rs.next()) {
                     maintenance.setId(rs.getInt(1));
                 }
-            }
-            if (!isConnectTesting) {
-                conn.close();
             }
             return stmt.executeUpdate() > 0;
         }
@@ -170,18 +140,13 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_START_DATE_INVALID);
         }
         String sql = "UPDATE Maintenance SET title = ?, description = ?, start_datetime = ?, end_datetime = ? WHERE id = ? AND is_active=true";
-        Connection conn = getConnection();
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
             stmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
             stmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
             stmt.setInt(5, maintenance.getId());
             return stmt.executeUpdate() > 0;
-        } finally {
-            if (!isConnectTesting) {
-                conn.close();
-            }
         }
     }
 
@@ -199,16 +164,11 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
         }
         String sql = "UPDATE Maintenance SET is_active = false WHERE id = ? AND is_active=true";
-        Connection conn = getConnection();
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             return false;
-        } finally {
-            if (!isConnectTesting) {
-                conn.close();
-            }
         }
     }
 }

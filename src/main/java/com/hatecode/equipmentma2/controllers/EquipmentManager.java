@@ -138,7 +138,7 @@ public class EquipmentManager {
 
         TableColumn<Equipment, String> createdDateColumn = new TableColumn<>("Created Date");
         createdDateColumn.setPrefWidth(200);
-        createdDateColumn.setCellValueFactory(new PropertyValueFactory<>("createdDate"));
+        createdDateColumn.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
 
         this.equipmentTable.getColumns().addAll(
                 equipmentIDColumn,
@@ -191,6 +191,7 @@ public class EquipmentManager {
         String key = typeFilterComboBox.getSelectionModel().getSelectedItem();
         String value = "";
         if (key != null && key.equals("Category")) {
+            key= "category_id";
             Category category = (Category) valueFilterComboBox.getSelectionModel().getSelectedItem();
             if (category != null) {
                 value = String.valueOf(category.getId());

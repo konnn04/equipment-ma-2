@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.function.Supplier;
 
 public class JdbcUtils {
-
+    // Add connection supplier pattern to match test version
     public static Supplier<Connection> connectionProvider = JdbcUtils::getConnection;
 
     static {
@@ -19,11 +19,8 @@ public class JdbcUtils {
         }
     }
 
-    public static Connection getConn() throws SQLException {
-        return connectionProvider.get();
-    }
-
-    private static Connection getConnection()  {
+    // Keep private implementation
+    private static Connection getConnection() {
         try {
             return DriverManager.getConnection(
                     AppConfig.DB_URL,
@@ -33,5 +30,22 @@ public class JdbcUtils {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    } 
+    
+    // Add public interface matching test version
+    public static Connection getConn() throws SQLException {
+        return connectionProvider.get();
+    }
+
+    public static void resetDatabase() {
+        
+    }
+
+    public static void closeConnection() {
+
+    }
+
+    public static Connection getDirectTestConnection() {
+        return getConnection();
     }
 }

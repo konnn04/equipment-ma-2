@@ -1,13 +1,15 @@
 package com.hatecode.services;
 
+import com.hatecode.config.TestDatabaseConfig;
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.pojo.MaintenanceStatus;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
 import com.hatecode.utils.ExceptionMessage;
-import com.hatecode.utils.TestDBUtils;
+import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,14 +19,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(TestDatabaseConfig.class)
 public class MaintenanceServiceImplTest {
-    private static Connection conn;
-    private MaintenanceService maintenanceService;
-
+// Reset database to clean state
     @BeforeEach
     void setupTestData() throws SQLException {
-        conn = TestDBUtils.createIsolatedConnection();
-        maintenanceService = new MaintenanceServiceImpl(conn);
+        JdbcUtils.resetDatabase();
         // Khởi tạo dữ liệu mẫu
         /* Với 6 bản ghi trong bảng Maintenance
          * 1. Maintenance #1 - Đã hoàn thành
@@ -44,18 +44,16 @@ public class MaintenanceServiceImplTest {
                       ('Maintenance #6 - Regular', 'Bảo trì định kỳ cho máy móc', '2025-08-01 08:00:00', '2025-09-20 18:00:00');
                 """;
 
-        try (Statement statement = conn.createStatement()) {
+        try (Connection conn = JdbcUtils.getConn(); // Use getConn() instead of getConnection()
+             Statement statement = conn.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @AfterEach
     void clearTestChanges() throws SQLException {
-        if (conn != null && !conn.isClosed()) {
-            conn.close();
-        }
+        // Close the test connection
+        JdbcUtils.closeConnection();
     }
 
     /* =============================================================================
@@ -63,6 +61,7 @@ public class MaintenanceServiceImplTest {
      * ========================================================================== */
     @Test
     void testGetMaintenances_Success() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Act
         List<Maintenance> maintenances = maintenanceService.getMaintenances();
         // Assert
@@ -72,6 +71,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testGetMaintenancesByQuery_Success() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Act
         List<Maintenance> maintenances = maintenanceService.getMaintenances("Emergency");
         // Assert
@@ -80,6 +80,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testGetMaintenanceByQueryAndFilter_ByCompleted() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Act
         List<Maintenance> maintenances1 = maintenanceService.getMaintenances("Maintenance", MaintenanceStatus.COMPLETED);
         List<Maintenance> maintenances2 = maintenanceService.getMaintenances("Emergency", MaintenanceStatus.COMPLETED);
@@ -92,6 +93,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testGetMaintenanceByQueryAndFilter_ByInProgress() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Act
         List<Maintenance> maintenances1 = maintenanceService.getMaintenances("Maintenance", MaintenanceStatus.IN_PROGRESS);
         List<Maintenance> maintenances2 = maintenanceService.getMaintenances("Emergency", MaintenanceStatus.IN_PROGRESS);
@@ -104,6 +106,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testGetMaintenanceByQueryAndFilter_ByPending() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Act
         List<Maintenance> maintenances1 = maintenanceService.getMaintenances("Maintenance", MaintenanceStatus.PENDING);
         List<Maintenance> maintenances2 = maintenanceService.getMaintenances("Emergency", MaintenanceStatus.PENDING);
@@ -115,6 +118,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testGetMaintenanceByQueryAndFilter_ByInvalidStatus() {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
             maintenanceService.getMaintenances("Maintenance", MaintenanceStatus.valueOf("INVALID_STATUS"));
@@ -126,6 +130,7 @@ public class MaintenanceServiceImplTest {
      * ========================================================================== */
     @Test
     void testGetMaintenanceById_Success() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Act
         Maintenance maintenance = maintenanceService.getMaintenanceById(1);
         // Assert
@@ -135,6 +140,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testGetMaintenanceById_NotFound() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Act
         Maintenance maintenance = maintenanceService.getMaintenanceById(999);
         // Assert
@@ -145,6 +151,7 @@ public class MaintenanceServiceImplTest {
      * ========================================================================== */
     @Test
     void testAddMaintenance_Success() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Arrange
         Maintenance maintenance = new Maintenance(
                 "Maintenance #7 - Regular",
@@ -160,6 +167,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testAddMaintenance_InvalidStartDate() {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Arrange
         Maintenance maintenance = new Maintenance(
                 "Maintenance #8 - Regular",
@@ -176,6 +184,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testAddMaintenance_EmptyTitle() {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Arrange
         Maintenance maintenance = new Maintenance(
                 "",
@@ -195,6 +204,7 @@ public class MaintenanceServiceImplTest {
      * ========================================================================== */
     @Test
     void testUpdateMaintenance_Success() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Arrange
         String newTitle = "Maintenance #1 - Updated";
         Maintenance maintenance = maintenanceService.getMaintenanceById(1);
@@ -208,6 +218,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testUpdateMaintenance_InvalidStartDate() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Arrange
         Maintenance maintenance = maintenanceService.getMaintenanceById(1);
         maintenance.setStartDateTime(LocalDateTime.of(2025, 9, 20, 18, 0));
@@ -221,6 +232,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testUpdateMaintenance_EmptyTitle() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Arrange
         Maintenance maintenance = maintenanceService.getMaintenanceById(1);
         maintenance.setTitle("");
@@ -233,6 +245,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testUpdateMaintenance_NullId() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Arrange
         Maintenance maintenance = new Maintenance(
                 null,
@@ -252,6 +265,7 @@ public class MaintenanceServiceImplTest {
      * ========================================================================== */
     @Test
     void testDeleteMaintenance_Success() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Arrange
         Maintenance maintenance = maintenanceService.getMaintenanceById(1);
         // Act
@@ -263,6 +277,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testDeleteMaintenanceById_Success() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Act
         boolean result = maintenanceService.deleteMaintenanceById(1);
         // Assert
@@ -272,6 +287,7 @@ public class MaintenanceServiceImplTest {
 
     @Test
     void testDeleteMaintenanceById_NotFound() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         // Act
         boolean result = maintenanceService.deleteMaintenanceById(999);
         // Assert

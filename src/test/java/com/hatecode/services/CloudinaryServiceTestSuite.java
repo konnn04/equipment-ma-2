@@ -1,10 +1,8 @@
-package com.hatecode.services.cloudinary;
+package com.hatecode.services;
 
 import com.cloudinary.Cloudinary;
 import com.hatecode.config.AppConfig;
-import com.hatecode.services.CloundinaryService;
 import com.hatecode.services.impl.CloudinaryServiceImpl;
-import org.junit.After;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

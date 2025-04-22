@@ -13,6 +13,7 @@ module com.hatecode.equipmentma2 {
 
     requires java.desktop;
     requires mysql.connector.j;
+    opens com.hatecode.config;
 //    requires dotenv.java;
     requires io.github.cdimascio.dotenv.java;
     opens com.hatecode.equipmentma2 to javafx.fxml;

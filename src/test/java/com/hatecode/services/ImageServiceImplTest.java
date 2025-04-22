@@ -1,13 +1,14 @@
 package com.hatecode.services;
 
+import com.hatecode.config.TestDatabaseConfig;
 import com.hatecode.pojo.Image;
 import com.hatecode.services.impl.ImageServiceImpl;
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.utils.TestDBUtils;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,33 +20,28 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(TestDatabaseConfig.class)
 public class ImageServiceImplTest {
-    private Connection conn;
-    private ImageService imageService;
-
     @BeforeEach
     void setupTestData() throws SQLException {
-        conn = TestDBUtils.createIsolatedConnection();
-        imageService = new ImageServiceImpl(conn);
-        
-        // Initialize test data
+        // Reset database to clean state
+        JdbcUtils.resetDatabase();
+        // Khởi tạo dữ liệu mẫu
         String sql = """
                 INSERT INTO Image (id, filename, created_at, path) 
                 VALUES (1, 'test_img', NOW(), 'test_img.jpg');
                 """;
-        
-        try (Statement statement = conn.createStatement()) {
+
+        try (Connection conn = JdbcUtils.getConn(); // Use getConn() instead of getConnection()
+             Statement statement = conn.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @AfterEach
     void clearTestChanges() throws SQLException {
-        if (conn != null && !conn.isClosed()) {
-            conn.close();
-        }
+        // Close the test connection
+        JdbcUtils.closeConnection();
     }
 
     /*=============================================================================
@@ -54,8 +50,8 @@ public class ImageServiceImplTest {
     
     @Test
     public void testGetImages() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         List<Image> images = imageService.getImages();
-        
         assertNotNull(images);
         assertFalse(images.isEmpty());
         assertTrue(images.stream().anyMatch(img -> img.getFilename().equals("test_img")));
@@ -63,9 +59,9 @@ public class ImageServiceImplTest {
     
     @Test
     public void testGetImageById() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         // Test getting an existing image
         Image image = imageService.getImageById(1);
-        
         assertNotNull(image);
         assertEquals("test_img", image.getFilename());
         assertEquals("test_img.jpg", image.getPath());
@@ -73,6 +69,7 @@ public class ImageServiceImplTest {
     
     @Test
     public void testGetImageById_NotFound() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         // Test getting a non-existent image
         Image image = imageService.getImageById(999);
         
@@ -81,6 +78,7 @@ public class ImageServiceImplTest {
     
     @Test
     public void testGetImageByPath() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         // Test getting an image by path
         Image image = imageService.getImageByPath("test_img.jpg");
         
@@ -91,6 +89,7 @@ public class ImageServiceImplTest {
     
     @Test
     public void testGetImageByPath_NotFound() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         // Test getting a non-existent image by path
         Image image = imageService.getImageByPath("nonexistent.jpg");
         
@@ -103,6 +102,7 @@ public class ImageServiceImplTest {
     
     @Test
     public void testAddImage_Success() throws SQLException {
+        ImageService imageService = new ImageServiceImpl();
         Image img = new Image("new_test_image.png", LocalDateTime.now(), "/images/new_test_image.png");
         
         boolean result = imageService.addImage(img);
@@ -113,6 +113,7 @@ public class ImageServiceImplTest {
 
     @Test
     public void testAddImage_DuplicateFilename() throws SQLException {
+        ImageService imageService = new ImageServiceImpl();
         // First add an image
         String filename = "duplicate_image.png";
         Image img1 = new Image(filename, LocalDateTime.now(), "/images/dup1.png");
@@ -128,6 +129,7 @@ public class ImageServiceImplTest {
 
     @Test
     public void testAddImage_NullPath() {
+        ImageService imageService = new ImageServiceImpl();
         Image img = new Image(0, "null_path_image.png", LocalDateTime.now(), null);
         
         assertThrows(SQLException.class, () -> {
@@ -137,6 +139,7 @@ public class ImageServiceImplTest {
 
     @Test
     public void testAddImage_NullFilename() {
+        ImageService imageService = new ImageServiceImpl();
         Image img = new Image(0, null, LocalDateTime.now(), "/images/null.png");
         
         assertThrows(SQLException.class, () -> {
@@ -146,6 +149,7 @@ public class ImageServiceImplTest {
 
     @Test
     public void testAddImage_NullCreatedDate() {
+        ImageService imageService = new ImageServiceImpl();
         Image img = new Image(0, "no_date.png", null, "/images/no_date.png");
         
         assertThrows(NullPointerException.class, () -> {
@@ -159,12 +163,11 @@ public class ImageServiceImplTest {
     
     @Test
     void testUpdateImage_Success() throws Exception {
+        Connection conn = JdbcUtils.getConn();
+        ImageService imageService = new ImageServiceImpl();
         Image image = new Image(1, "test_updated_img", LocalDateTime.now(), "/images/updated.png");
-
         boolean result = imageService.updateImage(image);
-        
         assertTrue(result);
-
         // Verify the update
         PreparedStatement stm = conn.prepareStatement("SELECT * FROM Image WHERE id = ?");
         stm.setInt(1, 1);
@@ -177,6 +180,7 @@ public class ImageServiceImplTest {
 
     @Test
     void testUpdateImage_NotFound() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         // Non-existent ID 999
         Image image = new Image(999, "nonexistent_img", LocalDateTime.now(), "/images/none.png");
 
@@ -187,6 +191,7 @@ public class ImageServiceImplTest {
 
     @Test
     void testUpdateImage_NullPath_ShouldThrowIllegalArgumentException() {
+        ImageService imageService = new ImageServiceImpl();
         Image image = new Image(1, "file.jpg", LocalDateTime.now(), null);
         
         assertThrows(IllegalArgumentException.class, () -> {
@@ -196,9 +201,10 @@ public class ImageServiceImplTest {
     
     @Test
     void testUpdateImage_WithConnection_Success() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         Image image = new Image(1, "test_updated_img2", LocalDateTime.now(), "/images/updated2.png");
 
-        boolean result = imageService.updateImage(conn, image);
+        boolean result = imageService.updateImage(image);
         
         assertTrue(result);
         
@@ -214,6 +220,7 @@ public class ImageServiceImplTest {
     
     @Test
     void testDeleteImage_IdExists_ShouldReturnTrue() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         // First add an image to delete
         Image img = new Image("to_delete.png", LocalDateTime.now(), "/images/to_delete.png");
         imageService.addImage(img);
@@ -231,6 +238,7 @@ public class ImageServiceImplTest {
 
     @Test
     void testDeleteImage_IdDoesNotExist_ShouldReturnFalse() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         int id = 9999;
         
         boolean result = imageService.deleteImage(id);
@@ -240,6 +248,7 @@ public class ImageServiceImplTest {
 
     @Test
     void testDeleteImage_InvalidId_ShouldThrowException() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         int invalidId = -1;
 
         assertThrows(IllegalArgumentException.class, () -> {
@@ -249,6 +258,7 @@ public class ImageServiceImplTest {
     
     @Test
     void testDeleteImage_WithConnection_IdExists_ShouldReturnTrue() throws Exception {
+        ImageService imageService = new ImageServiceImpl();
         // First add an image to delete
         Image img = new Image("to_delete_conn.png", LocalDateTime.now(), "/images/to_delete_conn.png");
         imageService.addImage(img);
@@ -258,7 +268,7 @@ public class ImageServiceImplTest {
         assertNotNull(addedImage);
         
         // Delete the image using connection
-        boolean result = imageService.deleteImage(conn, addedImage.getId());
+        boolean result = imageService.deleteImage(addedImage.getId());
         
         assertTrue(result);
         assertNull(imageService.getImageById(addedImage.getId()));

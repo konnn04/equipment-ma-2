@@ -1,15 +1,17 @@
 package com.hatecode.services;
 
+import com.hatecode.config.TestDatabaseConfig;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintenance;
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.pojo.Result;
 import com.hatecode.services.impl.EquipmentMaintenanceServiceImpl;
 import com.hatecode.utils.ExceptionMessage;
-import com.hatecode.utils.TestDBUtils;
+import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,16 +21,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(TestDatabaseConfig.class)
 public class EquipmentMaintenanceServiceImplTest {
-    private static Connection conn;
-    private EquipmentMaintenanceService equipmentMaintenanceService;
-
     @BeforeEach
     void setupTestData() throws SQLException {
-        conn = TestDBUtils.createIsolatedConnection();
-        equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl(conn);
-        
-        // Tạo bảng và thêm dữ liệu mẫu
+        // Reset database to clean state
+        JdbcUtils.resetDatabase();
+        // Khởi tạo dữ liệu mẫu
         String sql = """
                 INSERT INTO Category (id, name, is_active)
                 VALUES (1, 'Category 1', true),
@@ -58,18 +57,15 @@ public class EquipmentMaintenanceServiceImplTest {
                 ALTER TABLE equipment_maintenance ALTER COLUMN id RESTART WITH 10;
             """;
 
-        try (Statement statement = conn.createStatement()) {
+        try (Connection conn = JdbcUtils.getConn(); // Use getConn() instead of getConnection()
+             Statement statement = conn.createStatement()) {
             statement.executeUpdate(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @AfterEach
     void clearTestChanges() throws SQLException {
-        if (conn != null && !conn.isClosed()) {
-            conn.close();
-        }
+        JdbcUtils.closeConnection();
     }
 
     /* =============================================================================
@@ -77,6 +73,7 @@ public class EquipmentMaintenanceServiceImplTest {
      * ========================================================================== */
     @Test
     void testGetEquipmentMaintenance_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Act
         List<EquipmentMaintenance> result = equipmentMaintenanceService.getEquipmentMaintenance();
         // Assert
@@ -86,6 +83,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testGetEquipmentMaintenanceByQuery_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Act
         List<EquipmentMaintenance> result1 = equipmentMaintenanceService.getEquipmentMaintenance("Regular");
         List<EquipmentMaintenance> result2 = equipmentMaintenanceService.getEquipmentMaintenance("Emergency");
@@ -98,6 +96,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testGetEquipmentMaintenanceByMaintenance_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         Maintenance maintenance = new Maintenance();
         maintenance.setId(1); // Assuming this ID exists in the test data
@@ -111,6 +110,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testGetEquipmentMaintenanceByMaintenance_NotFound() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         Maintenance maintenance = new Maintenance();
         maintenance.setId(999);
@@ -122,6 +122,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testGetEquipmentMaintenanceById_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Act
         EquipmentMaintenance result = equipmentMaintenanceService.getEquipmentMaintenanceById(1);
         // Assert
@@ -133,6 +134,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testGetEquipmentMaintenanceById_NotFound() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Act
         EquipmentMaintenance result = equipmentMaintenanceService.getEquipmentMaintenanceById(999);
         // Assert
@@ -141,6 +143,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testGetEquipmentByEquipmentMaintenance_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Act
         Equipment result = equipmentMaintenanceService.getEquipmentByEquipmentMaintenance(1);
         // Assert
@@ -151,6 +154,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testGetEquipmentByEquipmentMaintenance_InvalidId() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
             equipmentMaintenanceService.getEquipmentByEquipmentMaintenance(0);
@@ -163,6 +167,7 @@ public class EquipmentMaintenanceServiceImplTest {
      * ========================================================================== */
     @Test
     void testAddEquipmentMaintenance_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         EquipmentMaintenance em = new EquipmentMaintenance(
                 2, 3, 1,
@@ -179,6 +184,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testAddEquipmentMaintenance_InvalidData() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         EquipmentMaintenance em = new EquipmentMaintenance(
                 0, 3, 1,
@@ -194,6 +200,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testAddEquipmentMaintenanceFull_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         EquipmentMaintenance em = new EquipmentMaintenance(
                 2, 3, 1,
@@ -222,6 +229,7 @@ public class EquipmentMaintenanceServiceImplTest {
      * ========================================================================== */
     @Test
     void testUpdateEquipmentMaintenance_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         EquipmentMaintenance em = equipmentMaintenanceService.getEquipmentMaintenanceById(1);
         em.setDescription("Updated description");
@@ -244,6 +252,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testUpdateEquipmentMaintenance_NotFound() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         LocalDateTime now = LocalDateTime.now();
         EquipmentMaintenance em = new EquipmentMaintenance(
@@ -268,6 +277,7 @@ public class EquipmentMaintenanceServiceImplTest {
      * ========================================================================== */
     @Test
     void testDeleteEquipmentMaintenance_ById_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Act
         boolean result = equipmentMaintenanceService.deleteEquipmentMaintenance(1);
         // Assert
@@ -277,6 +287,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testDeleteEquipmentMaintenance_ById_NotFound() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Act
         boolean result = equipmentMaintenanceService.deleteEquipmentMaintenance(999);
         
@@ -286,6 +297,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testDeleteEquipmentMaintenance_ByObject_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         EquipmentMaintenance em = equipmentMaintenanceService.getEquipmentMaintenanceById(1);
         
@@ -299,6 +311,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testDeleteEquipmentMaintenance_ByObject_Null() {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
             equipmentMaintenanceService.deleteEquipmentMaintenance((EquipmentMaintenance)null);
@@ -312,6 +325,7 @@ public class EquipmentMaintenanceServiceImplTest {
      * ========================================================================== */
     @Test
     void testGetEquipmentsMaintenanceByEMId_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Act
         List<EquipmentMaintenance> result = equipmentMaintenanceService.getEquipmentsMaintenanceByEMId("Regular", 1);
         // Assert
@@ -322,6 +336,7 @@ public class EquipmentMaintenanceServiceImplTest {
 
     @Test
     void testGetEquipmentsMaintenanceByEMId_NotFound() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Act
         List<EquipmentMaintenance> result = equipmentMaintenanceService.getEquipmentsMaintenanceByEMId("NonExistent", 1);
         // Assert

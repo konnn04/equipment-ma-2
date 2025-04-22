@@ -9,29 +9,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggestionService {
-    private final Connection externalConn;
-    private boolean isConnectTesting = false;
-
-    public MaintenanceRepairSuggestionImpl() {
-        this.externalConn = null;
-    }
-
-    public MaintenanceRepairSuggestionImpl(Connection conn) {
-        this.externalConn = conn;
-        this.isConnectTesting = true;
-    }
-
-    private Connection getConnection() throws SQLException {
-        if (externalConn != null) return externalConn;
-        return JdbcUtils.getConn();
-    }
-
+public class MaintenanceRepairSuggestionServiceImpl implements MaintenanceRepairSuggestionService {
     @Override
     public List<MaintenanceRepairSuggestion> getMaintenanceTypes() throws SQLException {
         List<MaintenanceRepairSuggestion> maintenanceRepairSuggestions = new ArrayList<>();
 
-        try (Connection conn = getConnection()) {
+        try (Connection conn = JdbcUtils.getConn()) {
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery("SELECT * FROM Maintenance_Repair_Suggestion");
 
@@ -53,7 +36,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
         MaintenanceRepairSuggestion maintenanceRepairSuggestion = null;
         String sql = "SELECT * FROM Maintenance_Repair_Suggestion WHERE id = ?";
 
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -75,7 +58,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
 
         String sql = "INSERT INTO Maintenance_Repair_Suggestion (name, description, suggest_price) VALUES (?, ?, ?)";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             setMaintenanceTypeStatementParameters(pstmt, maintenanceRepairSuggestion, false, 1);
@@ -96,7 +79,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
 
         String sql = "UPDATE Maintenance_Repair_Suggestion SET name = ?, description = ?, suggest_price = ? WHERE id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             setMaintenanceTypeStatementParameters(pstmt, maintenanceRepairSuggestion, true, 1);
@@ -117,7 +100,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
     public boolean deleteMaintenanceType(int id) throws SQLException {
         String sql = "UPDATE Maintenance_Repair_Suggestion SET is_active = false WHERE id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -137,7 +120,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
     public boolean hardDeleteMaintenanceType(int id) throws SQLException {
         String sql = "DELETE FROM Maintenance_Repair_Suggestion WHERE id = ?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = JdbcUtils.getConn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -169,7 +152,7 @@ public class MaintenanceRepairSuggestionImpl implements MaintenanceRepairSuggest
         maintenanceType.setDescription(resultSet.getString("description"));
         maintenanceType.setSuggestPrice(resultSet.getFloat("suggest_price"));
 
-        LocalDateTime time = resultSet.getTimestamp("created_date").toLocalDateTime();
+        LocalDateTime time = resultSet.getTimestamp("created_at").toLocalDateTime();
         if (time != null) {
             maintenanceType.setcreatedAt(time);
         }
