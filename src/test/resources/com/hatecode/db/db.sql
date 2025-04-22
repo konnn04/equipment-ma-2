@@ -96,4 +96,3 @@ ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk3` F
 INSERT INTO Image (filename, path)
 VALUES ('vector-sign-of-user-icon_zspnuk.jpg',
         'https://res.cloudinary.com/dg66aou8q/image/upload/v1743568524/vector-sign-of-user-icon_zspnuk.jpg');
-

@@ -23,6 +23,10 @@ public class CloundinaryServiceImpl implements CloundinaryService {
 
     private final Cloudinary cloudinary;
 
+    public CloundinaryServiceImpl(Cloudinary cloudinary) {
+        this.cloudinary = cloudinary;
+    }
+
     public CloundinaryServiceImpl() {
         this.cloudinary = new Cloudinary(ObjectUtils.asMap(
                 "cloud_name", AppConfig.CLOUD_NAME,
@@ -41,10 +45,9 @@ public class CloundinaryServiceImpl implements CloundinaryService {
     @Override
     public String uploadImage(File imageFile) throws SQLException {
         try {
-            Map<?, ?> uploadResult;
-            uploadResult = cloudinary.uploader().upload(imageFile, ObjectUtils.emptyMap());
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(imageFile, ObjectUtils.emptyMap());
             return uploadResult.get("secure_url").toString();
-        } catch (IOException ex) {
+        } catch (Exception ex) { // Bắt tất cả lỗi, không chỉ IOException
             Logger.getLogger(CloundinaryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;

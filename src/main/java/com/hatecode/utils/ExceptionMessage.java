@@ -18,4 +18,6 @@ public class ExceptionMessage {
     // EquipmentMaintenance
     public static final String EQUIPMENT_MAINTENANCE_ID_NULL = "EquipmentMaintenance ID cannot be null or empty";
     public static final String EQUIPMENT_MAINTENANCE_NOT_INVALID = "EquipmentMaintenance is invalid";
+    public static final String ROLE_NOT_EXIST = "Role not found";
+    public static final String PASSWORD_LESS_THAN_6 = "Password must be at least 6 characters";
 }

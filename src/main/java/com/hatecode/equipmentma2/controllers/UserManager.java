@@ -308,66 +308,6 @@ public class UserManager {
     }
 
     private void saveUser() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
-//        try {
-//            UserService userService = new UserServiceImpl();
-//
-//            // Cập nhật thông tin từ form vào đối tượng user
-//            currentUser.setFirstName(firstNameField.getText());
-//            currentUser.setLastName(lastNameField.getText());
-//            if (passwordField.getText().isEmpty() || passwordField.getText() == null) { // Không thay đổi mật khẩu
-//                currentUser.setPassword(currentUser.getPassword());
-//            } else { // Thay đổi mật khẩu
-//                String salt = PasswordUtils.generateSalt();
-//                String hashedPassword = PasswordUtils.hashPassword(passwordField.getText(), salt);
-//                currentUser.setPassword(hashedPassword);
-//            }
-//            currentUser.setUsername(usernameField.getText());
-//            currentUser.setEmail(emailField.getText());
-//            currentUser.setPhone(phoneField.getText());
-//            currentUser.setRole(roleComboBox.getSelectionModel().getSelectedItem());
-//            currentUser.setActive(isActiveCheckBox.isSelected());
-//
-//
-//            if (currentUser.getId() == 0) {
-//                // Thêm mới
-//                userService.addUser(currentUser);
-//                showInfoAlert("Thành công", "Thêm người dùng thành công");
-//            } else {
-//                com.hatecode.pojo.Image currUserImg = null;
-//                if (selectedAvatarFile != null) {
-//                    UserService services = new UserServiceImpl();
-//                    String imgUrl = services.uploadUserImage(selectedAvatarFile);
-//                    ImageService imgServices = new ImageServiceImpl();
-//                    String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
-//                    // Nếu là hình mặc định thì tạo mới
-//                    if (currentUser.getAvatar().getId() == 1) {
-//                        currUserImg = new com.hatecode.pojo.Image();
-//                        currUserImg.setId(0);
-//                    } else {
-//                        currUserImg = imgServices.getImageById(currentUser.getAvatar().getId());
-//                    }
-//                    currUserImg.setFilename(fileName);
-//                    currUserImg.setPath(imgUrl);
-//                    currUserImg.setCreateDate(LocalDateTime.now());
-//                }
-//                if (userService.updateUser(currentUser, currUserImg)) {
-//                    showInfoAlert("Thành công", "Cập nhật người dùng thành công");
-//                    loadUsers(null, 0);
-//                }
-//            }
-//
-//            // Làm mới danh sách
-//            loadUsers(txtSearchUser.getText(),
-//                    roles.getSelectionModel().getSelectedItem() != null ?
-//                            roles.getSelectionModel().getSelectedItem().getId() : 0);
-//
-//        } catch (SQLException e) {
-//            showErrorAlert("Lỗi", "Không thể lưu người dùng", e.getMessage());
-//            throw e;
-//        } catch (Exception e) {
-//            showErrorAlert("Lỗi", "Dữ liệu không hợp lệ", e.getMessage());
-//            throw e;
-//        }
 
         try {
             UserService userService = new UserServiceImpl();
@@ -382,7 +322,7 @@ public class UserManager {
             boolean isActive = isActiveCheckBox.isSelected();
 
             // Validate dữ liệu
-            if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() ||
+            if ((currentUser.getId() == 0 && passwordField.getText().isEmpty()) || firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() ||
                     email.isEmpty() || selectedRole == null) {
                 showErrorAlert("Lỗi", "Thiếu thông tin", "Vui lòng điền đầy đủ thông tin bắt buộc");
                 return;
@@ -394,6 +334,7 @@ public class UserManager {
                 String imgUrl = userService.uploadUserImage(selectedAvatarFile);
                 String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
                 avatar = new com.hatecode.pojo.Image(
+                        0,
                         fileName,
                         LocalDateTime.now(),
                         imgUrl
@@ -403,8 +344,7 @@ public class UserManager {
             // Xử lý mật khẩu
             String password = currentUser.getPassword(); // Giữ nguyên nếu không thay đổi
             if (!passwordField.getText().isEmpty()) {
-                String salt = PasswordUtils.generateSalt();
-                password = PasswordUtils.hashPassword(passwordField.getText(), salt);
+                password = PasswordUtils.hashPassword(passwordField.getText());
             }
 
             // Nếu là user mới (ID = 0)
@@ -418,10 +358,10 @@ public class UserManager {
                         phone,
                         selectedRole,
                         isActive,
-                        avatar.getId()
+                        avatar != null ? 0 : 1
                 );
 
-                if (userService.addUser(currentUser)) {
+                if (userService.addUser(currentUser,avatar)) {
                     showInfoAlert("Thành công", "Thêm người dùng mới thành công");
                     loadUsers(txtSearchUser.getText(),
                             roles.getSelectionModel().getSelectedItem() != null ?
