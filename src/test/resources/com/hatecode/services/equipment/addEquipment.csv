@@ -1,0 +1,6 @@
+id,code,name,status,categoryId,createdDate,imageId,regularMaintenanceDay,lastMaintenanceTime,description,isActive, Expected
+1,EQP-001,Air Compressor,1,1,2024-01-15T10:00:00,1,30,2024-03-15T09:00:00,Used in welding operations,true, true
+2,EQP-002,Welding Machine,2,2,2023-11-20T14:30:00,2,60,2024-02-01T11:00:00,Main welding unit,false, true
+3,EQP-003,Generator,3,3,2023-05-10T08:45:00,3,90,2024-01-10T08:00:00,Backup power supply,false, true
+4,EQP-004,Hydraulic Lift,4,4,2024-02-28T13:00:00,4,45,2024-03-30T10:30:00,For vehicle maintenance,true, true
+5,EQP-005,CNC Machine,5,5,2024-04-01T09:00:00,5,30,2024-04-10T10:00:00,Precision cutting,true, true

@@ -2,7 +2,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.Image;
 import com.hatecode.utils.JdbcUtils;
-import com.hatecode.services.interfaces.ImageService;
+import com.hatecode.services.ImageService;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean addImage(Image image) throws SQLException {
-        String sql = "INSERT INTO Image (filename, created_date, path) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Image (filename, created_at, path) VALUES (?, ?, ?)";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -87,7 +87,7 @@ public class ImageServiceImpl implements ImageService {
         if (image.getFilename() == null || image.getCreatedAt() == null || image.getPath() == null)
             throw new IllegalArgumentException("Image fields must not be null.");
 
-        String sql = "UPDATE Image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
+        String sql = "UPDATE Image SET filename = ?, created_at = ?, path = ? WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -104,7 +104,7 @@ public class ImageServiceImpl implements ImageService {
         if (image.getFilename() == null || image.getCreatedAt() == null || image.getPath() == null)
             throw new IllegalArgumentException("Image fields must not be null.");
 
-        String sql = "UPDATE Image SET filename = ?, created_date = ?, path = ? WHERE id = ?";
+        String sql = "UPDATE Image SET filename = ?, created_at= ?, path = ? WHERE id = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, image.getFilename());
             pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));

@@ -1,5 +1,7 @@
 package com.hatecode.pojo;
 
+import java.time.LocalDateTime;
+
 public class User
 {
     private int id;
@@ -12,7 +14,7 @@ public class User
     private Role role;
     private boolean isActive;
     private int avatarId;
-    private String roleName;
+    private LocalDateTime created_date;
 
     public User() {
     }
@@ -123,14 +125,6 @@ public class User
     @Override
     public String toString() {
         return firstName + " " + lastName;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
     }
 
     public int getAvatarId() {

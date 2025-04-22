@@ -3,17 +3,13 @@ package com.hatecode.services.impl;
 //import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Role;
-import com.hatecode.services.interfaces.ImageService;
-import com.hatecode.utils.ExtractImageIdUtils;
+import com.hatecode.services.ImageService;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.pojo.User;
 
 import java.io.File;
 
-import com.hatecode.services.interfaces.UserService;
-import com.hatecode.utils.EmailValidator;
-import com.hatecode.utils.PasswordUtils;
-
+import com.hatecode.services.UserService;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,8 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
-
-    private final CloundinaryServicesImpl cloudiServices = new CloundinaryServicesImpl();
+    private final CloundinaryServiceImpl cloudiServices = new CloundinaryServiceImpl();
 
     public static User extractUser(ResultSet rs) throws SQLException {
         return new User(

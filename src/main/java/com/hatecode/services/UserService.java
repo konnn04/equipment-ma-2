@@ -1,4 +1,4 @@
-package com.hatecode.services.interfaces;
+package com.hatecode.services;
 
 import com.hatecode.pojo.Image;
 import com.hatecode.pojo.User;

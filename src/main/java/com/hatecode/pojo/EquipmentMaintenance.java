@@ -4,6 +4,7 @@
  */
 package com.hatecode.pojo;
 
+
 import java.time.LocalDateTime;
 
 /**
@@ -20,7 +21,8 @@ public class EquipmentMaintenance {
     private String repairName;
     private float repairPrice;
     private LocalDateTime inspectionDate;
-    private LocalDateTime createdDate;
+    private LocalDateTime createdAt;
+    private boolean isActive;
 
     public EquipmentMaintenance() {
     }
@@ -35,7 +37,8 @@ public class EquipmentMaintenance {
             String repairName,
             float repairPrice,
             LocalDateTime inspectionDate,
-            LocalDateTime createdDate) {
+            LocalDateTime createdAt,
+            boolean isActive) {
         this.id = id;
         this.equipmentId = equipmentId;
         this.maintenanceId = maintenanceId;
@@ -45,15 +48,50 @@ public class EquipmentMaintenance {
         this.repairName = repairName;
         this.repairPrice = repairPrice;
         this.inspectionDate = inspectionDate;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
+        this.isActive = isActive;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public EquipmentMaintenance(
+            int equipmentId,
+            int maintenanceId,
+            int technicianId,
+            String description) {
+        this.equipmentId = equipmentId;
+        this.maintenanceId = maintenanceId;
+        this.technicianId = technicianId;
+        this.description = description;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
+    public EquipmentMaintenance(
+            int equipmentId,
+            int maintenanceId,
+            int technicianId,
+            String description,
+            Result result,
+            String repairName,
+            float repairPrice,
+            LocalDateTime inspectionDate,
+            LocalDateTime createdAt,
+            boolean isActive) {
+        this.equipmentId = equipmentId;
+        this.maintenanceId = maintenanceId;
+        this.technicianId = technicianId;
+        this.description = description;
+        this.result = result;
+        this.repairName = repairName;
+        this.repairPrice = repairPrice;
+        this.inspectionDate = inspectionDate;
+        this.createdAt = createdAt;
+        this.isActive = isActive;
+    }
+
+    public LocalDateTime getcreatedAt() {
+        return createdAt;
+    }
+
+    public void setcreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public LocalDateTime getInspectionDate() {
@@ -126,5 +164,13 @@ public class EquipmentMaintenance {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

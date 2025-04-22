@@ -5,17 +5,11 @@ import com.hatecode.config.AppConfig;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.function.Supplier;
 
 public class JdbcUtils {
-    private static Connection testConnection;
 
-    public static void overrideConnectionForTesting(Connection conn) {
-        testConnection = conn;
-    }
-
-    public static void resetTestConnection() {
-        testConnection = null;
-    }
+    public static Supplier<Connection> connectionProvider = JdbcUtils::getConnection;
 
     static {
         try {
@@ -26,13 +20,18 @@ public class JdbcUtils {
     }
 
     public static Connection getConn() throws SQLException {
-        if(testConnection != null){
-            return testConnection;
+        return connectionProvider.get();
+    }
+
+    private static Connection getConnection()  {
+        try {
+            return DriverManager.getConnection(
+                    AppConfig.DB_URL,
+                    AppConfig.DB_USER,
+                    AppConfig.DB_PASS
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return DriverManager.getConnection(
-                AppConfig.DB_URL,
-                AppConfig.DB_USER,
-                AppConfig.DB_PASS
-        );
     }
 }

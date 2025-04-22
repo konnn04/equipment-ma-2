@@ -5,7 +5,6 @@
 package com.hatecode.pojo;
 
 import java.time.LocalDateTime;
-
 /**
  * @author ADMIN
  */
@@ -15,7 +14,7 @@ public class Equipment {
     private String name;
     private Status status;
     private int categoryId;
-    private LocalDateTime createdDate;
+    private LocalDateTime createdAt;
     private int imageId;
     private int regularMaintenanceDay;
     private LocalDateTime lastMaintenanceTime;
@@ -64,7 +63,7 @@ public class Equipment {
             String name,
             Status status,
             int categoryId,
-            LocalDateTime createdDate,
+            LocalDateTime createdAt,
             int imageId,
             int regularMaintenanceDay,
             LocalDateTime lastMaintenanceTime,
@@ -75,7 +74,7 @@ public class Equipment {
         this.name = name;
         this.status = status;
         this.categoryId = categoryId;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
         this.imageId = imageId;
         this.regularMaintenanceDay = regularMaintenanceDay;
         this.lastMaintenanceTime = lastMaintenanceTime;
@@ -111,12 +110,12 @@ public class Equipment {
         this.status = status;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public LocalDateTime getcreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
+    public void setcreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public int getRegularMaintenanceDay() {
