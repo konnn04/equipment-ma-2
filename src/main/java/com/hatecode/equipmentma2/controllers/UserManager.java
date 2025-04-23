@@ -316,6 +316,7 @@ public class UserManager {
             String firstName = firstNameField.getText();
             String lastName = lastNameField.getText();
             String username = usernameField.getText();
+            String password = passwordField.getText();
             String email = emailField.getText();
             String phone = phoneField.getText();
             Role selectedRole = roleComboBox.getSelectionModel().getSelectedItem();
@@ -341,13 +342,13 @@ public class UserManager {
                 );
             }
 
-            // Xử lý mật khẩu
-            String password = currentUser.getPassword(); // Giữ nguyên nếu không thay đổi
-            if (!passwordField.getText().isEmpty()) {
-                password = PasswordUtils.hashPassword(passwordField.getText());
-            }
+//            // Xử lý mật khẩu
+//            String password = currentUser.getPassword(); // Giữ nguyên nếu không thay đổi
+//            if (!passwordField.getText().isEmpty()) {
+//                password = PasswordUtils.hashPassword(passwordField.getText());
+//            }
 
-            // Nếu là user mới (ID = 0)
+            // Nếu là user mới (ID = 0)x
             if (currentUser.getId() == 0) {
                 currentUser = new User(
                         firstName,
@@ -378,13 +379,19 @@ public class UserManager {
                 currentUser.setPhone(phone);
                 currentUser.setRole(selectedRole);
                 currentUser.setActive(isActive);
-                currentUser.setPassword(password);
 
-                if (userService.updateUser(currentUser, avatar)) {
+                String new_password = (passwordField.getText() != null && !passwordField.getText().isEmpty())
+                        ? passwordField.getText() : null;
+
+
+                if (userService.updateUser(currentUser, new_password, avatar)) {
                     showInfoAlert("Thành công", "Cập nhật người dùng thành công");
                     loadUsers(txtSearchUser.getText(),
                             roles.getSelectionModel().getSelectedItem() != null ?
                                     roles.getSelectionModel().getSelectedItem().getId() : 0);
+                }
+                else{
+                    showErrorAlert("Lỗi", "Lỗi cơ sở dữ liệu", "BUGS");
                 }
             }
         } catch (SQLException e) {

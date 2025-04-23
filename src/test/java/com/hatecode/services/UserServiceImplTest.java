@@ -42,21 +42,21 @@ public class UserServiceImplTest {
         sampleUser.setRole(Role.fromId(1));
         sampleUser.setActive(true);
 
-//        String sql = """
-//INSERT INTO Image (filename, path)
-//VALUES ('default_avatar.png','/images/default.png'),
-//       ('test_avatar.png', '/images/test_avatar.png');
-//
-//INSERT INTO `User` (first_name, last_name, username, password, email, phone, role,avatar_id)
-//VALUES ('Default', 'Image', 'defaultimg', 'password123', 'default@example.com', '0123456789', 1,1);
-//
-//INSERT INTO `User` (first_name, last_name, username, password, email, phone, role, avatar_id)
-//VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '0123456781', 1, 1);
-//""";
-//        try (Connection conn = JdbcUtils.getConn();
-//             Statement statement = conn.createStatement()) {
-//            statement.executeUpdate(sql);
-//        }
+        String sql = """
+INSERT INTO Image (filename, path)
+VALUES ('default_avatar.png','/images/default.png'),
+       ('test_avatar.png', '/images/test_avatar.png');
+
+INSERT INTO `User` (first_name, last_name, username, password, email, phone, role,avatar_id)
+VALUES ('Default', 'Image', 'defaultimg', 'password123', 'default@example.com', '0123456789', 1,1);
+
+INSERT INTO `User` (first_name, last_name, username, password, email, phone, role, avatar_id)
+VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '0123456781', 1, 2);
+""";
+        try (Connection conn = JdbcUtils.getConn();
+             Statement statement = conn.createStatement()) {
+            statement.executeUpdate(sql);
+        }
     }
 
     @AfterEach
@@ -164,7 +164,6 @@ public class UserServiceImplTest {
         u.setFirstName(firstName);
         u.setLastName(lastname);
         u.setUsername(username);
-        u.setPassword(password);
         u.setEmail(email);
         u.setPhone(phone);
         u.setActive(isActive);
@@ -174,12 +173,14 @@ public class UserServiceImplTest {
             Role role = Role.fromId(roleId);
             u.setRole(role);
 
-            boolean result = userService.updateUser(u);
+            boolean result = userService.updateUser(u,null,null);
             assertEquals(expectedOutput, result);
         } catch (IllegalArgumentException ex) {
             // Nếu expectedOutput là false, thì hợp lý khi ném ra lỗi
             assertFalse(expectedOutput, "Expected failure due to invalid roleId: " + roleId);
+            ex.printStackTrace();
         } catch (SQLException ex) {
+            ex.printStackTrace();
             fail("SQLException occurred during test: " + ex.getMessage());
         }
     }
@@ -190,11 +191,10 @@ public class UserServiceImplTest {
         ImageService imageService = new ImageServiceImpl();
 
         User u1 = new User();
-        u1.setId(31);
+        u1.setId(1);
         u1.setFirstName(null); // gây ra lỗi
         u1.setLastName("Doe");
         u1.setUsername("johndoe");
-        u1.setPassword("123456");
         u1.setEmail("john.doe@example.com");
         u1.setPhone("0909123456");
         u1.setRole(Role.fromId(1));
@@ -206,9 +206,12 @@ public class UserServiceImplTest {
         img.setCreatedAt(LocalDateTime.now());
         img.setPath("https://res.cloudinary.com/dg66aou8q/image/upload/v1744607866/OIP_awr3kj.jpg");
 
-        assertThrows(SQLException.class, () -> {
-            userService.updateUser(u1, img);
-        });
+        try {
+            boolean result = userService.updateUser(u1,null,img);
+            assertFalse(result);
+        } catch (SQLException e) {
+            fail("SQLException occurred during verification: " + e.getMessage());
+        }
 
         try {
             Image storedImage = imageService.getImageByPath("https://res.cloudinary.com/dg66aou8q/image/upload/v1744607866/OIP_awr3kj.jpg");
@@ -224,11 +227,10 @@ public class UserServiceImplTest {
         ImageService imageService = new ImageServiceImpl();
 
         User u1 = new User();
-        u1.setId(31);
+        u1.setId(1);
         u1.setFirstName("John");
         u1.setLastName("Doe");
         u1.setUsername("johndoe");
-        u1.setPassword("123456");
         u1.setEmail("john.doe@example.com");
         u1.setPhone("0909123456");
         u1.setRole(Role.fromId(1));
@@ -240,9 +242,12 @@ public class UserServiceImplTest {
         img.setCreatedAt(LocalDateTime.now());
         img.setPath("https://res.cloudinary.com/dg66aou8q/image/upload/v1744607866/OIP_awr3kj.jpg");
 
-        assertThrows(SQLException.class, () -> {
-            userService.updateUser(u1, img);
-        });
+        try {
+            boolean result = userService.updateUser(u1,null,img);
+            assertFalse(result);
+        } catch (SQLException e) {
+            fail("SQLException occurred during verification: " + e.getMessage());
+        }
 
         try {
             Image storedImage = imageService.getImageByPath("https://res.cloudinary.com/dg66aou8q/image/upload/v1744607866/OIP_awr3kj.jpg");
@@ -265,6 +270,7 @@ public class UserServiceImplTest {
             boolean result = userService.deleteUser(9999);
             assertFalse(result, "Deleting non-existent user should return false");
         } catch (SQLException ex) {
+            ex.printStackTrace();
             fail("SQLException occurred during test: " + ex.getMessage());
         }
     }
@@ -276,13 +282,14 @@ public class UserServiceImplTest {
 
         try {
             // Với người dùng có avatar khác với avatar mặc định đảm bảo xóa cả 2
-            User u = userService.getUserById(58);
-            boolean result = userService.deleteUser(58);
+            boolean result = userService.deleteUser(2);
             assertTrue(result);
 
-            Image img = imageService.getImageById(u.getAvatarId());
+            Image img = imageService.getImageById(2);
+//            System.out.println(u.getAvatarId());
             assertNull(img, "Image hasn't been deleted yet!!!");
         } catch (SQLException ex) {
+            ex.printStackTrace();
             fail("SQLException occurred during test: " + ex.getMessage());
         }
     }
