@@ -25,6 +25,7 @@ public class JdbcUtils {
     private static String user = DEFAULT_USER;
     private static String password = DEFAULT_PASSWORD;
     private static String dbUrl = DEFAULT_DB_URL;
+    public static String fileName = "db";
     
     static {
         try {
@@ -85,9 +86,9 @@ public class JdbcUtils {
     /**
      * Initializes the database using the SQL script.
      */
-    private static void initializeDatabase() throws SQLException { 
+    private static void initializeDatabase() throws SQLException {
         try {
-            File sqlFile = new File("src/test/resources/com/hatecode/db/db.sql");
+            File sqlFile = new File("src/test/resources/com/hatecode/db/" + fileName +".sql");
             if (!sqlFile.exists()) {
                 throw new RuntimeException("SQL file not found: " + sqlFile.getAbsolutePath());
             }

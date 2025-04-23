@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 public class JdbcUtils {
     // Add connection supplier pattern to match test version
     public static Supplier<Connection> connectionProvider = JdbcUtils::getConnection;
+    public static String fileName = "db";
 
     static {
         try {
