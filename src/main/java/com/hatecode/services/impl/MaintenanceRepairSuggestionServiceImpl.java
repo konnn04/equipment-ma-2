@@ -151,10 +151,11 @@ public class MaintenanceRepairSuggestionServiceImpl implements MaintenanceRepair
         maintenanceType.setName(resultSet.getString("name"));
         maintenanceType.setDescription(resultSet.getString("description"));
         maintenanceType.setSuggestPrice(resultSet.getFloat("suggest_price"));
+        maintenanceType.setIsActive(resultSet.getBoolean("is_active"));
 
         LocalDateTime time = resultSet.getTimestamp("created_at").toLocalDateTime();
         if (time != null) {
-            maintenanceType.setcreatedAt(time);
+            maintenanceType.setCreatedAt(time);
         }
 
         return maintenanceType;

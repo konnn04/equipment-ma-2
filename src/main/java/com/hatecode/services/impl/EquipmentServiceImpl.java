@@ -54,6 +54,27 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
     }
 
+    @Override
+    public Equipment getEquipmentByCode(String code) throws SQLException {
+        String sql = "SELECT * FROM equipment e " +
+                "LEFT JOIN Category c ON e.category_id = c.id " +
+                "WHERE e.code = ?";
+
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
+            stm.setString(1, code);
+            try (ResultSet rs = stm.executeQuery()) {
+                if (rs.next()) {
+                    return extractEquipmentFromResultSet(rs);
+                }
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get equipment by ID: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
+        }
+    }
+
     /**
      * Lấy tất cả thiết bị từ database
      */
@@ -197,11 +218,11 @@ public class EquipmentServiceImpl implements EquipmentService {
         boolean success = false;
 
         try {
+//             Thêm hình ảnh trước --> Gọi service lồng nhau connection bị lỗi vì imageService đóng connection
+            imageService.addImage(image_id);
+
             conn = JdbcUtils.getConn();
             conn.setAutoCommit(false);
-
-            // Thêm hình ảnh trước
-            imageService.addImage(image_id);
 
             // Thêm thiết bị với tham chiếu đến hình ảnh
             String sql = "INSERT INTO Equipment (code, name, status, category_id, regular_maintenance_day, description, image_id) " +
@@ -416,9 +437,12 @@ public class EquipmentServiceImpl implements EquipmentService {
                 rs.getString("name"),
                 Status.fromId(rs.getInt("status")),
                 rs.getInt("category_id"),
+                rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null,
                 rs.getInt("image_id"),
                 rs.getInt("regular_maintenance_day"),
-                rs.getString("description")
+                rs.getTimestamp("last_maintenance_time") != null ? rs.getTimestamp("last_maintenance_time").toLocalDateTime() : null,
+                rs.getString("description"),
+                rs.getBoolean("is_active")
         );
     }
 }

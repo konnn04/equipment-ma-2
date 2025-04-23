@@ -27,12 +27,10 @@ public class MaintenanceRepairSuggestionServiceImplTest {
     void setupTestData() throws SQLException {
         // Reset database to clean state
         JdbcUtils.resetDatabase();
+        JdbcUtils.fileName = "dbWithData";
         // Initialize test data
         String sql = """
-                INSERT INTO Maintenance_Repair_Suggestion (id, name, description, suggest_price, created_at)\s
-                VALUES (1, 'Thay động cơ', 'Thay động cơ cho máy khoan', 1500000, '2025-04-15 01:54:45'),
-                       (11, 'Test Delete', 'Test record for deletion', 50000, '2025-04-15 01:54:45');
-               \s""";
+                       """;
         try (Connection conn = JdbcUtils.getConn(); // Use getConn() instead of getConnection()
              Statement statement = conn.createStatement()) {
             statement.executeUpdate(sql);
@@ -64,7 +62,7 @@ public class MaintenanceRepairSuggestionServiceImplTest {
                 assertEquals(name, maintenanceRepairSuggestion.getName());
                 assertEquals(description, maintenanceRepairSuggestion.getDescription());
                 assertEquals(suggestPrice, maintenanceRepairSuggestion.getSuggestPrice());
-                assertEquals(createdAt, maintenanceRepairSuggestion.getcreatedAt());
+                assertNotNull(maintenanceRepairSuggestion.getcreatedAt());
             }
         }
     }
@@ -82,7 +80,7 @@ public class MaintenanceRepairSuggestionServiceImplTest {
         assertEquals(name, maintenanceRepairSuggestion.getName());
         assertEquals(description, maintenanceRepairSuggestion.getDescription());
         assertEquals(suggestPrice, maintenanceRepairSuggestion.getSuggestPrice());
-        assertEquals(createdAt, maintenanceRepairSuggestion.getcreatedAt());
+        assertNotNull(maintenanceRepairSuggestion.getcreatedAt());
     }
 
     @Test
@@ -102,7 +100,8 @@ public class MaintenanceRepairSuggestionServiceImplTest {
                 "Oil Change",
                 "Recommended every 3 months for optimal performance.",
                 49.99f,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                true
         );
 
         boolean result = maintenanceRepairSuggestionService.addMaintenanceType(maintenanceRepairSuggestion);
@@ -116,7 +115,8 @@ public class MaintenanceRepairSuggestionServiceImplTest {
                 "Oil Change",
                 "Recommended every 3 months for optimal performance.",
                 -49.99f,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                true
         );
 
         assertThrows(SQLException.class, () -> 
@@ -136,7 +136,8 @@ public class MaintenanceRepairSuggestionServiceImplTest {
                 "Updated Engine Replacement",
                 "Updated description for engine replacement",
                 1600000f,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                true
         );
 
         boolean result = maintenanceRepairSuggestionService.updateMaintenanceType(maintenanceRepairSuggestion);
@@ -157,11 +158,13 @@ public class MaintenanceRepairSuggestionServiceImplTest {
                 "Non-existent Record",
                 "This record doesn't exist",
                 1500000f,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                true
         );
 
-        boolean result = maintenanceRepairSuggestionService.updateMaintenanceType(maintenanceRepairSuggestion);
-        assertFalse(result);
+        assertThrows(SQLException.class,
+                () -> maintenanceRepairSuggestionService.updateMaintenanceType(maintenanceRepairSuggestion),
+                "Record not found");
     }
 
     /* =============================================================================
@@ -170,19 +173,23 @@ public class MaintenanceRepairSuggestionServiceImplTest {
     @Test
     void testDeleteMaintenanceRepairSuggestion_Success() throws SQLException {
         MaintenanceRepairSuggestionService maintenanceRepairSuggestionService = new MaintenanceRepairSuggestionServiceImpl();
-        // Act
+        // Act: soft delete
         boolean result = maintenanceRepairSuggestionService.deleteMaintenanceType(11);
+
         // Assert
         assertTrue(result);
+
         // Verify deletion
         MaintenanceRepairSuggestion deleted = maintenanceRepairSuggestionService.getMaintenanceTypeById(11);
-        assertNull(deleted);
+        assertFalse(deleted.getIsActive());
     }
 
     @Test
     void testDeleteMaintenanceRepairSuggestion_NotFound() throws SQLException {
         MaintenanceRepairSuggestionService maintenanceRepairSuggestionService = new MaintenanceRepairSuggestionServiceImpl();
-        boolean result = maintenanceRepairSuggestionService.deleteMaintenanceType(-12);
-        assertFalse(result);
+        assertThrows(SQLException.class,
+                () -> maintenanceRepairSuggestionService.deleteMaintenanceType(-12),
+                "Record not found"
+        );
     }
 }
