@@ -98,7 +98,6 @@ public class UserServiceImpl implements UserService {
                 + "WHERE u.id = ? ";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, id);
             user = getUser(user, pstmt);
         }
@@ -145,7 +144,7 @@ public class UserServiceImpl implements UserService {
             conn = JdbcUtils.getConn();
             conn.setAutoCommit(false); // Bắt đầu transaction
             if (image != null) { // Trường hợp có chọn ảnh
-                String sqlImage = "INSERT INTO image (filename, created_at, path) VALUES (?, ?, ?)";
+                String sqlImage = "INSERT INTO `image` (filename, created_at, path) VALUES (?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlImage, Statement.RETURN_GENERATED_KEYS)) {
                     pstmt.setString(1, image.getFilename());
                     pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
@@ -161,13 +160,14 @@ public class UserServiceImpl implements UserService {
             }
 
             // 2. Thêm User
+            String hashedPassword = PasswordUtils.hashPassword(user.getPassword());
             String sqlUser = "INSERT INTO `user` (first_name, last_name, username, password, email, phone, role, is_active, avatar_id) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
                 pstmt.setString(1, user.getFirstName());
                 pstmt.setString(2, user.getLastName());
                 pstmt.setString(3, user.getUsername());
-                pstmt.setString(4, user.getPassword());
+                pstmt.setString(4, hashedPassword);
                 pstmt.setString(5, user.getEmail());
                 pstmt.setString(6, user.getPhone());
                 pstmt.setInt(7, user.getRole().getId());
@@ -186,6 +186,7 @@ public class UserServiceImpl implements UserService {
             conn.commit(); // Commit transaction
             return true;
         } catch (SQLException e) {
+            e.printStackTrace();
             if (conn != null) {
                 conn.rollback();// Rollback nếu có lỗi
             }
@@ -220,13 +221,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateUser(User user, Image newImage) throws SQLException {
+    public boolean updateUser(User user, String password, Image newImage) throws SQLException {
         if (EmailValidator.isValidEmail(user.getEmail()) == false
                 || user.getRole() == null
                 || user.getFirstName() == null
                 || user.getLastName() == null
                 || user.getPhone() == null
-                || user.getPassword() == null) {
+        ) {
             return false;
         }
 
@@ -265,19 +266,34 @@ public class UserServiceImpl implements UserService {
                     }
                 }
             }
-            String sql = "UPDATE `User` SET first_name = ?, last_name = ?,username = ?, password = ?, "
-                    + "email = ?, phone = ?, role = ?, is_active = ?, avatar_id = ? WHERE id = ?";
+
+            String sql = "";
+
+            if(password != null && !password.isEmpty()){
+                sql = "UPDATE `user` SET first_name = ?, last_name = ?,username = ?,"
+                        + "email = ?, phone = ?, role = ?, is_active = ?, avatar_id = ?, password = ? WHERE id = ?";
+            }
+            else{
+                sql = "UPDATE `user` SET first_name = ?, last_name = ?,username = ?,"
+                        + "email = ?, phone = ?, role = ?, is_active = ?, avatar_id = ? WHERE id = ?";
+            }
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, user.getFirstName());
                 pstmt.setString(2, user.getLastName());
                 pstmt.setString(3, user.getUsername());
-                pstmt.setString(4, user.getPassword());
-                pstmt.setString(5, user.getEmail());
-                pstmt.setString(6, user.getPhone());
-                pstmt.setInt(7, user.getRole().getId());
-                pstmt.setBoolean(8, user.isActive());
-                pstmt.setInt(9, newImgId);
-                pstmt.setInt(10, user.getId());
+                pstmt.setString(4, user.getEmail());
+                pstmt.setString(5, user.getPhone());
+                pstmt.setInt(6, user.getRole().getId());
+                pstmt.setBoolean(7, user.isActive());
+                pstmt.setInt(8, newImgId);
+                if (password != null && !password.isEmpty()) {
+                    String hashedPassword = PasswordUtils.hashPassword(password);
+                    pstmt.setString(9, hashedPassword);
+                    pstmt.setInt(10, user.getId());
+                } else {
+                    pstmt.setInt(9, user.getId());
+                }
+
                 int rowsAffected = pstmt.executeUpdate();
                 if (rowsAffected == 0) {
                     conn.rollback();
@@ -292,6 +308,7 @@ public class UserServiceImpl implements UserService {
                 conn.rollback(); // Rollback nếu có lỗi
                 return false;
             }
+            e.printStackTrace();
             throw e;
         } finally {
             if (conn != null) {
@@ -302,25 +319,38 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean deleteUser(int id) throws SQLException, NullPointerException {
-        Connection conn = null;
-        try {
-            conn = JdbcUtils.getConn();
-            conn.setAutoCommit(false);
-
-            User u = getUserById(id);
+        User u = getUserById(id);
             if (u == null) {
                 System.err.println("Không tìm thấy user với id: " + id);
                 return false;
             }
 
-            ImageService imageService = new ImageServiceImpl();
-            Image image = imageService.getImageById(u.getAvatarId());
+        ImageService imageService = new ImageServiceImpl();
+        Image image = imageService.getImageById(u.getAvatarId());
 
+        Connection conn = null;
+        try {
+            conn = JdbcUtils.getConn();
+            conn.setAutoCommit(false);
 
-            boolean shouldDeleteImage = image != null && image.getId() != 1;
+            int imgID = 0;
+            String sqlImage = "SELECT * FROM `Image` WHERE id = ?";
+            try(PreparedStatement stm = conn.prepareStatement(sqlImage)){
+                stm.setInt(1,u.getAvatarId());
+                try(ResultSet rs = stm.executeQuery()){
+                    if(rs.next()){
+                        imgID = rs.getInt("id");
+                    }
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+//            boolean shouldDeleteImage = image != null && image.getId() != 1;
 
             // 1. Xóa user trước (tránh lỗi foreign key)
-            String sqlDeleteUser = "DELETE FROM `User` WHERE id = ?";
+            String sqlDeleteUser = "DELETE FROM `user` WHERE id = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sqlDeleteUser)) {
                 pstmt.setInt(1, id);
                 if (pstmt.executeUpdate() == 0) {
@@ -330,38 +360,50 @@ public class UserServiceImpl implements UserService {
             }
 
             // 2. Nếu có ảnh custom thì xóa ảnh trong DB (CHƯA xóa trên Cloud)
-            if (shouldDeleteImage) {
+            if (imgID > 1) {
                 String sqlDeleteImage = "DELETE FROM `image` WHERE id = ?";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlDeleteImage)) {
-                    pstmt.setInt(1, image.getId());
-                    pstmt.executeUpdate();
+                    pstmt.setInt(1, imgID);
+                    if (pstmt.executeUpdate() == 0) {
+                        conn.rollback();
+                        return false;
+                    }
                 }
             }
 
             conn.commit(); // Commit DB thành công
 
-            // 3. Sau khi commit, mới xóa trên Cloudinary (ngoài transaction)
-            if (shouldDeleteImage) {
-                boolean cloudDeleted = deleteUserImage(image.getPath());
-                if (!cloudDeleted) {
-                    System.err.println("Ảnh đã bị xóa khỏi DB nhưng không xóa được trên Cloudinary.");
-                    // Có thể log hoặc gửi cảnh báo tại đây
-                }
-            }
+//             3. Sau khi commit, mới xóa trên Cloudinary (ngoài transaction)
+//            if (imgID > 1) {
+//                boolean cloudDeleted = deleteUserImage(image.getPath());
+//                if (!cloudDeleted) {
+//                    System.err.println("Ảnh đã bị xóa khỏi DB nhưng không xóa được trên Cloudinary.");
+//                    // Có thể log hoặc gửi cảnh báo tại đây
+//                }
+//            }
 
             return true;
         } catch (SQLException | NullPointerException ex) {
-            if (!conn.isClosed()) {
-                conn.rollback();
-            }
             ex.printStackTrace();
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
             return false;
         }
-//        finally {
-//            if (!conn.isClosed()) {
-//                conn.setAutoCommit(true);
-//            }
-//        }
+        finally {
+            try {
+                if (conn != null && !conn.isClosed()) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
@@ -378,7 +420,7 @@ public class UserServiceImpl implements UserService {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 String hashedPassword = rs.getString("password");
-
+                System.out.println("Hash from DB: " + hashedPassword);
                 if (PasswordUtils.checkPassword(password, hashedPassword)) {
                     return extractUser(rs);
                 }
@@ -419,6 +461,21 @@ public class UserServiceImpl implements UserService {
             Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+    }
+
+    @Override
+    public int getCount(){
+        String sql = "SELECT COUNT(*) AS cnt FROM `User`";
+        try(Connection conn = JdbcUtils.getConn()){
+            PreparedStatement stm = conn.prepareStatement(sql);
+            ResultSet rs = stm.executeQuery();
+            if(rs.next()){
+                return rs.getInt("cnt");
+            }
+            return -1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

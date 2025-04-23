@@ -8,6 +8,7 @@ public class MaintenanceRepairSuggestion {
     private String description;
     private float suggestPrice;
     private LocalDateTime createdAt;
+    private boolean isActive;
 
     public MaintenanceRepairSuggestion() {
     }
@@ -17,23 +18,27 @@ public class MaintenanceRepairSuggestion {
             String name,
             String description,
             float suggestPrice,
-            LocalDateTime createdAt) {
+            LocalDateTime createdAt,
+            boolean isActive) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.suggestPrice = suggestPrice;
         this.createdAt = createdAt;
+        this.isActive = isActive;
     }
 
     public MaintenanceRepairSuggestion(
             String name,
             String description,
             float suggestPrice,
-            LocalDateTime createdAt) {
+            LocalDateTime createdAt,
+            boolean isActive) {
         this.name = name;
         this.description = description;
         this.suggestPrice = suggestPrice;
         this.createdAt = createdAt;
+        this.isActive = isActive;
     }
 
     // Getters and Setters
@@ -73,7 +78,11 @@ public class MaintenanceRepairSuggestion {
         return createdAt;
     }
 
-    public void setcreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public boolean getIsActive() { return isActive;}
+
+    public void setIsActive(boolean isActive) { this.isActive = isActive; }
 }

@@ -52,7 +52,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean addImage(Image image) throws SQLException {
-        String sql = "INSERT INTO Image (filename, created_at, path) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO `Image` (filename, created_at, path) VALUES (?, ?, ?)";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -69,7 +69,7 @@ public class ImageServiceImpl implements ImageService {
         if (image.getFilename() == null || image.getCreatedAt() == null || image.getPath() == null)
             throw new IllegalArgumentException("Image fields must not be null.");
 
-        String sql = "UPDATE Image SET filename = ?, created_at = ?, path = ? WHERE id = ?";
+        String sql = "UPDATE `Image` SET filename = ?, created_at = ?, path = ? WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -85,7 +85,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public boolean deleteImage(int id) throws SQLException {
         if (id <= 0) throw new IllegalArgumentException("ID must be positive");
-        String sql = "DELETE FROM Image WHERE id = ?";
+        String sql = "DELETE FROM `Image` WHERE id = ?";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -97,7 +97,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image getImageByPath(String path) throws SQLException {
-        String sql = "SELECT * FROM image WHERE path = ?";
+        String sql = "SELECT * FROM `image` WHERE path = ?";
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setString(1, path);
             try (ResultSet rs = stm.executeQuery()) {
@@ -105,7 +105,7 @@ public class ImageServiceImpl implements ImageService {
                     Image img = new Image();
                     img.setId(rs.getInt("id"));
                     img.setFilename(rs.getString("filename"));
-                    img.setCreatedAt(rs.getTimestamp("created_date").toLocalDateTime());
+                    img.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     img.setPath(rs.getString("path"));
                     return img;
                 }
