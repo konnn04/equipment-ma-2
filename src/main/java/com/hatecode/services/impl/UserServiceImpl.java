@@ -98,7 +98,6 @@ public class UserServiceImpl implements UserService {
                 + "WHERE u.id = ? ";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, id);
             user = getUser(user, pstmt);
         }
@@ -320,32 +319,37 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean deleteUser(int id) throws SQLException, NullPointerException {
+        User u = getUserById(id);
+            if (u == null) {
+                return false;
+            }
+
+        ImageService imageService = new ImageServiceImpl();
+        Image image = imageService.getImageById(u.getAvatarId());
+
         Connection conn = null;
         try {
             conn = JdbcUtils.getConn();
             conn.setAutoCommit(false);
 
-            User u = getUserById(id);
-            if (u == null) {
-                // Close connection before returning
-                try {
-                    if (conn != null) {
-                        conn.setAutoCommit(true);
-                        conn.close();
+            int imgID = 0;
+            String sqlImage = "SELECT * FROM `Image` WHERE id = ?";
+            try(PreparedStatement stm = conn.prepareStatement(sqlImage)){
+                stm.setInt(1,u.getAvatarId());
+                try(ResultSet rs = stm.executeQuery()){
+                    if(rs.next()){
+                        imgID = rs.getInt("id");
                     }
-                } catch (SQLException e) {
+                }
+                catch (Exception e){
                     e.printStackTrace();
                 }
-                return false;
             }
 
-            ImageService imageService = new ImageServiceImpl();
-            Image image = imageService.getImageById(u.getAvatarId());
-
-            boolean shouldDeleteImage = image != null && image.getId() != 1;
+//            boolean shouldDeleteImage = image != null && image.getId() != 1;
 
             // 1. Xóa user trước (tránh lỗi foreign key)
-            String sqlDeleteUser = "DELETE FROM `User` WHERE id = ?";
+            String sqlDeleteUser = "DELETE FROM `user` WHERE id = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sqlDeleteUser)) {
                 pstmt.setInt(1, id);
                 if (pstmt.executeUpdate() == 0) {
@@ -355,27 +359,31 @@ public class UserServiceImpl implements UserService {
             }
 
             // 2. Nếu có ảnh custom thì xóa ảnh trong DB (CHƯA xóa trên Cloud)
-            if (shouldDeleteImage) {
+            if (imgID > 1) {
                 String sqlDeleteImage = "DELETE FROM `image` WHERE id = ?";
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlDeleteImage)) {
-                    pstmt.setInt(1, image.getId());
-                    pstmt.executeUpdate();
+                    pstmt.setInt(1, imgID);
+                    if (pstmt.executeUpdate() == 0) {
+                        conn.rollback();
+                        return false;
+                    }
                 }
             }
 
             conn.commit(); // Commit DB thành công
 
-            // 3. Sau khi commit, mới xóa trên Cloudinary (ngoài transaction)
-            if (shouldDeleteImage) {
-                boolean cloudDeleted = deleteUserImage(image.getPath());
-                if (!cloudDeleted) {
-                    System.err.println("Ảnh đã bị xóa khỏi DB nhưng không xóa được trên Cloudinary.");
-                    // Có thể log hoặc gửi cảnh báo tại đây
-                }
-            }
+//             3. Sau khi commit, mới xóa trên Cloudinary (ngoài transaction)
+//            if (imgID > 1) {
+//                boolean cloudDeleted = deleteUserImage(image.getPath());
+//                if (!cloudDeleted) {
+//                    System.err.println("Ảnh đã bị xóa khỏi DB nhưng không xóa được trên Cloudinary.");
+//                    // Có thể log hoặc gửi cảnh báo tại đây
+//                }
+//            }
 
             return true;
         } catch (SQLException | NullPointerException ex) {
+            ex.printStackTrace();
             try {
                 if (conn != null) {
                     conn.rollback();
@@ -384,7 +392,8 @@ public class UserServiceImpl implements UserService {
                 rollbackEx.printStackTrace();
             }
             return false;
-        } finally {
+        }
+        finally {
             try {
                 if (conn != null && !conn.isClosed()) {
                     conn.setAutoCommit(true);
@@ -410,7 +419,7 @@ public class UserServiceImpl implements UserService {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 String hashedPassword = rs.getString("password");
-
+                System.out.println("Hash from DB: " + hashedPassword);
                 if (PasswordUtils.checkPassword(password, hashedPassword)) {
                     return extractUser(rs);
                 }
@@ -451,6 +460,21 @@ public class UserServiceImpl implements UserService {
             Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+    }
+
+    @Override
+    public int getCount(){
+        String sql = "SELECT COUNT(*) AS cnt FROM `User`";
+        try(Connection conn = JdbcUtils.getConn()){
+            PreparedStatement stm = conn.prepareStatement(sql);
+            ResultSet rs = stm.executeQuery();
+            if(rs.next()){
+                return rs.getInt("cnt");
+            }
+            return -1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

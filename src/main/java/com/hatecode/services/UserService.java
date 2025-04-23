@@ -19,4 +19,5 @@ public interface UserService {
     String getUserImage(User user);
     String uploadUserImage(File imageFile);
     boolean deleteUserImage(String publicId);
+    int getCount();
 }
