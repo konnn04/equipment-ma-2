@@ -129,11 +129,11 @@ public class Equipment {
         this.status = status;
     }
 
-    public LocalDateTime getcreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setcreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -188,4 +188,6 @@ public class Equipment {
     public void setId(int id) {
         this.id = id;
     }
+
+
 }

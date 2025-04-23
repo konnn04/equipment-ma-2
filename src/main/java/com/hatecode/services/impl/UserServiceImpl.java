@@ -321,6 +321,7 @@ public class UserServiceImpl implements UserService {
     public boolean deleteUser(int id) throws SQLException, NullPointerException {
         User u = getUserById(id);
             if (u == null) {
+                System.err.println("Không tìm thấy user với id: " + id);
                 return false;
             }
 

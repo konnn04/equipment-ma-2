@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="729.0" prefWidth="1406.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hatecode.equipmentma2.MaintenanceHistoryController">
+   <children>
+      <BorderPane layoutX="173.0" layoutY="125.0" style="-fx-background-color: #FFFFFF;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <center>
+            <SplitPane dividerPositions="0.2952480782669462" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <items>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
+                     <children>
+                        <VBox prefHeight="649.0" prefWidth="400.0" style="-fx-background-color: #F5F5F7; -fx-background-radius: 10;" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                           <padding>
+                              <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                           </padding>
+                           <children>
+                              <Label styleClass="" text="Search Maintenance Records">
+                                 <font>
+                                    <Font name="SF Pro Text Semibold" size="18.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets bottom="15.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <VBox prefHeight="67.0" prefWidth="147.0" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label styleClass="" text="Maintenance ID">
+                                             <font>
+                                                <Font name="SF Pro Text Semibold" size="16.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="searchMaintenanceTextField" prefWidth="168.0" promptText="Search maintenance..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field">
+                                             <VBox.margin>
+                                                <Insets bottom="5.0" />
+                                             </VBox.margin>
+                                          </TextField>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <VBox alignment="CENTER_LEFT">
+                                 <children>
+                                    <Label text="Date Range:">
+                                       <font>
+                                          <Font name="SF Pro Text Semibold" size="16.0" />
+                                       </font>
+                                       <padding>
+                                          <Insets bottom="7.0" />
+                                       </padding>
+                                    </Label>
+                                    <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+                                       <children>
+                                          <DatePicker fx:id="fromDatePicker" prefHeight="42.0" prefWidth="158.0" promptText="From" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" HBox.hgrow="ALWAYS" />
+                                          <Label alignment="CENTER" minWidth="20.0" prefHeight="19.0" prefWidth="45.0" text="to" HBox.hgrow="ALWAYS">
+                                             <font>
+                                                <Font name="SF Pro Text Semibold" size="15.0" />
+                                             </font>
+                                          </Label>
+                                          <DatePicker fx:id="toDatePicker" prefHeight="42.0" prefWidth="153.0" promptText="To" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" HBox.hgrow="ALWAYS" />
+                                          <Button fx:id="searchRepairButton111" minWidth="99.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="99.0" styleClass="secondary-button" text="Search" />
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets bottom="10.0" />
+                                       </VBox.margin>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                              <TableView fx:id="maintenancesTableViewTable" prefHeight="645.0" prefWidth="654.0" styleClass="table-view" VBox.vgrow="ALWAYS" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
+                     <children>
+                        <VBox prefHeight="340.0" prefWidth="1170.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                           <padding>
+                              <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                           </padding>
+                           <children>
+                              <HBox prefHeight="503.0" prefWidth="888.0" spacing="15.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <VBox prefHeight="488.0" prefWidth="510.0" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label styleClass="" text="Maintenance Equipments">
+                                             <font>
+                                                <Font name="SF Pro Text Semibold" size="18.0" />
+                                             </font>
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                          </Label>
+                                          <TextField fx:id="searchEquipmentTextField" promptText="Search equipment..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" VBox.vgrow="NEVER">
+                                             <VBox.margin>
+                                                <Insets bottom="5.0" />
+                                             </VBox.margin>
+                                          </TextField>
+                                          <TableView fx:id="equipmentsTableViewTable" prefHeight="548.0" prefWidth="450.0" />
+                                       </children>
+                                    </VBox>
+                                    <GridPane hgap="20.0" prefHeight="486.0" prefWidth="500.0" vgap="15.0" HBox.hgrow="ALWAYS">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="53.0" prefWidth="87.5" />
+                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="86.5" />
+                                          <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="45.5" />
+                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="163.3228759765625" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="105.33331298828125" minHeight="10.0" prefHeight="105.33331298828125" vgrow="SOMETIMES" />
+                                       </rowConstraints>
+                                       <children>
+                                          <Label styleClass="" text="Technician:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                                             <font>
+                                                <Font name="SF Pro Text Semibold" size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <Label styleClass="" text="Date:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                                             <font>
+                                                <Font name="SF Pro Text Semibold" size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <Label styleClass="" text="Description:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                                             <font>
+                                                <Font name="SF Pro Text Semibold" size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <TextArea fx:id="descriptionTextArea" disable="true" prefHeight="79.0" prefWidth="738.0" styleClass="text-area" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="5" />
+                                          <Label styleClass="" text="ID:" wrapText="true" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                                             <font>
+                                                <Font name="SF Pro Text Semibold" size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="startDateTextField" disable="true" prefHeight="38.0" prefWidth="145.0" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+                                          <Label styleClass="" text="Name:" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="LEFT">
+                                             <font>
+                                                <Font name="SF Pro Text Semibold" size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="equipmentNameTextField" disable="true" prefHeight="42.0" prefWidth="225.0" styleClass="text-field-disabled" GridPane.columnIndex="3" />
+                                          <Label styleClass="" text="Price:" GridPane.rowIndex="4">
+                                             <font>
+                                                <Font name="SF Pro Text Semibold" size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="priceTextField" disable="true" prefWidth="260.0" promptText="0.00" styleClass="text-field" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4" />
+                                          <Label styleClass="" text="Type:" GridPane.rowIndex="3">
+                                             <font>
+                                                <Font name="SF Pro Text Semibold" size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="equipmentIdTextField" disable="true" prefHeight="38.0" prefWidth="145.0" styleClass="text-field-disabled" GridPane.columnIndex="1" />
+                                          <TextField fx:id="endDateTextField" disable="true" prefHeight="38.0" prefWidth="145.0" styleClass="text-field-disabled" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                                          <TextField fx:id="equipmentTechnicianTextField" disable="true" prefHeight="38.0" prefWidth="145.0" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
+                                          <TextField fx:id="maintenanceTypeTextField" disable="true" prefHeight="38.0" prefWidth="145.0" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3" />
+                                       </children>
+                                    </GridPane>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <Separator prefWidth="200.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+                     </children>
+                  </AnchorPane>
+               </items>
+            </SplitPane>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>
