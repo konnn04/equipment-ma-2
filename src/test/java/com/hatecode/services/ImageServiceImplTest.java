@@ -163,10 +163,10 @@ public class ImageServiceImplTest {
     
     @Test
     void testUpdateImage_Success() throws Exception {
-        Connection conn = JdbcUtils.getConn();
         ImageService imageService = new ImageServiceImpl();
         Image image = new Image(1, "test_updated_img", LocalDateTime.now(), "/images/updated.png");
         boolean result = imageService.updateImage(image);
+        Connection conn = JdbcUtils.getConn();
         assertTrue(result);
         // Verify the update
         PreparedStatement stm = conn.prepareStatement("SELECT * FROM Image WHERE id = ?");
