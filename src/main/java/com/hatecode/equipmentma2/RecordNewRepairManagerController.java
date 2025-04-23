@@ -1,14 +1,18 @@
-package com.hatecode.equipmentma2.controllers;
+package com.hatecode.equipmentma2;
 
-import com.hatecode.pojo.*;
-import com.hatecode.services.impl.EquipmentMaintenanceServiceImpl;
-import com.hatecode.services.impl.MaintenanceServiceImpl;
-import com.hatecode.services.impl.UserServiceImpl;
+import com.hatecode.pojo.EquipmentMaintenance;
+import com.hatecode.pojo.Maintenance;
+import com.hatecode.pojo.Result;
+import com.hatecode.pojo.User;
 import com.hatecode.services.EquipmentMaintenanceService;
 import com.hatecode.services.MaintenanceService;
 import com.hatecode.services.UserService;
+import com.hatecode.services.impl.EquipmentMaintenanceServiceImpl;
+import com.hatecode.services.impl.MaintenanceServiceImpl;
+import com.hatecode.services.impl.UserServiceImpl;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -17,53 +21,37 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
-public class    RecordNewRepairManager {
-    private final TableView<Maintenance> recordNewRepairMaintenance;
-    private final TextField recordNewRepairSearch;
-    private final TableView<EquipmentMaintenance> recordNewRepairMaintenceEquipments;
-    private final TextField EquipmentMaintenanceID;
-    private final TextField equipmentID;
-    private final TextField EquipmentMaintenanceTechnician;
-    private final TextArea EquipmentMaintenanceDescription;
-    private final DatePicker inspectionDate;
-    private final ComboBox<Result> statusComboBox;
-    private final Button recordNewRepairSaveButton;
+public class RecordNewRepairManagerController {
+    @FXML
+    TableView<Maintenance> recordNewRepairMaintenance;
+    @FXML
+    TextField recordNewRepairSearch;
+    @FXML
+    TableView<EquipmentMaintenance> recordNewRepairMaintenceEquipments;
+    @FXML
+    TextField equipmentMaintenanceID;
+    @FXML
+    TextField equipmentID;
+    @FXML
+    TextField equipmentMaintenanceTechnician;
+    @FXML
+    TextArea equipmentMaintenanceDescription;
+    @FXML
+    DatePicker inspectionDate;
+    @FXML
+    ComboBox<Result> statusComboBox;
+    @FXML
+    Button recordNewRepairSaveButton;
 
     private Maintenance currentMaintenance;
     private EquipmentMaintenance currentEquipmentMaintenance;
 
-
-
     private MaintenanceService maintenanceService = new MaintenanceServiceImpl();
     private EquipmentMaintenanceService EquipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
 
-    public RecordNewRepairManager(
-            TableView<Maintenance> recordNewRepairMaintenance,
-            TextField recordNewRepairSearch,
-            TableView<EquipmentMaintenance> recordNewRepairMaintenceEquipments,
-            TextField EquipmentMaintenanceID,
-            TextField equipmentID,
-            TextField EquipmentMaintenanceTechnician,
-            TextArea EquipmentMaintenanceDescription,
-            DatePicker inspectionDate,
-            ComboBox<Result> statusComboBox,
-            Button recordNewRepairSaveButton) {
-        this.recordNewRepairMaintenance = recordNewRepairMaintenance;
-        this.recordNewRepairSearch = recordNewRepairSearch;
-        this.recordNewRepairMaintenceEquipments = recordNewRepairMaintenceEquipments;
-        this.EquipmentMaintenanceID = EquipmentMaintenanceID;
-        this.equipmentID = equipmentID;
-        this.EquipmentMaintenanceTechnician = EquipmentMaintenanceTechnician;
-        this.EquipmentMaintenanceDescription = EquipmentMaintenanceDescription;
-        this.inspectionDate = inspectionDate;
-        this.statusComboBox = statusComboBox;
-        this.recordNewRepairSaveButton = recordNewRepairSaveButton;
-    }
-
-    public void loadColumnMaintenance(){
+    public void loadColumnMaintenance() {
         TableColumn colPlanId = recordNewRepairMaintenance.getColumns().get(0);
         colPlanId.setCellValueFactory(new PropertyValueFactory("id"));
 
@@ -104,7 +92,7 @@ public class    RecordNewRepairManager {
         this.recordNewRepairMaintenance.setItems(FXCollections.observableList(res));
     }
 
-    public void RecordNewRepairSetupHandler(){
+    public void RecordNewRepairSetupHandler() {
         // Tìm kiếm lịch bảo trì
         this.recordNewRepairSearch.textProperty().addListener(e -> {
             try {
@@ -115,8 +103,8 @@ public class    RecordNewRepairManager {
         });
 
         // Hiển thị chi tiết các thiết bị trong plan
-        this.recordNewRepairMaintenance.getSelectionModel().selectedItemProperty().addListener((obs,oldVal,newval)->{
-            if(newval!=null){
+        this.recordNewRepairMaintenance.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newval) -> {
+            if (newval != null) {
                 // Hiển thị bảng thiết bị trong plan
                 try {
                     loadColumnEquipmentMaintenance();
@@ -128,8 +116,8 @@ public class    RecordNewRepairManager {
         });
 
         // Hiển thị chi EquipmentMaintenance
-        this.recordNewRepairMaintenceEquipments.getSelectionModel().selectedItemProperty().addListener((obs,oldval,newVal)->{
-            if(newVal!=null){
+        this.recordNewRepairMaintenceEquipments.getSelectionModel().selectedItemProperty().addListener((obs, oldval, newVal) -> {
+            if (newVal != null) {
                 // code here
                 try {
                     showMaintenceEquipmentsDetails(newVal);
@@ -165,10 +153,10 @@ public class    RecordNewRepairManager {
     public void showMaintenceEquipmentsDetails(EquipmentMaintenance e) throws SQLException {
         UserService userService = new UserServiceImpl();
         this.currentEquipmentMaintenance = e;
-        this.EquipmentMaintenanceID.setText(String.valueOf(e.getId()));
+        this.equipmentMaintenanceID.setText(String.valueOf(e.getId()));
         this.equipmentID.setText(String.valueOf(e.getEquipmentId()));
         User technician = userService.getUserById(e.getTechnicianId());
-        this.EquipmentMaintenanceTechnician.setText(String.valueOf(technician.getLastName() + " " + technician.getFirstName()));
+        this.equipmentMaintenanceTechnician.setText(String.valueOf(technician.getLastName() + " " + technician.getFirstName()));
         // Xử lý
         LocalDateTime localDateTime = e.getInspectionDate();
         if (localDateTime != null) {
@@ -176,7 +164,7 @@ public class    RecordNewRepairManager {
         } else {
             this.inspectionDate.setValue(null); // hoặc set ngày mặc định nếu cần
         }
-        this.EquipmentMaintenanceDescription.setText(String.valueOf(e.getDescription()));
+        this.equipmentMaintenanceDescription.setText(String.valueOf(e.getDescription()));
 
         // Thiết lập giá trị status trong comboBox
         if (e.getResult() != null) {
@@ -197,7 +185,7 @@ public class    RecordNewRepairManager {
         }
 
         // Cập nhật thông tin từ các control vào đối tượng hiện tại
-        currentEquipmentMaintenance.setDescription(EquipmentMaintenanceDescription.getText());
+        currentEquipmentMaintenance.setDescription(equipmentMaintenanceDescription.getText());
 
         // Cập nhật ngày kiểm tra
         if (inspectionDate.getValue() != null) {

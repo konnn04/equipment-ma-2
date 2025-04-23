@@ -1,4 +1,4 @@
-package com.hatecode.equipmentma2.controllers;
+package com.hatecode.equipmentma2;
 
 import com.hatecode.pojo.Role;
 import com.hatecode.pojo.User;
@@ -23,73 +23,47 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
-public class UserManager {
+public class UserManagerController {
     @FXML
-    private final TableView<User> users;
-
+    TableView<User> users;
     @FXML
-    private final ComboBox<Role> roles;
-
+    ComboBox<Role> roles;
     @FXML
-    private final TextField txtSearchUser;
-
+    TextField txtSearchUser;
     // Các control cho phần chi tiết
     @FXML
-    private final TextField userIdField;
+    TextField userIdField;
     @FXML
-    private final TextField firstNameField;
+    TextField firstNameField;
     @FXML
-    private final TextField lastNameField;
+    TextField lastNameField;
     @FXML
-    private final TextField usernameField;
+    TextField usernameField;
     @FXML
-    private final TextField passwordField;
+    TextField passwordField;
     @FXML
-    private final TextField emailField;
+    TextField emailField;
     @FXML
-    private final TextField phoneField;
+    TextField phoneField;
     @FXML
-    private final ComboBox<Role> roleComboBox;
+    ComboBox<Role> roleComboBox;
     @FXML
-    private final CheckBox isActiveCheckBox;
+    CheckBox isActiveCheckBox;
     @FXML
-    private final ImageView avatarImageView;
+    ImageView avatarImageView;
     @FXML
-    private final Button changeAvatarButton;
+    Button changeAvatarButton;
     @FXML
-    private final Button saveButton;
+    Button saveButton;
     @FXML
-    private final Button newUserButton;
+    Button newUserButton;
     @FXML
-    private final Button deleteUserButton;
+    Button deleteUserButton;
 
     private File selectedAvatarFile;
     private User currentUser;
-
-    public UserManager(TableView<User> users, ComboBox<Role> roles, TextField txtSearchUser, TextField userIdField, TextField firstNameField, TextField lastNameField, TextField usernameField, TextField passwordField, TextField emailField, TextField phoneField, ComboBox<Role> roleComboBox, CheckBox isActiveCheckBox, ImageView avatarImageView, Button changeAvatarButton, Button saveButton, Button newUserButton, Button deleteUserButton) {
-        this.users = users;
-        this.roles = roles;
-        this.txtSearchUser = txtSearchUser;
-        this.userIdField = userIdField;
-        this.firstNameField = firstNameField;
-        this.lastNameField = lastNameField;
-        this.usernameField = usernameField;
-        this.passwordField = passwordField;
-        this.emailField = emailField;
-        this.phoneField = phoneField;
-        this.roleComboBox = roleComboBox;
-        this.isActiveCheckBox = isActiveCheckBox;
-        this.avatarImageView = avatarImageView;
-        this.changeAvatarButton = changeAvatarButton;
-        this.saveButton = saveButton;
-        this.newUserButton = newUserButton;
-        this.deleteUserButton = deleteUserButton;
-    }
 
     public void loadColumn() {
         TableColumn colId = users.getColumns().get(0);

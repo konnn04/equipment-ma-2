@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
             }
 
             // 2. Thêm User
-            String sqlUser = "INSERT INTO user (first_name, last_name, username, password, email, phone, role, is_active, avatar_id) "
+            String sqlUser = "INSERT INTO `user` (first_name, last_name, username, password, email, phone, role, is_active, avatar_id) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
                 pstmt.setString(1, user.getFirstName());

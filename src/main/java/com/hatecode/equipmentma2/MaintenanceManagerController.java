@@ -1,10 +1,11 @@
-package com.hatecode.equipmentma2.controllers;
+package com.hatecode.equipmentma2;
 
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
 import com.hatecode.services.MaintenanceService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -14,19 +15,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.sql.SQLException;
 import java.util.List;
 
-public class MaintenanceManager {
+public class MaintenanceManagerController {
     private final MaintenanceService maintenanceService = new MaintenanceServiceImpl();
 
+    @FXML
     TableView<Maintenance> maintenanceTable;
+    @FXML
     TextField maintenanceQueryTextField;
-
-    public MaintenanceManager(
-            TableView<Maintenance> maintenanceTable,
-            TextField maintenanceQueryTextField
-    ) {
-        this.maintenanceTable = maintenanceTable;
-        this.maintenanceQueryTextField = maintenanceQueryTextField;
-    }
 
     public void fetchMaintenanceTableView() throws SQLException {
         List<Maintenance> maintenances;

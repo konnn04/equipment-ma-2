@@ -1,4 +1,4 @@
-package com.hatecode.equipmentma2.controllers;
+package com.hatecode.equipmentma2;
 
 import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
@@ -15,6 +15,7 @@ import com.hatecode.services.ImageService;
 import com.hatecode.utils.AlertBox;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
@@ -27,82 +28,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class EquipmentManager {
+public class EquipmentManagerController {
     private static final EquipmentService equipmentService = new EquipmentServiceImpl();
     private static final CategoryService categoryService = new CategoryServiceImpl();
 
-    private final TableView<Equipment> equipmentTable;
-    private final TextField equipmentQueryTextField;
-    private final ComboBox<String> typeFilterComboBox;
-    private final ComboBox<Object> valueFilterComboBox;
-
-    private final TextField equipmentIDTextField;
-    private final TextField equipmentCodeTextField;
-    private final TextField equipmentNameTextField;
-    private ComboBox<Category> equipmentCategoryComboBox;
-    private final Text statusEquipmentText;
-    private TextArea equipmentDescriptionTextField;
-
-    private Button addEquipmentButton;
-    private Button updateEquipmentButton;
-    private Button saveEquipmentButton;
-    private Button cancelEquipmentButton;
-    private ComboBox<String> modeComboBox;
-    private Label modeLabel;
-    private Text lastMaintenanceDateTextField;
-    private DatePicker nextMaintenanceDatePicker;
-    private Button changeEquipmentImageButton;
-    private ImageView equipmentImage;
+    @FXML
+    TableView<Equipment> equipmentTable;
+    @FXML
+    TextField equipmentQueryTextField;
+    @FXML
+    ComboBox<String> typeFilterComboBox;
+    @FXML
+    ComboBox<Object> valueFilterComboBox;
+    @FXML
+    TextField equipmentIDTextField;
+    @FXML
+    TextField equipmentCodeTextField;
+    @FXML
+    TextField equipmentNameTextField;
+    @FXML
+    ComboBox<Category> equipmentCategoryComboBox;
+    @FXML
+    Text statusEquipmentText;
+    @FXML
+    TextArea equipmentDescriptionTextField;
+    @FXML
+    Button addEquipmentButton;
+    @FXML
+    Button updateEquipmentButton;
+    @FXML
+    Button saveEquipmentButton;
+    @FXML
+    Button cancelEquipmentButton;
+    @FXML
+    ComboBox<String> modeComboBox;
+    @FXML
+    Label modeLabel;
+    @FXML
+    Text lastMaintenanceDateTextField;
+    @FXML
+    DatePicker nextMaintenanceDatePicker;
+    @FXML
+    Button changeEquipmentImageButton;
+    @FXML
+    ImageView equipmentImage;
+    @FXML
     TextField regularMaintenanceTimeTextField;
 
     private Equipment selectedEquipment = null;
     private boolean isImageChanged = false;
-
-    public EquipmentManager(
-            TableView<Equipment> equipmentTable,
-            TextField equipmentQueryTextField,
-            ComboBox<String> typeFilterComboBox,
-            ComboBox<Object> valueFilterComboBox,
-            TextField equipmentIDTextField,
-            TextField equipmentCodeTextField,
-            TextField equipmentNameTextField,
-            ComboBox<Category> equipmentCategoryComboBox,
-            Text statusEquipmentText,
-            Text lastMaintenanceDateTextField,
-            DatePicker nextMaintenanceDatePicker,
-            TextArea equipmentDescriptionTextField,
-            Button addEquipmentButton,
-            Button saveEquipmentButton,
-            Button cancelEquipmentButton,
-            Button updateEquipmentButton,
-            ComboBox<String> modeComboBox,
-            Label modeLabel,
-            Button changeEquipmentImageButton,
-            ImageView equipmentImage,
-            TextField regularMaintenanceTimeTextField
-    ) {
-        this.equipmentTable = equipmentTable;
-        this.equipmentQueryTextField = equipmentQueryTextField;
-        this.typeFilterComboBox = typeFilterComboBox;
-        this.valueFilterComboBox = valueFilterComboBox;
-        this.equipmentIDTextField = equipmentIDTextField;
-        this.equipmentCodeTextField = equipmentCodeTextField;
-        this.equipmentNameTextField = equipmentNameTextField;
-        this.equipmentCategoryComboBox = equipmentCategoryComboBox;
-        this.statusEquipmentText = statusEquipmentText;
-        this.nextMaintenanceDatePicker = nextMaintenanceDatePicker;
-        this.lastMaintenanceDateTextField = lastMaintenanceDateTextField;
-        this.equipmentDescriptionTextField = equipmentDescriptionTextField;
-        this.addEquipmentButton = addEquipmentButton;
-        this.updateEquipmentButton = updateEquipmentButton;
-        this.saveEquipmentButton = saveEquipmentButton;
-        this.cancelEquipmentButton = cancelEquipmentButton;
-        this.modeComboBox = modeComboBox;
-        this.modeLabel = modeLabel;
-        this.changeEquipmentImageButton = changeEquipmentImageButton;
-        this.equipmentImage = equipmentImage;
-        this.regularMaintenanceTimeTextField = regularMaintenanceTimeTextField;
-    }
 
     public void loadColumnEquipmentTableView() throws SQLException {
         TableColumn<Equipment, String> equipmentIDColumn = new TableColumn<>("Code");

@@ -1,4 +1,4 @@
-package com.hatecode.equipmentma2.controllers;
+package com.hatecode.equipmentma2;
 
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintenance;
@@ -14,6 +14,7 @@ import com.hatecode.services.UserService;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -22,45 +23,38 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
-import static com.hatecode.config.AppConfig.PAGE_SIZE;
-
-public class MaintenanceHistory {
+public class MaintenanceHistoryController {
     MaintenanceService maintenanceService = new MaintenanceServiceImpl();
     EquipmentMaintenanceService equipmentMaintainanceService = new EquipmentMaintenanceServiceImpl();
 
-
+    @FXML
     TableView<Maintenance> maintenancesTableViewTable;
+    @FXML
     TableView<EquipmentMaintenance> equipmentsTableViewTable;
-
+    @FXML
     TextField equipmentIdTextField;
+    @FXML
     TextField equipmentNameTextField;
+    @FXML
     TextField equipmentTechnicianTextField;
+    @FXML
     TextField startDateTextField;
+    @FXML
     TextField endDateTextField;
+    @FXML
     TextArea descriptionTextArea;
+    @FXML
     TextField priceTextField;
+    @FXML
     TextField maintenanceTypeTextField;
+    @FXML
     TextField searchMaintenanceTextField;
+    @FXML
     DatePicker fromDatePicker;
+    @FXML
     DatePicker toDatePicker;
+    @FXML
     TextField searchEquipmentTextField;
-
-    public MaintenanceHistory(TableView<Maintenance> maintenancesTableViewTable, TableView<EquipmentMaintenance> equipmentsTableViewTable, TextField equipmentIdTextField, TextField equipmentNameTextField, TextField equipmentTechnicianTextField, TextField startDateTextField, TextField endDateTextField, TextArea descriptionTextArea, TextField priceTextField, TextField maintenanceTypeTextField, TextField searchMaintenanceTextField, DatePicker fromDatePicker, DatePicker toDatePicker, TextField searchEquipmentTextField) {
-        this.maintenancesTableViewTable = maintenancesTableViewTable;
-        this.equipmentsTableViewTable = equipmentsTableViewTable;
-        this.equipmentIdTextField = equipmentIdTextField;
-        this.equipmentNameTextField = equipmentNameTextField;
-        this.equipmentTechnicianTextField = equipmentTechnicianTextField;
-        this.startDateTextField = startDateTextField;
-        this.endDateTextField = endDateTextField;
-        this.descriptionTextArea = descriptionTextArea;
-        this.priceTextField = priceTextField;
-        this.maintenanceTypeTextField = maintenanceTypeTextField;
-        this.searchMaintenanceTextField = searchMaintenanceTextField;
-        this.fromDatePicker = fromDatePicker;
-        this.toDatePicker = toDatePicker;
-        this.searchEquipmentTextField = searchEquipmentTextField;
-    }
 
     private void initTable() {
         TableColumn<Maintenance, Integer> maintenanceIDColumn = new TableColumn<>("ID");
