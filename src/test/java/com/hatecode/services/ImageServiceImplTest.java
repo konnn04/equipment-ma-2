@@ -29,7 +29,7 @@ public class ImageServiceImplTest {
         // Khởi tạo dữ liệu mẫu
         String sql = """
                 INSERT INTO Image (id, filename, created_at, path) 
-                VALUES (1, 'test_img', NOW(), 'test_img.jpg');
+                VALUES (2, 'test_img', NOW(), 'test_img.jpg');
                 """;
 
         try (Connection conn = JdbcUtils.getConn(); // Use getConn() instead of getConnection()
@@ -61,7 +61,7 @@ public class ImageServiceImplTest {
     public void testGetImageById() throws Exception {
         ImageService imageService = new ImageServiceImpl();
         // Test getting an existing image
-        Image image = imageService.getImageById(1);
+        Image image = imageService.getImageById(2);
         assertNotNull(image);
         assertEquals("test_img", image.getFilename());
         assertEquals("test_img.jpg", image.getPath());
@@ -84,7 +84,7 @@ public class ImageServiceImplTest {
         
         assertNotNull(image);
         assertEquals("test_img", image.getFilename());
-        assertEquals(1, image.getId());
+        assertEquals(2, image.getId());
     }
     
     @Test
