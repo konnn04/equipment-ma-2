@@ -309,11 +309,13 @@ public class UserServiceImpl implements UserService {
 
             User u = getUserById(id);
             if (u == null) {
+                System.err.println("Không tìm thấy user với id: " + id);
                 return false;
             }
 
             ImageService imageService = new ImageServiceImpl();
             Image image = imageService.getImageById(u.getAvatarId());
+
 
             boolean shouldDeleteImage = image != null && image.getId() != 1;
 
@@ -349,16 +351,17 @@ public class UserServiceImpl implements UserService {
 
             return true;
         } catch (SQLException | NullPointerException ex) {
-            if (conn != null) {
+            if (!conn.isClosed()) {
                 conn.rollback();
             }
             ex.printStackTrace();
             return false;
-        } finally {
-            if (conn != null) {
-                conn.setAutoCommit(true);
-            }
         }
+//        finally {
+//            if (!conn.isClosed()) {
+//                conn.setAutoCommit(true);
+//            }
+//        }
 
     }
 

@@ -70,7 +70,7 @@
             <Tab fx:id="maintenanceHistoryTab" text="Maintenance History" />
             <Tab fx:id="recordNewRepairTab" text="Record New Repair" />
             <Tab fx:id="userManagerTab" text="Users Management" />
-            <Tab text="Report">
+            <Tab fx:id="reportTab" text="Report">
                 <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                         <children>
@@ -87,7 +87,7 @@
                     </AnchorPane>
                 </content>
             </Tab>
-         <Tab text="Notification">
+         <Tab fx:id="notificationTab" text="Notification">
             <content>
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>

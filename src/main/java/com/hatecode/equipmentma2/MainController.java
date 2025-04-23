@@ -5,43 +5,149 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MainController implements Initializable {
-    @FXML
-    TabPane tabPane;
+    private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
+    private final Map<String, Object> controllers = new HashMap<>();
+    private final Map<String, Boolean> loadedTabs = new HashMap<>();
 
-    @FXML
-    Tab equipmentTab;
+    @FXML private TabPane tabPane;
+    @FXML private Tab equipmentTab;
+    @FXML private Tab maintenanceTab;
+    @FXML private Tab maintenanceHistoryTab;
+    @FXML private Tab recordNewRepairTab;
+    @FXML private Tab userManagerTab;
+    @FXML private Tab reportTab;
+    @FXML private Tab notificationTab;
+    @FXML private Label UIUsernameTextField;
+    @FXML private Label UIRoleTextField;
 
-    @FXML
-    Tab maintenanceTab;
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            initializeTabs();
+            setupLazyLoading();
+            initUI();
+            
+            // Load tab đầu tiên khi ứng dụng khởi động
+            loadTab(tabPane.getSelectionModel().getSelectedItem());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error initializing application", e);
+            showErrorDialog("Application Error", 
+                "Failed to initialize the application", 
+                "Please check the logs or contact support: " + e.getMessage());
+        }
+    }
+    
+    private void initializeTabs() {
+        // Khai báo các tab và đánh dấu là chưa được load
+        loadedTabs.put(equipmentTab.getId(), false);
+        loadedTabs.put(maintenanceTab.getId(), false);
+        loadedTabs.put(maintenanceHistoryTab.getId(), false);
+        loadedTabs.put(recordNewRepairTab.getId(), false);
+        loadedTabs.put(userManagerTab.getId(), false);
+    }
 
-    @FXML
-    Tab maintenanceHistoryTab;
+    private void setupLazyLoading() {
+        tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+            if (newTab != null) {
+                try {
+                    // Chỉ load tab nếu chưa được load trước đó
+                    loadTab(newTab);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Error loading tab: " + newTab.getId(), e);
+                    showErrorDialog("Tab Loading Error", 
+                        "Failed to load the tab content", 
+                        "Error: " + e.getMessage());
+                }
+                
+                LOGGER.info("Tab changed to: " + newTab.getId());
+            }
+        });
+    }
+    
+    private void loadTab(Tab tab) throws IOException, SQLException {
+        String tabId = tab.getId();
+        
+        // Bỏ qua nếu tab đã được load
+        if (Boolean.TRUE.equals(loadedTabs.get(tabId))) {
+            return;
+        }
+        
+        LOGGER.info("Loading tab content for: " + tabId);
+        
+        switch (tabId) {
+            case "equipmentTab":
+                EquipmentManagerController equipmentController = (EquipmentManagerController) loadTabContent(
+                    tab, "equipment-tab-view.fxml");
+                equipmentController.init();
+                break;
+                
+            case "maintenanceTab":
+                MaintenanceManagerController maintenanceController = (MaintenanceManagerController) loadTabContent(
+                    tab, "maintenance-tab-view.fxml");
+                maintenanceController.fetchMaintenanceTableView();
+                maintenanceController.loadColumnMaintenanceTableView();
+                break;
+                
+            case "maintenanceHistoryTab":
+                MaintenanceHistoryController historyController = (MaintenanceHistoryController) loadTabContent(
+                    tab, "maintenance-history-tab-view.fxml");
+                historyController.initMaintenanceHistory();
+                break;
+                
+            case "recordNewRepairTab":
+                RecordNewRepairManagerController repairController = (RecordNewRepairManagerController) loadTabContent(
+                    tab, "record-manager-tab-view.fxml");
+                repairController.loadColumnMaintenance();
+                repairController.loadMaintenancesData(null);
+                repairController.RecordNewRepairSetupHandler();
+                break;
+                
+            case "userManagerTab":
+                UserManagerController userController = (UserManagerController) loadTabContent(
+                    tab, "user-manager-tab-view.fxml");
+                userController.loadColumn();
+                userController.setupDetailForm();
+                userController.loadUsers(null, 0);
+                userController.loadRole();
+                userController.setupHandler();
+                break;
+                
+            default:
+                LOGGER.warning("Unknown tab ID: " + tabId);
+                return;
+        }
+        
+        // Đánh dấu là đã load tab này
+        loadedTabs.put(tabId, true);
+    }
 
-    @FXML
-    Tab recordNewRepairTab;
-
-    @FXML
-    Tab userManagerTab;
-    /* UI */
-    @FXML
-    Label UIUsernameTextField;
-
-    @FXML
-    Label UIRoleTextField;
+    private Object loadTabContent(Tab tab, String fxmlFile) throws IOException {
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(
+            getClass().getResource(fxmlFile)));
+        Pane content = loader.load();
+        tab.setContent(content);
+        
+        Object controller = loader.getController();
+        controllers.put(tab.getId(), controller);
+        return controller;
+    }
 
     @FXML
     private void initUI() {
         User currentUser = App.getCurrentUser();
-        System.out.println(currentUser);
         if (currentUser != null) {
             UIUsernameTextField.setText(currentUser.getUsername());
             UIRoleTextField.setText(currentUser.getRole().getName());
@@ -51,45 +157,16 @@ public class MainController implements Initializable {
         }
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Nạp content cho các tab
-        try {
-            // Nạp content cho tab Equipment
-            FXMLLoader equipmentLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("equipment-tab-view.fxml")));
-            equipmentTab.setContent(equipmentLoader.load());
-            EquipmentManagerController equipmentManagerController = equipmentLoader.getController();
-            equipmentManagerController.init();
-            // Nạp content cho tab Maintenance
-            FXMLLoader maintenanceLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("maintenance-tab-view.fxml")));
-            maintenanceTab.setContent(maintenanceLoader.load());
-            MaintenanceManagerController maintenanceManagerController = maintenanceLoader.getController();
-            maintenanceManagerController.fetchMaintenanceTableView();
-            maintenanceManagerController.loadColumnMaintenanceTableView();
-            // Nạp content cho tab Maintenance History
-            FXMLLoader maintenanceHistoryLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("maintenance-history-tab-view.fxml")));
-            maintenanceHistoryTab.setContent(maintenanceHistoryLoader.load());
-            MaintenanceHistoryController maintenanceHistoryController = maintenanceHistoryLoader.getController();
-            maintenanceHistoryController.initMaintenanceHistory();
-            // Nạp content cho tab Record new Repair
-            FXMLLoader recordNewRepairLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("record-manager-tab-view.fxml")));
-            recordNewRepairTab.setContent(recordNewRepairLoader.load());
-            RecordNewRepairManagerController recordNewRepairManagerController = recordNewRepairLoader.getController();
-            recordNewRepairManagerController.loadColumnMaintenance();
-            recordNewRepairManagerController.loadMaintenancesData(null);
-            recordNewRepairManagerController.RecordNewRepairSetupHandler();
-            // Nạp content cho tab User Management
-            FXMLLoader userManagerLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("user-manager-tab-view.fxml")));
-            userManagerTab.setContent(userManagerLoader.load());
-            UserManagerController userManagerController = userManagerLoader.getController();
-            userManagerController.loadColumn();
-            userManagerController.setupDetailForm();
-            userManagerController.loadUsers(null, 0);
-            userManagerController.loadRole();
-            userManagerController.setupHandler();
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e);
-        }
-        initUI();
+    private void showErrorDialog(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    // Lấy controller của tab theo ID
+    public Object getController(String tabId) {
+        return controllers.get(tabId);
     }
 }

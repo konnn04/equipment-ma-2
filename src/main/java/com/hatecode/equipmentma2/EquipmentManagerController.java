@@ -5,10 +5,7 @@ import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.Status;
 import com.hatecode.pojo.Image;
 import com.hatecode.services.CloundinaryService;
-import com.hatecode.services.impl.CategoryServiceImpl;
-import com.hatecode.services.impl.CloudinaryServiceImpl;
-import com.hatecode.services.impl.EquipmentServiceImpl;
-import com.hatecode.services.impl.ImageServiceImpl;
+import com.hatecode.services.impl.*;
 import com.hatecode.services.CategoryService;
 import com.hatecode.services.EquipmentService;
 import com.hatecode.services.ImageService;
@@ -26,388 +23,193 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.function.Consumer;
 
 public class EquipmentManagerController {
+    // Services
     private static final EquipmentService equipmentService = new EquipmentServiceImpl();
     private static final CategoryService categoryService = new CategoryServiceImpl();
+    private static final ImageService imageService = new ImageServiceImpl();
+    private static final CloundinaryService cloudinaryService = new CloudinaryServiceImpl();
 
-    @FXML
-    TableView<Equipment> equipmentTable;
-    @FXML
-    TextField equipmentQueryTextField;
-    @FXML
-    ComboBox<String> typeFilterComboBox;
-    @FXML
-    ComboBox<Object> valueFilterComboBox;
-    @FXML
-    TextField equipmentIDTextField;
-    @FXML
-    TextField equipmentCodeTextField;
-    @FXML
-    TextField equipmentNameTextField;
-    @FXML
-    ComboBox<Category> equipmentCategoryComboBox;
-    @FXML
-    Text statusEquipmentText;
-    @FXML
-    TextArea equipmentDescriptionTextField;
-    @FXML
-    Button addEquipmentButton;
-    @FXML
-    Button updateEquipmentButton;
-    @FXML
-    Button saveEquipmentButton;
-    @FXML
-    Button cancelEquipmentButton;
-    @FXML
-    ComboBox<String> modeComboBox;
-    @FXML
-    Label modeLabel;
-    @FXML
-    Text lastMaintenanceDateTextField;
-    @FXML
-    DatePicker nextMaintenanceDatePicker;
-    @FXML
-    Button changeEquipmentImageButton;
-    @FXML
-    ImageView equipmentImage;
-    @FXML
-    TextField regularMaintenanceTimeTextField;
-
+    // State variables
     private Equipment selectedEquipment = null;
     private boolean isImageChanged = false;
 
-    public void loadColumnEquipmentTableView() throws SQLException {
-        TableColumn<Equipment, String> equipmentIDColumn = new TableColumn<>("Code");
-        equipmentIDColumn.setPrefWidth(100);
-        equipmentIDColumn.setCellValueFactory(new PropertyValueFactory<>("code"));
+    // FXML UI components
+    @FXML private TableView<Equipment> equipmentTable;
+    @FXML private TextField equipmentQueryTextField;
+    @FXML private ComboBox<String> typeFilterComboBox;
+    @FXML private ComboBox<Object> valueFilterComboBox;
+    @FXML private TextField equipmentIDTextField;
+    @FXML private TextField equipmentCodeTextField;
+    @FXML private TextField equipmentNameTextField;
+    @FXML private ComboBox<Category> equipmentCategoryComboBox;
+    @FXML private Text statusEquipmentText;
+    @FXML private TextArea equipmentDescriptionTextField;
+    @FXML private Button addEquipmentButton;
+    @FXML private Button updateEquipmentButton;
+    @FXML private Button saveEquipmentButton;
+    @FXML private Button cancelEquipmentButton;
+    @FXML private ComboBox<String> modeComboBox;
+    @FXML private Label modeLabel;
+    @FXML private Text lastMaintenanceDateTextField;
+    @FXML private DatePicker nextMaintenanceDatePicker;
+    @FXML private Button changeEquipmentImageButton;
+    @FXML private ImageView equipmentImage;
+    @FXML private TextField regularMaintenanceTimeTextField;
 
-        TableColumn<Equipment, String> equipmentNameColumn = new TableColumn<>("Name");
-        equipmentNameColumn.setPrefWidth(160);
-        equipmentNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-
-        TableColumn<Equipment, String> equipmentStatusColumn = new TableColumn<>("Status");
-        equipmentStatusColumn.setPrefWidth(180);
-        equipmentStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-
-        TableColumn<Equipment, String> equipmentCategoryColumn = new TableColumn<>("Category");
-        equipmentCategoryColumn.setPrefWidth(180);
-        equipmentCategoryColumn.setCellValueFactory(
-                cellData -> {
-                    Equipment equipment = cellData.getValue();
-                    try {
-                        Category category = categoryService.getCategoryById(equipment.getCategoryId());
-                        if (category != null) {
-                            return new SimpleStringProperty(category.getName());
-                        } else {
-                            return null;
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }
-        );
-
-        TableColumn<Equipment, String> createdDateColumn = new TableColumn<>("Created Date");
-        createdDateColumn.setPrefWidth(200);
-        createdDateColumn.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
-
-        this.equipmentTable.getColumns().addAll(
-                equipmentIDColumn,
-                equipmentNameColumn,
-                equipmentStatusColumn,
-                equipmentCategoryColumn,
-                createdDateColumn);
+    /**
+     * Initialize the controller
+     */
+    public void init() throws SQLException {
+        setupTableColumns();
+        setupFilters();
+        setupUIDefaults();
+        setupEventHandlers();
+        
+        // Load initial data
+        loadCategories();
+        refreshEquipmentData();
     }
 
-    /* Khởi tạo danh sách lọc trong bảng Equipment */
-    public void initEquipmentFilterComboBox() {
+    /**
+     * Set up table columns with appropriate cell value factories
+     */
+    private void setupTableColumns() {
+        // Create columns
+        TableColumn<Equipment, String> codeColumn = createColumn("Code", "code", 100);
+        TableColumn<Equipment, String> nameColumn = createColumn("Name", "name", 160);
+        TableColumn<Equipment, String> statusColumn = createColumn("Status", "status", 180);
+        TableColumn<Equipment, String> categoryColumn = createCategoryColumn();
+        TableColumn<Equipment, String> dateColumn = createColumn("Created Date", "createdAt", 200);
+
+        // Add columns to table
+        equipmentTable.getColumns().addAll(codeColumn, nameColumn, statusColumn, categoryColumn, dateColumn);
+    }
+
+    /**
+     * Create a standard table column with PropertyValueFactory
+     */
+    private <T> TableColumn<Equipment, T> createColumn(String title, String property, double width) {
+        TableColumn<Equipment, T> column = new TableColumn<>(title);
+        column.setPrefWidth(width);
+        column.setCellValueFactory(new PropertyValueFactory<>(property));
+        return column;
+    }
+
+    /**
+     * Create specialized category column with custom value factory
+     */
+    private TableColumn<Equipment, String> createCategoryColumn() {
+        TableColumn<Equipment, String> column = new TableColumn<>("Category");
+        column.setPrefWidth(180);
+        column.setCellValueFactory(cellData -> {
+            try {
+                Equipment equipment = cellData.getValue();
+                Category category = categoryService.getCategoryById(equipment.getCategoryId());
+                return category != null ? new SimpleStringProperty(category.getName()) : null;
+            } catch (SQLException e) {
+                handleException(e, "Error loading category");
+                return null;
+            }
+        });
+        return column;
+    }
+
+    /**
+     * Set up filter comboboxes and their listeners
+     */
+    private void setupFilters() {
+        // Type filter setup
         typeFilterComboBox.getItems().addAll("All", "Category", "Status");
-        typeFilterComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                if (newSelection.equals("Category")) {
-                    try {
-                        List<Category> categories = categoryService.getCategories();
-                        List<Object> categoryObjects = new ArrayList<>(categories);
-                        valueFilterComboBox.setItems(FXCollections.observableList(categoryObjects));
-                        valueFilterComboBox.getSelectionModel().select(0);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                } else if (newSelection.equals("Status")) {
-                    try {
-                        List<Status> statuses = Status.getAllStatus();
-                        List<Object> statusObjects = new ArrayList<>(statuses);
-                        valueFilterComboBox.setItems(FXCollections.observableList(statusObjects));
-                        valueFilterComboBox.getSelectionModel().select(0);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        typeFilterComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null) return;
+            
+            try {
+                if ("Category".equals(newVal)) {
+                    List<Category> categories = categoryService.getCategories();
+                    valueFilterComboBox.setItems(FXCollections.observableList(new ArrayList<>(categories)));
+                    valueFilterComboBox.getSelectionModel().select(0);
+                } else if ("Status".equals(newVal)) {
+                    List<Status> statuses = Status.getAllStatus();
+                    valueFilterComboBox.setItems(FXCollections.observableList(new ArrayList<>(statuses)));
+                    valueFilterComboBox.getSelectionModel().select(0);
                 } else {
                     valueFilterComboBox.getItems().clear();
                 }
+            } catch (Exception e) {
+                handleException(e, "Error setting up filters");
             }
         });
-        valueFilterComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            try {
-                fetchEquipmentTableView();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+
+        // Value filter change listener
+        valueFilterComboBox.getSelectionModel().selectedItemProperty().addListener(
+            (obs, oldVal, newVal) -> safeExecute(this::refreshEquipmentData));
     }
 
-    /* Lấy danh sách thiết bị từ database và hiển thị lên bảng Equipment */
-    public void fetchEquipmentTableView() throws SQLException {
-        String query = equipmentQueryTextField.getText();
-        String key = typeFilterComboBox.getSelectionModel().getSelectedItem();
-        String value = "";
-        if (key != null && key.equals("Category")) {
-            key= "category_id";
-            Category category = (Category) valueFilterComboBox.getSelectionModel().getSelectedItem();
-            if (category != null) {
-                value = String.valueOf(category.getId());
-            }
-        } else if (key != null && key.equals("Status")) {
-            Status status = (Status) valueFilterComboBox.getSelectionModel().getSelectedItem();
-            if (status != null) {
-                value = String.valueOf(status.getId());
-            }
-        } else{
-            key = null;
-            value = null;
-        }
-        List<Equipment> equipments;
-        equipments = equipmentService.getEquipments(query, 0, 100, key, value);
-        equipmentTable.setItems(FXCollections.observableList(equipments));
-    }
-
-    /* Chuyển dữ liệu từ bảng Equipment sang các trường nhập liệu */
-    private void praseSelectedEquipmentData(Equipment selectedEquipment) throws SQLException {
-        CategoryService categoryService = new CategoryServiceImpl();
-        ImageService imageService = new ImageServiceImpl();
-
-        isImageChanged = false;
-        equipmentIDTextField.setText(String.valueOf(selectedEquipment.getId()));
-        equipmentCodeTextField.setText(selectedEquipment.getCode());
-        equipmentNameTextField.setText(selectedEquipment.getName());
-        equipmentCategoryComboBox.getSelectionModel().select(
-                categoryService.getCategoryById(selectedEquipment.getCategoryId()));
-        statusEquipmentText.setText(selectedEquipment.getStatus().getDescription());
-        equipmentDescriptionTextField.setText(selectedEquipment.getDescription());
-        lastMaintenanceDateTextField.setText(selectedEquipment.getLastMaintenanceTime().toString());
-        regularMaintenanceTimeTextField.setText(selectedEquipment.getRegularMaintenanceDay() + "");
-
-        Image image = imageService.getImageById(selectedEquipment.getImageId());
-        if (image != null) {
-            equipmentImage.setImage(new ImageView(image.getPath()).getImage());
-        } else {
-            equipmentImage.setImage(null);
-        }
-    }
-
-    /*Thêm thiết bị mới*/
-    public void init() throws SQLException {
-        initEquipmentFilterComboBox();
-        loadColumnEquipmentTableView();
-        fetchEquipmentTableView();
-
-        /* Bắt sự kiện khi chọn 1 dòng trong bảng Equipment */
-        equipmentTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                selectedEquipment = newSelection;
-                try {
-                    praseSelectedEquipmentData(newSelection);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-
-        /* Bắt sự kiện khi click vào nút tìm kiếm */
-        equipmentQueryTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                fetchEquipmentTableView();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-
-        /* Khởi tạo comboBox category */
-        equipmentCategoryComboBox.getItems().addAll(
-                FXCollections.observableList(categoryService.getCategories())
-        );
-
+    /**
+     * Set up default UI state
+     */
+    private void setupUIDefaults() {
+        // Initial button states
         updateEquipmentButton.setVisible(false);
         saveEquipmentButton.setVisible(false);
         changeEquipmentImageButton.setVisible(false);
+        cancelEquipmentButton.setVisible(false);
+        
+        // Combobox setup
         modeComboBox.getItems().addAll("Viewing", "Editing");
         modeComboBox.getSelectionModel().select(0);
-        saveEquipmentButton.setVisible(false);
-        cancelEquipmentButton.setVisible(false);
+        
+        // Form defaults
         regularMaintenanceTimeTextField.setDisable(true);
         equipmentCategoryComboBox.setDisable(true);
         nextMaintenanceDatePicker.setDisable(true);
+        
+        setViewMode(true);
+    }
 
-        switchMode(true);
-
-        /* Bắt sự kiện khi chọn chế độ xem hoặc chỉnh sửa */
-        modeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                if (newSelection.equals("Editing")) {
-                    switchMode(false);
-                } else {
-                    switchMode(true);
+    /**
+     * Set up all event handlers
+     */
+    private void setupEventHandlers() {
+        // Table selection listener
+        equipmentTable.getSelectionModel().selectedItemProperty().addListener(
+            (obs, oldSelection, newSelection) -> {
+                if (newSelection != null) {
+                    selectedEquipment = newSelection;
+                    safeExecute(() -> displayEquipmentDetails(newSelection));
                 }
-            }
-        });
+            });
 
-        /* Bắt sự kiện khi click vào nút thêm thiết bị */
-        addEquipmentButton.setOnAction(event -> {
-            isImageChanged = false;
-            selectedEquipment = null;
-            addEquipmentButton.setDisable(true);
-            cancelEquipmentButton.setVisible(true);
-            saveEquipmentButton.setVisible(true);
-            modeComboBox.setVisible(false);
-            modeLabel.setText("Adding ");
-            equipmentIDTextField.clear();
-            equipmentCodeTextField.clear();
-            equipmentCodeTextField.setDisable(false);
-            equipmentNameTextField.clear();
-            equipmentNameTextField.setDisable(false);
-            statusEquipmentText.setText(Status.ACTIVE.getDescription());
-            equipmentDescriptionTextField.clear();
-            equipmentDescriptionTextField.setDisable(false);
-            changeEquipmentImageButton.setVisible(true);
-            equipmentImage.setImage(null);
-            lastMaintenanceDateTextField.setText("None");
-            regularMaintenanceTimeTextField.setDisable(false);
-            regularMaintenanceTimeTextField.clear();
-            equipmentCategoryComboBox.setDisable(false);
-            nextMaintenanceDatePicker.setDisable(true);
-        });
+        // Search field listener
+        equipmentQueryTextField.textProperty().addListener(
+            (observable, oldValue, newValue) -> safeExecute(this::refreshEquipmentData));
 
-        /* Bắt sự kiện huỷ  thêm thiết bị */
-        cancelEquipmentButton.setOnAction(event -> {
-            selectedEquipment = null;
-            isImageChanged = false;
-
-            addEquipmentButton.setDisable(false);
-            cancelEquipmentButton.setVisible(false);
-            saveEquipmentButton.setVisible(false);
-            modeComboBox.setVisible(true);
-            equipmentCodeTextField.clear();
-            equipmentNameTextField.clear();
-            equipmentDescriptionTextField.clear();
-            statusEquipmentText.setText("None");
-            equipmentImage.setImage(null);
-            switchMode(true);
-        });
-
-        /* Bắt sự kiện khi click vào nút đổi ảnh cho thiết bị */
-        changeEquipmentImageButton.setOnAction(event -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
-            fileChooser.setTitle("Select Equipment Image");
-            java.io.File file = fileChooser.showOpenDialog(null);
-            if (file != null) {
-                isImageChanged = true;
-                equipmentImage.setImage(new ImageView(file.toURI().toString()).getImage());
-            }
-        });
-
-        /* Bắt sự kiện khi click vào nút lưu thiết bị mới*/
-        saveEquipmentButton.setOnAction(event -> {
-            try{
-                Image uploadImage = null;
-                if (equipmentImage.getImage() != null) {
-                    CloundinaryService cloundinaryService = new CloudinaryServiceImpl();
-                    File file = new File( equipmentImage.getImage().getUrl().replace("file:", ""));
-                    uploadImage = new Image(
-                            file.getName(),
-                            cloundinaryService.uploadImage(file)
-                    );
-                    ImageService imageService = new ImageServiceImpl();
-                    imageService.addImage(uploadImage);
+        // Mode selection listener
+        modeComboBox.getSelectionModel().selectedItemProperty().addListener(
+            (obs, oldVal, newVal) -> {
+                if (newVal != null) {
+                    setViewMode("Viewing".equals(newVal));
                 }
+            });
 
-                assert uploadImage != null;
-                Equipment newEquipment = new Equipment(
-                        equipmentCodeTextField.getText(),
-                        equipmentNameTextField.getText(),
-                        Status.ACTIVE,
-                        equipmentCategoryComboBox.getSelectionModel().getSelectedItem().getId(),
-                        uploadImage.getId(),
-                        Integer.parseInt(regularMaintenanceTimeTextField.getText()),
-                        equipmentDescriptionTextField.getText()
-                );
-                equipmentService.addEquipment(newEquipment);
-                AlertBox.showConfirmation(
-                        "Add Equipment",
-                        "Equipment added successfully!"
-                );
-            }catch (Exception e){
-                AlertBox.showError(
-                        "Add Equipment",
-                        "Failed to add equipment: " + e.getMessage()
-                );
-                e.printStackTrace();
-            }
-        });
+        // Button click handlers
+        addEquipmentButton.setOnAction(event -> handleAddEquipmentAction());
+        cancelEquipmentButton.setOnAction(event -> handleCancelAction());
+        changeEquipmentImageButton.setOnAction(event -> handleChangeImageAction());
+        saveEquipmentButton.setOnAction(event -> handleSaveEquipmentAction());
+        updateEquipmentButton.setOnAction(event -> handleUpdateEquipmentAction());
 
-        /* Bắt sự kiện khi click vào nút cập nhật thiết bị*/
-        updateEquipmentButton.setOnAction(event -> {
-            if (selectedEquipment != null) {
-                try {
-                    /* Kiểm tra ảnh có cập nhật hay không */
-                    if (isImageChanged) {
-                        CloundinaryService cloundinaryService = new CloudinaryServiceImpl();
-                        File file  = new File(equipmentImage.getImage().getUrl());
-                        Image image = new Image(
-                                file.getName(),
-                                cloundinaryService.uploadImage(file)
-                        );
-                        selectedEquipment.setImageId(image.getId());
-                    }
+        // Maintenance time field listener
+        setupMaintenanceTimeListener();
+    }
 
-                    EquipmentService equipmentService = new EquipmentServiceImpl();
-                    selectedEquipment.setCode(equipmentCodeTextField.getText());
-                    selectedEquipment.setName(equipmentNameTextField.getText());
-                    selectedEquipment.setDescription(equipmentDescriptionTextField.getText());
-                    selectedEquipment.setCategoryId(equipmentCategoryComboBox.getSelectionModel().getSelectedItem().getId());
-                    selectedEquipment.setRegularMaintenanceDay(Integer.parseInt(regularMaintenanceTimeTextField.getText()));
-
-                    equipmentService.updateEquipment(selectedEquipment);
-                    switchMode(true);
-                    modeComboBox.getSelectionModel().select(0);
-                    fetchEquipmentTableView();
-                    equipmentTable.getSelectionModel().select(selectedEquipment);
-                    equipmentTable.scrollTo(selectedEquipment);
-                    praseSelectedEquipmentData(selectedEquipment);
-                    AlertBox.showConfirmation(
-                            "Update Equipment",
-                            "Equipment updated successfully!"
-                    );
-                    switchMode(true);
-                } catch (SQLException e) {
-                    AlertBox.showError(
-                            "Update Equipment",
-                            "Failed to update equipment: " + e.getMessage()
-                    );
-                    e.printStackTrace();
-                }
-            }else{
-                AlertBox.showError(
-                        "Update Equipment",
-                        "Please select an equipment to update!"
-                );
-            }
-        });
-
-        /* Bắt sự kiện khi thay đổi regularMaintenanceTimeTextField */
+    /**
+     * Set up regular maintenance time field listener
+     */
+    private void setupMaintenanceTimeListener() {
         regularMaintenanceTimeTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 int value = Integer.parseInt(newValue);
@@ -415,7 +217,8 @@ public class EquipmentManagerController {
                     regularMaintenanceTimeTextField.setText("0");
                 }
                 if (selectedEquipment != null) {
-//                    nextMaintenanceDatePicker.setValue(selectedEquipment.getLastMaintenanceTime().plusDays(value).toLocalDate());
+                    nextMaintenanceDatePicker.setValue(
+                        selectedEquipment.getLastMaintenanceTime().plusDays(value).toLocalDate());
                 }
             } catch (NumberFormatException e) {
                 regularMaintenanceTimeTextField.setText("0");
@@ -423,32 +226,307 @@ public class EquipmentManagerController {
         });
     }
 
+    /**
+     * Load categories into combobox
+     */
+    private void loadCategories() throws SQLException {
+        equipmentCategoryComboBox.getItems().addAll(
+            FXCollections.observableList(categoryService.getCategories()));
+    }
 
-    private void switchMode(Boolean isViewing) {
-        if (isViewing) {
-            modeLabel.setText("Viewing");
-            updateEquipmentButton.setVisible(false);
-            addEquipmentButton.setDisable(false);
-            equipmentCodeTextField.setDisable(true);
-            equipmentNameTextField.setDisable(true);
-            equipmentDescriptionTextField.setDisable(true);
-            changeEquipmentImageButton.setVisible(false);
-            regularMaintenanceTimeTextField.setDisable(true);
-            equipmentCategoryComboBox.setDisable(true);
-            nextMaintenanceDatePicker.setDisable(true);
-        } else {
-            modeLabel.setText("Editing");
-            updateEquipmentButton.setVisible(true);
-            addEquipmentButton.setDisable(true);
-            equipmentCodeTextField.setDisable(false);
-            equipmentNameTextField.setDisable(false);
-            equipmentDescriptionTextField.setDisable(false);
-            changeEquipmentImageButton.setVisible(true);
-            regularMaintenanceTimeTextField.setDisable(false);
-            equipmentCategoryComboBox.setDisable(false);
-            nextMaintenanceDatePicker.setDisable(false);
+    /**
+     * Handle the add equipment button action
+     */
+    private void handleAddEquipmentAction() {
+        isImageChanged = false;
+        selectedEquipment = null;
+        
+        // Update UI state
+        addEquipmentButton.setDisable(true);
+        cancelEquipmentButton.setVisible(true);
+        saveEquipmentButton.setVisible(true);
+        modeComboBox.setVisible(false);
+        modeLabel.setText("Adding ");
+        
+        // Clear form fields
+        clearFormFields();
+        
+        // Enable editable fields
+        setFieldsEditable(true);
+        
+        // Set defaults
+        statusEquipmentText.setText(Status.ACTIVE.getDescription());
+        lastMaintenanceDateTextField.setText("None");
+    }
+
+    /**
+     * Handle the cancel button action
+     */
+    private void handleCancelAction() {
+        selectedEquipment = null;
+        isImageChanged = false;
+
+        // Update UI state
+        addEquipmentButton.setDisable(false);
+        cancelEquipmentButton.setVisible(false);
+        saveEquipmentButton.setVisible(false);
+        modeComboBox.setVisible(true);
+        
+        // Clear form fields
+        clearFormFields();
+        
+        // Reset to view mode
+        setViewMode(true);
+    }
+
+    /**
+     * Handle the change image button action
+     */
+    private void handleChangeImageAction() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+        fileChooser.setTitle("Select Equipment Image");
+        
+        java.io.File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
+            isImageChanged = true;
+            equipmentImage.setImage(new ImageView(file.toURI().toString()).getImage());
         }
     }
 
+    /**
+     * Handle the save equipment button action
+     */
+    private void handleSaveEquipmentAction() {
+        try {
+            // Upload image if provided
+            Image uploadImage = uploadImageIfChanged();
+            if (equipmentImage.getImage() != null && uploadImage == null) {
+                AlertBox.showError("Add Equipment", "Failed to upload image");
+                return;
+            }
 
+            // Validate required fields
+            if (!validateForm()) {
+                AlertBox.showError("Add Equipment", "Please fill all required fields");
+                return;
+            }
+
+            // Create new equipment
+            Equipment newEquipment = new Equipment(
+                equipmentCodeTextField.getText(),
+                equipmentNameTextField.getText(),
+                Status.ACTIVE,
+                equipmentCategoryComboBox.getSelectionModel().getSelectedItem().getId(),
+                uploadImage.getId(),
+                Integer.parseInt(regularMaintenanceTimeTextField.getText()),
+                equipmentDescriptionTextField.getText()
+            );
+            
+            // Save to database
+            equipmentService.addEquipment(newEquipment);
+            
+            // Show success and refresh
+            AlertBox.showConfirmation("Add Equipment", "Equipment added successfully!");
+            refreshEquipmentData();
+            handleCancelAction();
+            
+        } catch (Exception e) {
+            handleException(e, "Failed to add equipment");
+        }
+    }
+
+    /**
+     * Handle the update equipment button action
+     */
+    private void handleUpdateEquipmentAction() {
+        if (selectedEquipment == null) {
+            AlertBox.showError("Update Equipment", "Please select an equipment to update!");
+            return;
+        }
+
+        try {
+            // Upload image if changed
+            if (isImageChanged) {
+                Image image = uploadImageIfChanged();
+                selectedEquipment.setImageId(image.getId());
+            }
+
+            // Update equipment details
+            selectedEquipment.setCode(equipmentCodeTextField.getText());
+            selectedEquipment.setName(equipmentNameTextField.getText());
+            selectedEquipment.setDescription(equipmentDescriptionTextField.getText());
+            selectedEquipment.setCategoryId(
+                equipmentCategoryComboBox.getSelectionModel().getSelectedItem().getId());
+            selectedEquipment.setRegularMaintenanceDay(
+                Integer.parseInt(regularMaintenanceTimeTextField.getText()));
+
+            // Save changes
+            equipmentService.updateEquipment(selectedEquipment);
+            
+            // Update UI
+            setViewMode(true);
+            modeComboBox.getSelectionModel().select(0);
+            refreshEquipmentData();
+            selectEquipmentInTable(selectedEquipment);
+            
+            // Show success message
+            AlertBox.showConfirmation("Update Equipment", "Equipment updated successfully!");
+            
+        } catch (Exception e) {
+            handleException(e, "Failed to update equipment");
+        }
+    }
+
+    /**
+     * Clear all form fields
+     */
+    private void clearFormFields() {
+        equipmentIDTextField.clear();
+        equipmentCodeTextField.clear();
+        equipmentNameTextField.clear();
+        equipmentDescriptionTextField.clear();
+        statusEquipmentText.setText("None");
+        equipmentImage.setImage(null);
+        regularMaintenanceTimeTextField.clear();
+    }
+
+    /**
+     * Toggle view/edit mode
+     */
+    private void setViewMode(boolean isViewing) {
+        modeLabel.setText(isViewing ? "Viewing" : "Editing");
+        updateEquipmentButton.setVisible(!isViewing);
+        addEquipmentButton.setDisable(!isViewing);
+        changeEquipmentImageButton.setVisible(!isViewing);
+        
+        setFieldsEditable(!isViewing);
+        
+        // Always disable these fields in either mode
+        nextMaintenanceDatePicker.setDisable(true);
+    }
+
+    /**
+     * Set editable state for form fields
+     */
+    private void setFieldsEditable(boolean editable) {
+        equipmentCodeTextField.setDisable(!editable);
+        equipmentNameTextField.setDisable(!editable);
+        equipmentDescriptionTextField.setDisable(!editable);
+        regularMaintenanceTimeTextField.setDisable(!editable);
+        equipmentCategoryComboBox.setDisable(!editable);
+    }
+
+    /**
+     * Display equipment details in the form
+     */
+    private void displayEquipmentDetails(Equipment equipment) throws SQLException {
+        isImageChanged = false;
+        equipmentIDTextField.setText(String.valueOf(equipment.getId()));
+        equipmentCodeTextField.setText(equipment.getCode());
+        equipmentNameTextField.setText(equipment.getName());
+        equipmentCategoryComboBox.getSelectionModel().select(
+            categoryService.getCategoryById(equipment.getCategoryId()));
+        statusEquipmentText.setText(equipment.getStatus().getDescription());
+        equipmentDescriptionTextField.setText(equipment.getDescription());
+        lastMaintenanceDateTextField.setText(equipment.getLastMaintenanceTime().toString());
+        regularMaintenanceTimeTextField.setText(String.valueOf(equipment.getRegularMaintenanceDay()));
+
+        // Load image
+        Image image = imageService.getImageById(equipment.getImageId());
+        if (image != null) {
+            equipmentImage.setImage(new ImageView(image.getPath()).getImage());
+        } else {
+            equipmentImage.setImage(null);
+        }
+    }
+
+    /**
+     * Upload image to cloud service if it has been changed
+     */
+    private Image uploadImageIfChanged() throws SQLException {
+        if (equipmentImage.getImage() != null) {
+            File file = new File(equipmentImage.getImage().getUrl().replace("file:", ""));
+            String imageUrl = cloudinaryService.uploadImage(file);
+            Image image = new Image(file.getName(), imageUrl);
+            imageService.addImage(image);
+            return image;
+        }
+        return null;
+    }
+
+    /**
+     * Refresh equipment data in the table
+     */
+    private void refreshEquipmentData() throws SQLException {
+        String query = equipmentQueryTextField.getText();
+        String key = typeFilterComboBox.getSelectionModel().getSelectedItem();
+        String value = null;
+        
+        if (key != null) {
+            if ("Category".equals(key)) {
+                key = "category_id";
+                Category category = (Category) valueFilterComboBox.getSelectionModel().getSelectedItem();
+                if (category != null) {
+                    value = String.valueOf(category.getId());
+                }
+            } else if ("Status".equals(key)) {
+                Status status = (Status) valueFilterComboBox.getSelectionModel().getSelectedItem();
+                if (status != null) {
+                    value = String.valueOf(status.getId());
+                }
+            } else {
+                key = null;
+            }
+        }
+        
+        List<Equipment> equipments = equipmentService.getEquipments(query, 0, 100, key, value);
+        equipmentTable.setItems(FXCollections.observableList(equipments));
+    }
+
+    /**
+     * Select an equipment in the table
+     */
+    private void selectEquipmentInTable(Equipment equipment) {
+        equipmentTable.getSelectionModel().select(equipment);
+        equipmentTable.scrollTo(equipment);
+    }
+    
+    /**
+     * Basic form validation
+     */
+    private boolean validateForm() {
+        return equipmentCodeTextField.getText() != null && !equipmentCodeTextField.getText().isEmpty()
+            && equipmentNameTextField.getText() != null && !equipmentNameTextField.getText().isEmpty()
+            && equipmentCategoryComboBox.getSelectionModel().getSelectedItem() != null
+            && regularMaintenanceTimeTextField.getText() != null && !regularMaintenanceTimeTextField.getText().isEmpty();
+    }
+
+    /**
+     * Centralized exception handling
+     */
+    private void handleException(Exception e, String message) {
+        e.printStackTrace();
+        AlertBox.showError("Error", message + ": " + e.getMessage());
+    }
+    
+    /**
+     * Execute an operation safely with error handling
+     */
+    private void safeExecute(SqlOperation operation) {
+        try {
+            operation.execute();
+        } catch (SQLException e) {
+            handleException(e, "Database operation failed");
+        }
+    }
+    
+    /**
+     * Functional interface for SQL operations
+     */
+    @FunctionalInterface
+    private interface SqlOperation {
+        void execute() throws SQLException;
+    }
 }

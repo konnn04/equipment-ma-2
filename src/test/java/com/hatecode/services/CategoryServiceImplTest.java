@@ -29,7 +29,7 @@ public class CategoryServiceImplTest {
                        ('Category 3'),
                        ('Category 4'),
                        ('Category 5');
-                INSERT INTO Category (name, is_active)
+                INSERT INTO `Category` (name, is_active)
                 VALUES ('Category non-active', false);
 
                 INSERT INTO Equipment (code, name, status, category_id, image_id, regular_maintenance_day, description)

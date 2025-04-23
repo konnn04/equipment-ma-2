@@ -43,16 +43,16 @@ public class UserServiceImplTest {
         sampleUser.setActive(true);
 
         String sql = """
-INSERT INTO Image (filename, path)
-VALUES ('default_avatar.png','/images/default.png'),
-       ('test_avatar.png', '/images/test_avatar.png');
-
-INSERT INTO `User` (first_name, last_name, username, password, email, phone, role)
-VALUES ('Default', 'Image', 'defaultimg', 'password123', 'default@example.com', '0123456789', 1);
-
-INSERT INTO `User` (first_name, last_name, username, password, email, phone, role, avatar_id)
-VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '0123456781', 1, 1);
-""";
+        INSERT INTO `Image` (filename, path)
+        VALUES ('default_avatar.png','/images/default.png'),
+               ('test_avatar.png', '/images/test_avatar.png');
+        
+        INSERT INTO `User` (first_name, last_name, username, password, email, phone, role,avatar_id)
+        VALUES ('Default', 'Image', 'defaultimg', 'password123', 'default@example.com', '0123456789', 1, 1);
+        
+        INSERT INTO `User` (first_name, last_name, username, password, email, phone, role, avatar_id)
+        VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '0123456781', 1, 2);
+        """;
         try (Connection conn = JdbcUtils.getConn();
              Statement statement = conn.createStatement()) {
             statement.executeUpdate(sql);
@@ -276,13 +276,14 @@ VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '01
 
         try {
             // Với người dùng có avatar khác với avatar mặc định đảm bảo xóa cả 2
-            User u = userService.getUserById(58);
-            boolean result = userService.deleteUser(58);
+            User u = userService.getUserById(1);
+            boolean result = userService.deleteUser(1);
             assertTrue(result);
 
             Image img = imageService.getImageById(u.getAvatarId());
             assertNull(img, "Image hasn't been deleted yet!!!");
         } catch (SQLException ex) {
+            ex.printStackTrace();
             fail("SQLException occurred during test: " + ex.getMessage());
         }
     }
