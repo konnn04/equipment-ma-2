@@ -427,7 +427,7 @@ public class EquipmentManagerController {
         equipmentCodeTextField.setText(equipment.getCode());
         equipmentNameTextField.setText(equipment.getName());
         equipmentCategoryComboBox.getSelectionModel().select(
-            categoryService.getCategoryById(equipment.getCategoryId()));
+        categoryService.getCategoryById(equipment.getCategoryId()));
         statusEquipmentText.setText(equipment.getStatus().getDescription());
         equipmentDescriptionTextField.setText(equipment.getDescription());
         lastMaintenanceDateTextField.setText(equipment.getLastMaintenanceTime().toString());

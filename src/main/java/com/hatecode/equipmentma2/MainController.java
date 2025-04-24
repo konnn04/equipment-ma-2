@@ -1,6 +1,8 @@
 package com.hatecode.equipmentma2;
 
 import com.hatecode.pojo.*;
+import com.hatecode.security.Permission;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -39,7 +41,8 @@ public class MainController implements Initializable {
             initializeTabs();
             setupLazyLoading();
             initUI();
-            
+            // Kiểm tra nếu không phải admin thì ẩn tab quản lý người dùng
+            userManagerTab.setDisable(!App.hasPermission(Permission.USER_VIEW));
             // Load tab đầu tiên khi ứng dụng khởi động
             loadTab(tabPane.getSelectionModel().getSelectedItem());
         } catch (Exception e) {
