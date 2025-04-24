@@ -1,5 +1,6 @@
 package com.hatecode.equipmentma2;
 
+import com.hatecode.pojo.Role;
 import com.hatecode.pojo.User;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -7,24 +8,45 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
 
 import java.io.IOException;
 import java.util.Optional;
 
-public class App extends Application {
+import com.hatecode.security.Permission;
+import com.hatecode.security.SecurityManager;
 
+public class App extends Application {
     private static User currentUser;
     private static Stage primaryStage;
 
+    public static boolean hasPermission(Permission permission) {
+        if (currentUser == null || !currentUser.isActive()) {
+            System.out.println("Current user is not active");
+            return false;
+        }
+        return SecurityManager.hasPermission(currentUser, permission);
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
+        User adminUser = new User();
+        adminUser.setId(1);
+        adminUser.setUsername("admin");
+        adminUser.setPassword("admin");
+        adminUser.setRole(Role.ADMIN);
+        adminUser.setActive(true);
+        setCurrentUser(adminUser);
+
         primaryStage = stage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Equipment Management System");
+
+        Image appIcon = new Image(App.class.getResourceAsStream("/com/hatecode/assets/app-icon.png"));
+        stage.getIcons().add(appIcon);
 
         stage.setScene(scene);
         stage.show();
@@ -50,6 +72,7 @@ public class App extends Application {
     }
 
     public static void switchToHome() throws IOException {
+        // Load the home-view.fxml file
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         primaryStage.setScene(scene);

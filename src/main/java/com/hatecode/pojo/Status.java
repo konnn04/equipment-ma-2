@@ -4,7 +4,7 @@ import java.util.List;
 
 public enum Status {
     INACTIVE (1, "Inactive"),
-    ACTIVE (2, "Inactive"),
+    ACTIVE (2, "Active"),
     UNDER_MAINTENANCE (3, "Under maintenance"),
     BROKEN (4, "Broken"),
     LIQUIDATED (5, "Liquidated");
