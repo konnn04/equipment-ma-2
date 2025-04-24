@@ -298,7 +298,7 @@ public class UserManagerController {
 
             // Validate dữ liệu
             if ((currentUser.getId() == 0 && passwordField.getText().isEmpty()) || firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() ||
-                    email.isEmpty() || selectedRole == null) {
+                    email.isEmpty() || selectedRole == null || phoneField.getText().isEmpty()) {
                 showErrorAlert("Error", "Missing information", "Please fill in all required fields");
                 return;
             }
