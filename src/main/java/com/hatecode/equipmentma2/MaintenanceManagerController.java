@@ -308,6 +308,9 @@ public class MaintenanceManagerController {
                     }
                 });
 
+        // equipmentQueryTextField listener
+        equipmentQueryTextField.textProperty().addListener((observable, oldValue, newValue) -> executeWithErrorHandling(() -> refreshEquipmentMaintenanceData(newValue)));
+
         // Add technician change listener
         technicianComboBox.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldValue, newValue) -> {
@@ -365,6 +368,16 @@ public class MaintenanceManagerController {
         maintenanceTable.setItems(FXCollections.observableList(maintenances));
     }
 
+    /**
+     * Refresh equipment maintenance table data
+     */
+    private void refreshEquipmentMaintenanceData(String query) throws SQLException {
+        if (selectedMaintenance != null) {
+            List<EquipmentMaintenance> equipmentMaintenances = equipmentMaintenanceService
+                    .getEquipmentsMaintenanceByEMId(query, selectedMaintenance.getId());
+            equipmentMaintenanceTable.setItems(FXCollections.observableList(equipmentMaintenances));
+        }
+    }
     /**
      * Load equipment maintenance data for selected maintenance
      */
