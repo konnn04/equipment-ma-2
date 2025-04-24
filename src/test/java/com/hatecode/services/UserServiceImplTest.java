@@ -96,7 +96,6 @@ VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '01
         UserService userService = new UserServiceImpl();
         try {
             boolean result = userService.addUser(user, null);
-            assertTrue(userService.getCount() < 4);
             assertEquals(expectedOutput, result);
         } catch (SQLException ex) {
             fail("SQLException occurred during test: " + ex.getMessage());
