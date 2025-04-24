@@ -299,7 +299,7 @@ public class UserManagerController {
             // Validate dữ liệu
             if ((currentUser.getId() == 0 && passwordField.getText().isEmpty()) || firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() ||
                     email.isEmpty() || selectedRole == null) {
-                showErrorAlert("Lỗi", "Thiếu thông tin", "Vui lòng điền đầy đủ thông tin bắt buộc");
+                showErrorAlert("Error", "Missing information", "Please fill in all required fields");
                 return;
             }
 
