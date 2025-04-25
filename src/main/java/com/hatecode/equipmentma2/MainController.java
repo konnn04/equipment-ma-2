@@ -100,8 +100,7 @@ public class MainController implements Initializable {
             case "maintenanceTab":
                 MaintenanceManagerController maintenanceController = (MaintenanceManagerController) loadTabContent(
                     tab, "maintenance-tab-view.fxml");
-                maintenanceController.fetchMaintenanceTableView();
-                maintenanceController.loadColumnMaintenanceTableView();
+                maintenanceController.init();
                 break;
                 
             case "maintenanceHistoryTab":

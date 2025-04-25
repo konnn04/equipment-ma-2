@@ -12,7 +12,6 @@ import com.hatecode.utils.PasswordUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
@@ -114,7 +113,7 @@ VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '01
         user.setUsername("rollback_user_error");
         user.setPassword("1");
         user.setPhone("0999999999");
-        user.setRole(Role.USER);
+        user.setRole(Role.TECHNICIAN);
         user.setActive(true);
         user.setAvatarId(1);
         user.setEmail(null);
@@ -137,7 +136,7 @@ VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '01
         user.setUsername("rollback_user_error");
         user.setPassword("1");
         user.setPhone("0999999999");
-        user.setRole(Role.USER);
+        user.setRole(Role.TECHNICIAN);
         user.setActive(true);
         user.setAvatarId(1);
         user.setEmail("testUser@gmail.com");

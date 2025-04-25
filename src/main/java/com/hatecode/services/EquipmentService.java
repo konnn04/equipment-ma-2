@@ -18,6 +18,7 @@ import java.util.List;
 public interface EquipmentService {
     Equipment getEquipmentById(int id) throws SQLException;
     List<Equipment> getEquipments() throws SQLException;
+    List<Equipment> getEquipments(String query) throws SQLException;
     List<Equipment> getEquipments(String query, int page, int pageSize, String key, String value) throws SQLException;
     List<EquipmentMaintenance> getEquipmentMaintainances(int id) throws SQLException;
     boolean addEquipment(Equipment e) throws SQLException;

@@ -23,7 +23,7 @@ public class SecurityManager {
         technicianPermissions.add(Permission.EQUIPMENT_VIEW);
         technicianPermissions.add(Permission.MAINTENANCE_VIEW);
         technicianPermissions.add(Permission.MAINTENANCE_COMPLETE);
-        ROLE_PERMISSIONS.put(Role.USER, technicianPermissions);
+        ROLE_PERMISSIONS.put(Role.TECHNICIAN, technicianPermissions);
         
         // Manager có quyền trung gian
         Set<Permission> managerPermissions = new HashSet<>();

@@ -15,6 +15,11 @@ public class ExceptionMessage {
     public static final String MAINTENANCE_NAME_EMPTY = "Title cannot be empty";
     public static final String MAINTENANCE_ID_NULL = "Maintenance ID cannot be null or empty";
     public static final String MAINTENANCE_NOT_FOUND = "Maintenance not found";
+    public static final String MAINTENANCE_START_DATE_IN_FUTURE = "Start date cannot be in the future";
+    public static final String MAINTENANCE_OVERLAP = "Maintenance dates overlap with another maintenance";
+    public static final String MAINTENANCE_NOT_FOUND_BY_ID = "Maintenance not found by ID";
+    public static final String MAINTENANCE_CANNOT_CHANGE_START_DATE = "Cannot change start date after maintenance has started";
+    
     // EquipmentMaintenance
     public static final String EQUIPMENT_MAINTENANCE_ID_NULL = "EquipmentMaintenance ID cannot be null or empty";
     public static final String EQUIPMENT_MAINTENANCE_NOT_INVALID = "EquipmentMaintenance is invalid";

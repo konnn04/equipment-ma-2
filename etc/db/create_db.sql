@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `Equipment_Maintenance` (
                                                        `equipment_id` int NOT NULL,
                                                        `maintenance_id` int NOT NULL,
                                                        `technician_id` int NOT NULL,
-                                                       `description` text NOT NULL,
+                                                       `description` text,
                                                        `result` int,
                                                        `repair_name` nvarchar(255),
                                                        `repair_price` int CHECK (repair_price >= 0),

@@ -98,6 +98,29 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
     }
 
+    @Override
+    public List<Equipment> getEquipments(String query) throws SQLException {
+        List<Equipment> equipments = new ArrayList<>();
+        String sql = "SELECT e.* FROM equipment e WHERE (e.code LIKE ? OR e.name LIKE ?)";
+
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stm = conn.prepareStatement(sql)) {
+            stm.setString(1, "%" + query + "%");
+            stm.setString(2, "%" + query + "%");
+
+            try (ResultSet rs = stm.executeQuery()) {
+                while (rs.next()) {
+                    equipments.add(extractEquipment(rs));
+                }
+            }
+            return equipments;
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get equipments: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
+        }
+    }
+
     /**
      * Tìm kiếm thiết bị theo các tiêu chí
      * @param query Từ khóa tìm kiếm (tìm trong code hoặc name)
