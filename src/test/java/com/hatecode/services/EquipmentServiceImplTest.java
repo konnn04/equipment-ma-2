@@ -235,7 +235,7 @@ public class EquipmentServiceImplTest {
 
         // Verify the equipment was deleted (soft delete)
         Equipment deleted = equipmentService.getEquipmentById(idToDelete);
-        assertFalse(deleted.isActive(), "Equipment should not be found after deletion");
+        assertNull(deleted, "Equipment should not be found after deletion");
     }
 
     // Added from DeleteEquipment.java
