@@ -25,6 +25,7 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Equipment Management System");
+//        stage.setResizable(false);
 
         stage.setScene(scene);
         stage.show();
