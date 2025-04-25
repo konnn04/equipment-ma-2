@@ -6,6 +6,8 @@ import com.hatecode.services.impl.ImageServiceImpl;
 import com.hatecode.services.impl.UserServiceImpl;
 import com.hatecode.services.ImageService;
 import com.hatecode.services.UserService;
+import com.hatecode.utils.EmailValidator;
+import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.ExtractImageIdUtils;
 import com.hatecode.utils.PasswordUtils;
 import javafx.collections.FXCollections;
@@ -298,8 +300,23 @@ public class UserManagerController {
 
             // Validate dữ liệu
             if ((currentUser.getId() == 0 && passwordField.getText().isEmpty()) || firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() ||
-                    email.isEmpty() || selectedRole == null) {
-                showErrorAlert("Lỗi", "Thiếu thông tin", "Vui lòng điền đầy đủ thông tin bắt buộc");
+                    email.isEmpty() || selectedRole == null || phoneField.getText().isEmpty()) {
+                showErrorAlert("Error", "Missing information", "Please fill in all required fields");
+                return;
+            }
+
+            // Kiểm tra email có đúng định dạng hay chưa (25 / 04)
+            if(!EmailValidator.isValidEmail(email)){
+                showErrorAlert("Invalid Email", "Email Format Error", ExceptionMessage.EMAIL_FORMAT_ERROR);
+                return;
+            }
+
+            // Kiểm tra độ mạnh mật khẩu
+            // Kiểm tra mật khẩu mạnh chỉ khi:
+            // - Là user mới (id = 0) HOẶC
+            // - Là user cũ nhưng có thay đổi mật khẩu (password field không trống)
+            if ((currentUser.getId() == 0 || !password.isEmpty()) && !PasswordUtils.isStrongPassword(password)) {
+                showErrorAlert("Weak Password", "Password does not meet requirements", ExceptionMessage.PASSWORD_REQUIREMENTS);
                 return;
             }
 
@@ -337,7 +354,7 @@ public class UserManagerController {
                 );
 
                 if (userService.addUser(currentUser,avatar)) {
-                    showInfoAlert("Thành công", "Thêm người dùng mới thành công");
+                    showInfoAlert("Success", "Successfully add new user");
                     loadUsers(txtSearchUser.getText(),
                             roles.getSelectionModel().getSelectedItem() != null ?
                                     roles.getSelectionModel().getSelectedItem().getId() : 0);
@@ -359,7 +376,7 @@ public class UserManagerController {
 
 
                 if (userService.updateUser(currentUser, new_password, avatar)) {
-                    showInfoAlert("Thành công", "Cập nhật người dùng thành công");
+                    showInfoAlert("Succesfully", "Successfully updated user");
                     loadUsers(txtSearchUser.getText(),
                             roles.getSelectionModel().getSelectedItem() != null ?
                                     roles.getSelectionModel().getSelectedItem().getId() : 0);
@@ -424,6 +441,7 @@ public class UserManagerController {
                                 roles.getSelectionModel().getSelectedItem() != null ?
                                         roles.getSelectionModel().getSelectedItem().getId() : 0);
                         clearForm();
+                        currentUser = null;
                     } else {
                         showErrorAlert("Error", "Deletion Failed", "Failed to delete user");
                     }
