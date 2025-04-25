@@ -58,7 +58,7 @@
                      <HBox.margin>
                         <Insets left="20.0" />
                      </HBox.margin></Button>
-                        <Button mnemonicParsing="false" prefHeight="34.0" prefWidth="82.0" styleClass="warning-button" text="Logout">
+                        <Button fx:id="logoutButton" mnemonicParsing="false" prefHeight="34.0" prefWidth="82.0" styleClass="warning-button" text="Logout">
                      <HBox.margin>
                         <Insets left="20.0" />
                      </HBox.margin></Button>

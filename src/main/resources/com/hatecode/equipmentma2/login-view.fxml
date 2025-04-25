@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.6270296084049666" maxHeight="528.0" maxWidth="1049.0" minHeight="528.0" minWidth="1007.0" mouseTransparent="true" prefHeight="528.0" prefWidth="1256.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hatecode.equipmentma2.LoginController">
+<SplitPane dividerPositions="0.6270296084049666" maxHeight="528.0" maxWidth="1049.0" minHeight="528.0" minWidth="1007.0" prefHeight="528.0" prefWidth="1256.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hatecode.equipmentma2.LoginController">
    <items>
       <AnchorPane fx:id="leftPane" minHeight="0.0" minWidth="0.0" SplitPane.resizableWithParent="false">
          <children>
@@ -77,7 +77,7 @@
                            <GridPane.margin>
                               <Insets left="10.0" />
                            </GridPane.margin></Label>
-                        <PasswordField fx:id="passwordField" onKeyReleased="#onEnterLogin" prefHeight="26.0" prefWidth="289.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <PasswordField fx:id="passwordField" onAction="#onEnterLogin" onKeyReleased="#onEnterLogin" prefHeight="26.0" prefWidth="289.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                      </children>
                      <VBox.margin>
                         <Insets bottom="50.0" />
