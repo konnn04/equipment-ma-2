@@ -25,4 +25,17 @@ public class ExceptionMessage {
     public static final String EQUIPMENT_MAINTENANCE_NOT_INVALID = "EquipmentMaintenance is invalid";
     public static final String ROLE_NOT_EXIST = "Role not found";
     public static final String PASSWORD_LESS_THAN_6 = "Password must be at least 6 characters";
+
+    // User
+    public static final String EMAIL_FORMAT_ERROR = "The email address you entered is not valid.\n Please enter a valid email address (e.g., example@domain.com)";
+    public static final String PASSWORD_REQUIREMENTS =  "Password must contain:\n" +
+                                                        "- At least 8 characters\n" +
+                                                        "- At least 1 lowercase letter\n" +
+                                                        "- At least 1 uppercase letter\n" +
+                                                        "- At least 1 digit\n" +
+                                                        "- At least 1 special character (!@#$%^&*()_+-=[]{};':\"|,.<>/?)\n";
+    public static final String PHONE_FORMAT_ERROR =   "Please enter a valid 10-digit phone number\n"
+                                                    + "- Must contain exactly 10 digits\n"
+                                                    + "- No spaces or special characters allowed\n"
+                                                    + "Example: 0987654321";
 }

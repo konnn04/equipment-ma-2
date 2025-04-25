@@ -2,6 +2,8 @@ package com.hatecode.equipmentma2;
 
 import com.hatecode.pojo.Role;
 import com.hatecode.pojo.User;
+import com.hatecode.services.UserService;
+import com.hatecode.services.impl.UserServiceImpl;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Optional;
 
 import com.hatecode.security.Permission;
@@ -32,21 +35,16 @@ public class App extends Application {
 
 
     @Override
-    public void start(Stage stage) throws IOException {
-
-        User adminUser = new User();
-        adminUser.setId(1);
-        adminUser.setUsername("admin");
-        adminUser.setPassword("admin");
-        adminUser.setRole(Role.ADMIN);
-        adminUser.setActive(true);
-        setCurrentUser(adminUser);
-
+    public void start(Stage stage) throws IOException, SQLException {
+        User admin = UserServiceImpl.createSuperUser();
+        // bypass login
+        setCurrentUser(admin);
         primaryStage = stage;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("login-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Equipment Management System");
+//        stage.setResizable(false);
 
         Image appIcon = new Image(App.class.getResourceAsStream("/com/hatecode/assets/app-icon.png"));
         stage.getIcons().add(appIcon);

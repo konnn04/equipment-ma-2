@@ -3,6 +3,7 @@ package com.hatecode.pojo;
 import java.util.List;
 
 public enum Role {
+    ALL_USER(0,"All Roles"),
     ADMIN(1, "Administrator"),
     TECHNICIAN(2, "Technician"),
     MANAGER(3, "Manager");
