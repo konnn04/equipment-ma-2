@@ -345,7 +345,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         if (id <= 0) {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
         }
-        String sql = "UPDATE Maintenance SET is_active = false WHERE id = ? AND is_active=true";
+        String sql = "DELETE FROM `maintenance` WHERE id = ? AND is_active=true";
         try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;

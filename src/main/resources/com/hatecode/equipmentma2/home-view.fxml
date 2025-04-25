@@ -282,7 +282,7 @@
                 <ButtonBar prefHeight="51.0" prefWidth="240.0">
                     <buttons>
                         <Button mnemonicParsing="false" prefHeight="34.0" prefWidth="119.0" styleClass="secondary-button" text="Setting" />
-                        <Button mnemonicParsing="false" styleClass="warning-button" text="Logout" />
+                        <Button fx:id="logoutButton" mnemonicParsing="false" styleClass="warning-button" text="Logout" />
                     </buttons>
                     <HBox.margin>
                         <Insets right="20.0" />

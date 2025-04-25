@@ -18,7 +18,6 @@ public class EquipmentMaintenance {
     private int technicianId;
     private String description;
     private Result result;
-    private String repairName;
     private float repairPrice;
     private LocalDateTime inspectionDate;
     private LocalDateTime createdAt;
@@ -34,7 +33,6 @@ public class EquipmentMaintenance {
             int technicianId,
             String description,
             Result result,
-            String repairName,
             float repairPrice,
             LocalDateTime inspectionDate,
             LocalDateTime createdAt,
@@ -45,7 +43,6 @@ public class EquipmentMaintenance {
         this.technicianId = technicianId;
         this.description = description;
         this.result = result;
-        this.repairName = repairName;
         this.repairPrice = repairPrice;
         this.inspectionDate = inspectionDate;
         this.createdAt = createdAt;
@@ -69,7 +66,6 @@ public class EquipmentMaintenance {
             int technicianId,
             String description,
             Result result,
-            String repairName,
             float repairPrice,
             LocalDateTime inspectionDate,
             LocalDateTime createdAt,
@@ -79,7 +75,6 @@ public class EquipmentMaintenance {
         this.technicianId = technicianId;
         this.description = description;
         this.result = result;
-        this.repairName = repairName;
         this.repairPrice = repairPrice;
         this.inspectionDate = inspectionDate;
         this.createdAt = createdAt;
@@ -108,14 +103,6 @@ public class EquipmentMaintenance {
 
     public void setRepairPrice(float repairPrice) {
         this.repairPrice = repairPrice;
-    }
-
-    public String getRepairName() {
-        return repairName;
-    }
-
-    public void setRepairName(String repairName) {
-        this.repairName = repairName;
     }
 
     public Result getResult() {

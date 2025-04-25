@@ -47,12 +47,12 @@ public class EquipmentMaintenanceServiceImplTest {
                 VALUES (1, 'tech1', 'password1', 'John', 'Doe', '1234567890', 'john@example.com', 2, 1),
                     (2, 'tech2', 'password2', 'Jane', 'Smith', '0987654321', 'jane@example.com', 2, 1);
                     
-                INSERT INTO equipment_maintenance (id, equipment_id, maintenance_id, technician_id, description, result, repair_name, repair_price, inspection_date, is_active)
-                VALUES (1, 1, 1, 1, 'Regular check for Equipment 1', 1, 'Oil change', 50.0, '2025-01-01 10:00:00', true),
-                    (2, 2, 1, 2, 'Regular check for Equipment 2', 2, 'Filter replacement', 30.0, '2025-01-01 11:00:00', true),
-                    (3, 3, 2, 1, 'Emergency repair', 1, 'Motor replacement', 500.0, '2025-02-01 09:00:00', true),
-                    (4, 1, 3, 2, 'Special maintenance', 0, 'Full inspection', 100.0, '2025-03-01 12:00:00', true),
-                    (5, 2, 2, 1, 'Inactive record', 1, 'Test repair', 75.0, '2025-02-02 14:00:00', false);
+                INSERT INTO equipment_maintenance (id, equipment_id, maintenance_id, technician_id, description, result, repair_price, inspection_date, is_active)
+                VALUES (1, 1, 1, 1, 'Regular check for Equipment 1', 1, 50.0, '2025-01-01 10:00:00', true),
+                    (2, 2, 1, 2, 'Regular check for Equipment 2', 2, 30.0, '2025-01-01 11:00:00', true),
+                    (3, 3, 2, 1, 'Emergency repair', 1, 500.0, '2025-02-01 09:00:00', true),
+                    (4, 1, 3, 2, 'Special maintenance', 0, 100.0, '2025-03-01 12:00:00', true),
+                    (5, 2, 2, 1, 'Inactive record', 1, 75.0, '2025-02-02 14:00:00', false);
                 -- Reset sequences to avoid ID conflicts
                 ALTER TABLE equipment_maintenance ALTER COLUMN id RESTART WITH 10;
             """;
@@ -206,7 +206,6 @@ public class EquipmentMaintenanceServiceImplTest {
                 2, 3, 1,
                 "Full maintenance for Equipment 2",
                 Result.NEED_REPAIR,
-                "Software update",
                 100.0f,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
@@ -221,7 +220,6 @@ public class EquipmentMaintenanceServiceImplTest {
         EquipmentMaintenance added = equipmentMaintenanceService.getEquipmentMaintenanceById(em.getId());
         assertEquals("Full maintenance for Equipment 2", added.getDescription());
         assertEquals(Result.NEED_REPAIR, added.getResult());
-        assertEquals("Software update", added.getRepairName());
         assertEquals(100.0f, added.getRepairPrice());
     }
     /* =============================================================================
@@ -233,7 +231,6 @@ public class EquipmentMaintenanceServiceImplTest {
         // Arrange
         EquipmentMaintenance em = equipmentMaintenanceService.getEquipmentMaintenanceById(1);
         em.setDescription("Updated description");
-        em.setRepairName("Updated repair");
         em.setRepairPrice(75.0f);
         em.setResult(Result.NORMALLY);
         em.setInspectionDate(LocalDateTime.now());
@@ -244,7 +241,6 @@ public class EquipmentMaintenanceServiceImplTest {
         // Verify
         EquipmentMaintenance updated = equipmentMaintenanceService.getEquipmentMaintenanceById(1);
         assertEquals("Updated description", updated.getDescription());
-        assertEquals("Updated repair", updated.getRepairName());
         assertEquals(75.0f, updated.getRepairPrice());
         assertEquals(Result.NORMALLY, updated.getResult());
         assertEquals(em.getInspectionDate().toString().substring(0, 13), updated.getInspectionDate().toString().substring(0, 13));
@@ -259,7 +255,6 @@ public class EquipmentMaintenanceServiceImplTest {
                 999, 1, 1, 1,
                 "Non-existent record",
                 Result.NEED_REPAIR,
-                "Test",
                 50.0f,
                 now,
                 now,
@@ -331,7 +326,7 @@ public class EquipmentMaintenanceServiceImplTest {
         // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertTrue(result.stream().allMatch(em -> em.getDescription().contains("Regular") || em.getRepairName().contains("Regular")));
+        assertTrue(result.stream().allMatch(em -> em.getDescription().contains("Regular")));
     }
 
     @Test

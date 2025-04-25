@@ -112,6 +112,55 @@ public class MaintenanceManagerController {
         this.userService = new UserServiceImpl();
     }
 
+    // Operation types for maintenance operations
+    public enum OperationType {
+        CREATE, UPDATE, DELETE
+    }
+
+    // List of maintenance change listeners
+    private final List<MaintenanceChangeListener> maintenanceChangeListeners = new ArrayList<>();
+
+    /**
+     * Interface for maintenance change notifications
+     */
+    @FunctionalInterface
+    public interface MaintenanceChangeListener {
+        void onMaintenanceChanged(OperationType operationType, Maintenance maintenance);
+    }
+
+    /**
+     * Add a listener for maintenance changes
+     * @param listener The listener to add
+     */
+    public void addMaintenanceChangeListener(MaintenanceChangeListener listener) {
+        if (listener != null) {
+            maintenanceChangeListeners.add(listener);
+        }
+    }
+
+    /**
+     * Remove a listener for maintenance changes
+     * @param listener The listener to remove
+     */
+    public void removeMaintenanceChangeListener(MaintenanceChangeListener listener) {
+        maintenanceChangeListeners.remove(listener);
+    }
+
+    /**
+     * Notify all listeners about a maintenance change
+     * @param operationType Type of operation (CREATE, UPDATE, DELETE)
+     * @param maintenance The maintenance that changed
+     */
+    private void notifyMaintenanceChange(OperationType operationType, Maintenance maintenance) {
+        for (MaintenanceChangeListener listener : maintenanceChangeListeners) {
+            listener.onMaintenanceChanged(operationType, maintenance);
+        }
+        
+        // Log the operation
+        LOGGER.info("Maintenance " + operationType.name() + " operation completed for ID: " + 
+                (maintenance != null ? maintenance.getId() : "null"));
+    }
+
     /**
      * Initialize the controller
      */
@@ -584,32 +633,32 @@ public class MaintenanceManagerController {
 
     private void handleSaveMaintenance() {
         try {
-            // Kiểm tra các trường bắt buộc
+            // Check required fields
             if (maintenanceTitleTextField.getText().isEmpty() || maintenanceFromDatePicker.getValue() == null
                     || maintenanceToDatePicker.getValue() == null || maintenanceFromTimeTextField.getText().isEmpty()
                     || maintenanceToTimeTextField.getText().isEmpty()) {
-                AlertBox.showError("Lỗi", "Vui lòng điền đầy đủ thông tin");
+                AlertBox.showError("Error", "Please fill in all required information");
                 return;
             }
             
-            // Kiểm tra thiết bị và kỹ thuật viên
+            // Check equipment and technicians
             if (equipmentMaintenanceTable.getItems().isEmpty()) {
-                AlertBox.showError("Lỗi", "Vui lòng chọn ít nhất một thiết bị cho lịch bảo trì");
+                AlertBox.showError("Error", "Please select at least one equipment for maintenance");
                 return;
             }
             
-            // Kiểm tra kỹ thuật viên cho từng thiết bị
+            // Check technician for each equipment
             for (EquipmentMaintenance equipmentMaintenance : equipmentMaintenanceTable.getItems()) {
                 if (equipmentMaintenance.getTechnicianId() <= 0) {
-                    AlertBox.showError("Lỗi", "Vui lòng chọn kỹ thuật viên cho từng thiết bị");
+                    AlertBox.showError("Error", "Please assign a technician for each equipment");
                     return;
                 }
             }
             
-            // Xác định xem đây là thêm mới hay cập nhật
+            // Determine if this is an update or a new creation
             boolean isUpdate = !maintenanceIdText.getText().isEmpty() && isCreateOrModify;
             
-            // Tạo đối tượng Maintenance từ dữ liệu form
+            // Create Maintenance object from form data
             Maintenance maintenance = new Maintenance();
             maintenance.setTitle(maintenanceTitleTextField.getText());
             maintenance.setStartDateTime(FormatDate.combineDateAndTime(
@@ -620,114 +669,121 @@ public class MaintenanceManagerController {
             
             boolean result;
             if (isUpdate) {
-                // Trường hợp cập nhật
+                // Update case
                 maintenance.setId(Integer.parseInt(maintenanceIdText.getText()));
                 
-                // Lấy danh sách thiết bị hiện tại trong cơ sở dữ liệu
+                // Get current equipment list from database
                 List<EquipmentMaintenance> existingEquipments = maintenanceService
                         .getEquipmentMaintenancesByMaintenance(maintenance.getId());
                 
-                // Lấy danh sách ID thiết bị trong cơ sở dữ liệu
+                // Get equipment IDs from database
                 List<Integer> existingIds = existingEquipments.stream()
                         .map(EquipmentMaintenance::getEquipmentId)
                         .collect(Collectors.toList());
                 
-                // Lấy danh sách ID thiết bị hiện tại trên giao diện
+                // Get current equipment IDs from UI
                 List<Integer> currentIds = equipmentMaintenanceTable.getItems().stream()
                         .map(EquipmentMaintenance::getEquipmentId)
                         .collect(Collectors.toList());
                 
-                // Thiết bị cần xóa: có trong cơ sở dữ liệu nhưng không còn trên giao diện
+                // Equipment to delete: exists in database but not in UI
                 for (EquipmentMaintenance em : existingEquipments) {
                     if (!currentIds.contains(em.getEquipmentId())) {
-                        // Xóa thiết bị bảo trì không còn được chọn
+                        // Delete equipment maintenance that is no longer selected
                         equipmentMaintenanceService.deleteEquipmentMaintenance(em.getId());
                     }
                 }
                 
-                // Cập nhật lịch bảo trì
+                // Update maintenance schedule
                 result = maintenanceService.updateMaintenance(maintenance);
                 
-                // Thêm thiết bị bảo trì mới hoặc cập nhật thiết bị hiện có
+                // Add new equipment maintenance or update existing ones
                 for (EquipmentMaintenance em : equipmentMaintenanceTable.getItems()) {
                     em.setMaintenanceId(maintenance.getId());
                     
                     if (em.getId() > 0) {
-                        // Thiết bị đã tồn tại, cập nhật
+                        // Existing equipment, update
                         equipmentMaintenanceService.updateEquipmentMaintenance(em);
                     } else {
-                        // Thiết bị mới, thêm vào
+                        // New equipment, add
                         equipmentMaintenanceService.addEquipmentMaintenance(em);
                     }
                 }
+                
+                // Execute callback for successful update
+                if (result) {
+                    notifyMaintenanceChange(OperationType.UPDATE, maintenance);
+                }
             } else {
-                // Trường hợp thêm mới
+                // New creation case
                 result = maintenanceService.addMaintenance(maintenance, equipmentMaintenanceTable.getItems());
+                
+                // Execute callback for successful creation
+                if (result) {
+                    notifyMaintenanceChange(OperationType.CREATE, maintenance);
+                }
             }
             
             if (result) {
-                AlertBox.showInfo("Thành công", isUpdate ? "Đã cập nhật lịch bảo trì thành công" : "Đã thêm lịch bảo trì mới thành công");
+                AlertBox.showInfo("Success", isUpdate ? "Maintenance schedule updated successfully" : "New maintenance schedule created successfully");
                 resetAllFields();
                 setDisableMaintenanceForm(true);
                 maintenanceTable.setDisable(false);
                 isCreateOrModify = false;
                 refreshMaintenanceData(null);
             } else {
-                AlertBox.showError("Lỗi", "Không thể lưu lịch bảo trì");
+                AlertBox.showError("Error", "Unable to save maintenance schedule");
             }
         } catch (Exception e) {
             handleException(e, e.getMessage());
         } finally {
-            // Xóa bộ nhớ đệm
+            // Clear cache
             equipmentCache.clear();
             userCache.clear();
         }
     }
 
     private void handleDeleteMaintenance() {
-        // Kiểm tra xem có lịch bảo trì được chọn không
+        // Check if a maintenance schedule is selected
         if (selectedMaintenance == null) {
-            AlertBox.showError("Lỗi", "Không có lịch bảo trì nào được chọn để xóa");
+            AlertBox.showError("Error", "Please select a maintenance schedule to delete");
             return;
         }
         
-        // Kiểm tra xem lịch bảo trì có thể xóa được không (chưa bắt đầu)
+        // Check if the maintenance schedule can be deleted (not yet started)
         if (selectedMaintenance.getStartDateTime().isBefore(java.time.LocalDateTime.now())) {
-            AlertBox.showError("Lỗi", "Không thể xóa lịch bảo trì đã bắt đầu");
+            AlertBox.showError("Error", "Cannot delete a maintenance schedule that has already started");
             return;
         }
         
-        // Xác nhận từ người dùng trước khi xóa
-        boolean confirmDelete = AlertBox.showConfirmation("Xác nhận xóa", 
-            "Bạn có chắc chắn muốn xóa lịch bảo trì này không?\nMọi thông tin liên quan sẽ bị xóa và không thể khôi phục.");
+        // Confirm deletion with the user
+        boolean confirmDelete = AlertBox.showConfirmation("Confirm Deletion", 
+            "Are you sure you want to delete this maintenance schedule?\nAll related information will be permanently deleted.");
         
         if (!confirmDelete) {
-            return; // Người dùng đã hủy thao tác
+            return; // User canceled the operation
         }
         
-        try {
-            // Tiến hành xóa lịch bảo trì
+        executeWithErrorHandling(() -> {
+            // Proceed with deleting the maintenance schedule
             boolean result = maintenanceService.deleteMaintenanceById(selectedMaintenance.getId());
             
             if (result) {
-                AlertBox.showInfo("Thành công", "Đã xóa lịch bảo trì thành công");
+                // Execute callback for successful deletion
+                notifyMaintenanceChange(OperationType.DELETE, selectedMaintenance);
                 
-                // Đặt lại giao diện và làm mới dữ liệu
+                AlertBox.showInfo("Success", "Maintenance schedule deleted successfully");
+                
+                // Reset the interface and refresh data
                 resetAllFields();
                 setDisableMaintenanceForm(true);
                 maintenanceTable.setDisable(false);
                 isCreateOrModify = false;
                 refreshMaintenanceData(null);
             } else {
-                AlertBox.showError("Lỗi", "Không thể xóa lịch bảo trì");
+                AlertBox.showError("Error", "Unable to delete the maintenance schedule");
             }
-        } catch (Exception e) {
-            handleException(e, "Lỗi khi xóa lịch bảo trì");
-        } finally {
-            // Xóa bộ nhớ đệm
-            equipmentCache.clear();
-            userCache.clear();
-        }
+        });
     }
 
     private void handleCancelOperation() {
