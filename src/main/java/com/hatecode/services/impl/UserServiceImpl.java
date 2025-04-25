@@ -36,6 +36,41 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    public static User createSuperUser() throws SQLException {
+        User superUser = null;
+        String sql = "SELECT * FROM `User` WHERE username = 'admin'";
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stm = conn.prepareStatement(sql)) {
+
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                superUser = extractUser(rs);
+            } else {
+                User admin = new User();
+                admin.setUsername("admin");
+                admin.setPassword("admin123");
+                admin.setEmail("admin@example.com");
+                admin.setFirstName("Super");
+                admin.setLastName("Admin");
+                admin.setPhone("056004040");
+                admin.setRole(Role.ADMIN);
+                admin.setActive(true);
+
+                boolean added = new UserServiceImpl().addUser(admin, null);
+                if (added) {
+                    try (PreparedStatement stm2 = conn.prepareStatement(sql)) {
+                        ResultSet rs2 = stm2.executeQuery();
+                        if (rs2.next()) {
+                            superUser = extractUser(rs2);
+                        }
+                    }
+                }
+            }
+        }
+        return superUser;
+    }
+
+
     @Override
     public List<User> getUsers(String kw, int roleId) throws SQLException {
         List<User> users = new ArrayList<>();
@@ -120,7 +155,6 @@ public class UserServiceImpl implements UserService {
         String sql = "SELECT * FROM `User` WHERE username = ?";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setString(1, username);
             user = getUser(user, pstmt);
         }

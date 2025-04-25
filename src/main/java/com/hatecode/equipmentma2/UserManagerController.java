@@ -376,7 +376,7 @@ public class UserManagerController {
 
 
                 if (userService.updateUser(currentUser, new_password, avatar)) {
-                    showInfoAlert("Thành công", "Cập nhật người dùng thành công");
+                    showInfoAlert("Succesfully", "Successfully updated user");
                     loadUsers(txtSearchUser.getText(),
                             roles.getSelectionModel().getSelectedItem() != null ?
                                     roles.getSelectionModel().getSelectedItem().getId() : 0);
