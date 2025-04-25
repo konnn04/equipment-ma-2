@@ -30,7 +30,6 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 rs.getInt("technician_id"),
                 rs.getString("description"),
                 rs.getInt("result") == 0 ? null : Result.fromCode(rs.getInt("result")),
-                rs.getString("repair_name"),
                 rs.getFloat("repair_price"),
                 rs.getTimestamp("inspection_date") == null ? null : rs.getTimestamp("inspection_date").toLocalDateTime(),
                 rs.getTimestamp("created_at").toLocalDateTime(),
@@ -69,10 +68,9 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
 
         return executeQuery(conn -> {
             List<EquipmentMaintenance> result = new ArrayList<>();
-            String sql = "SELECT * FROM equipment_maintenance WHERE is_active = true AND (description LIKE ? OR repair_name LIKE ?)";
+            String sql = "SELECT * FROM equipment_maintenance WHERE is_active = true AND (description LIKE ?)";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setString(1, "%" + query + "%");
-                stm.setString(2, "%" + query + "%");
                 ResultSet rs = stm.executeQuery();
                 while (rs.next()) {
                     result.add(extractEquipmentMaintenance(rs));
@@ -174,20 +172,19 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         validateEquipmentMaintenance(em);
 
         return executeQuery(conn -> {
-            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result, repair_name, repair_price, inspection_date)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result, repair_price, inspection_date)" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement stm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 stm.setInt(1, em.getEquipmentId());
                 stm.setInt(2, em.getMaintenanceId());
                 stm.setInt(3, em.getTechnicianId());
                 stm.setString(4, em.getDescription());
                 stm.setInt(5, em.getResult().getCode());
-                stm.setString(6, em.getRepairName());
-                stm.setFloat(7, em.getRepairPrice());
+                stm.setFloat(6, em.getRepairPrice());
                 if (em.getInspectionDate() != null) {
-                    stm.setTimestamp(8, Timestamp.valueOf(em.getInspectionDate()));
+                    stm.setTimestamp(7, Timestamp.valueOf(em.getInspectionDate()));
                 } else {
-                    stm.setNull(8, Types.TIMESTAMP);
+                    stm.setNull(7, Types.TIMESTAMP);
                 }
                 int rowsAffected = stm.executeUpdate();
                 try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
@@ -207,7 +204,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         validateEquipmentMaintenance(em);
         return executeQuery(conn -> {
             String sql = "UPDATE equipment_maintenance" +
-                    " SET equipment_id = ?, maintenance_id = ?, technician_id = ?, description = ?, result = ?, repair_name = ?, repair_price = ?, inspection_date = ? " +
+                    " SET equipment_id = ?, maintenance_id = ?, technician_id = ?, description = ?, result = ?, repair_price = ?, inspection_date = ? " +
                     " WHERE id = ?";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setInt(1, em.getEquipmentId());
@@ -215,10 +212,9 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 stm.setInt(3, em.getTechnicianId());
                 stm.setString(4, em.getDescription());
                 stm.setInt(5, em.getResult().getCode());
-                stm.setString(6, em.getRepairName());
-                stm.setFloat(7, em.getRepairPrice());
-                stm.setTimestamp(8, Timestamp.valueOf(em.getInspectionDate()));
-                stm.setInt(9, em.getId());
+                stm.setFloat(6, em.getRepairPrice());
+                stm.setTimestamp(7, Timestamp.valueOf(em.getInspectionDate()));
+                stm.setInt(8, em.getId());
                 return stm.executeUpdate() > 0;
             }
         });
@@ -253,7 +249,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             List<EquipmentMaintenance> maintenanceEquipments = new ArrayList<>();
             String sql = "SELECT em.* FROM equipment_maintenance em JOIN equipment e ON em.equipment_id = e.id WHERE em.maintenance_id = ? AND em.is_active = true";
             if (kw != null && !kw.isEmpty()) {
-                sql += " AND (e.name LIKE ? OR em.description LIKE ? OR em.repair_name LIKE ?)";
+                sql += " AND (e.name LIKE ? OR em.description LIKE ?)";
             }
 
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
@@ -261,7 +257,6 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 if (kw != null && !kw.isEmpty()) {
                     stm.setString(2, "%" + kw + "%");
                     stm.setString(3, "%" + kw + "%");
-                    stm.setString(4, "%" + kw + "%");
                 }
                 ResultSet rs = stm.executeQuery();
                 while (rs.next()) {

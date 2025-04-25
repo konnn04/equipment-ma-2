@@ -512,4 +512,22 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public List<User> getUsersByRole(Role role) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM `User` WHERE role = ?";
+
+        try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, role.getId());
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                User user = extractUser(rs);
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
 }

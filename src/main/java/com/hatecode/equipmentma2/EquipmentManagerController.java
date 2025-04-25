@@ -49,8 +49,7 @@ public class EquipmentManagerController {
     @FXML private TextArea equipmentDescriptionTextField;
     @FXML private Button addEquipmentButton;
     @FXML private Button updateEquipmentButton;
-    @FXML private Button saveEquipmentButton;
-    @FXML private Button cancelEquipmentButton;
+
     @FXML private ComboBox<String> modeComboBox;
     @FXML private Label modeLabel;
     @FXML private Text lastMaintenanceDateTextField;
@@ -58,6 +57,10 @@ public class EquipmentManagerController {
     @FXML private Button changeEquipmentImageButton;
     @FXML private ImageView equipmentImage;
     @FXML private TextField regularMaintenanceTimeTextField;
+
+    @FXML private Button saveEquipmentButton;
+    @FXML private Button cancelEquipmentButton;
+    @FXML private Button deleteEquipmentButton;
 
     /**
      * Initialize the controller
@@ -157,6 +160,7 @@ public class EquipmentManagerController {
         saveEquipmentButton.setVisible(false);
         changeEquipmentImageButton.setVisible(false);
         cancelEquipmentButton.setVisible(false);
+        deleteEquipmentButton.setVisible(false);
         
         // Combobox setup
         modeComboBox.getItems().addAll("Viewing", "Editing");
@@ -201,9 +205,35 @@ public class EquipmentManagerController {
         changeEquipmentImageButton.setOnAction(event -> handleChangeImageAction());
         saveEquipmentButton.setOnAction(event -> handleSaveEquipmentAction());
         updateEquipmentButton.setOnAction(event -> handleUpdateEquipmentAction());
+        deleteEquipmentButton.setOnAction(event -> handleDeleteEquipment());
 
         // Maintenance time field listener
         setupMaintenanceTimeListener();
+    }
+
+    private void handleDeleteEquipment() {
+        if (selectedEquipment == null) {
+            AlertBox.showError("Delete Equipment", "Please select an equipment to delete!");
+            return;
+        }
+
+        boolean confirmation = AlertBox.showConfirmation("Delete Equipment", "Are you sure you want to delete this equipment?");
+        if (!confirmation) {
+            return;
+        }
+
+        try {
+            boolean check = equipmentService.deleteEquipment(selectedEquipment.getId());
+            if (!check) {
+                AlertBox.showError("Delete Equipment", "Failed to delete equipment");
+                return;
+            }
+            AlertBox.showConfirmation("Delete Equipment", "Equipment deleted successfully!");
+            refreshEquipmentData();
+            handleCancelAction();
+        } catch (SQLException e) {
+            handleException(e, "Failed to delete equipment");
+        }
     }
 
     /**
@@ -244,6 +274,7 @@ public class EquipmentManagerController {
         // Update UI state
         addEquipmentButton.setDisable(true);
         cancelEquipmentButton.setVisible(true);
+        deleteEquipmentButton.setVisible(false);
         saveEquipmentButton.setVisible(true);
         modeComboBox.setVisible(false);
         modeLabel.setText("Adding ");
@@ -271,6 +302,7 @@ public class EquipmentManagerController {
         cancelEquipmentButton.setVisible(false);
         saveEquipmentButton.setVisible(false);
         modeComboBox.setVisible(true);
+        deleteEquipmentButton.setVisible(true);
         
         // Clear form fields
         clearFormFields();
@@ -400,6 +432,7 @@ public class EquipmentManagerController {
         updateEquipmentButton.setVisible(!isViewing);
         addEquipmentButton.setDisable(!isViewing);
         changeEquipmentImageButton.setVisible(!isViewing);
+        deleteEquipmentButton.setVisible(!isViewing);
         
         setFieldsEditable(!isViewing);
         

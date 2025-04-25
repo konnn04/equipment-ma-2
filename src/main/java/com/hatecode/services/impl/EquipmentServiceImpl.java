@@ -37,7 +37,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     public Equipment getEquipmentById(int id) throws SQLException {
         String sql = "SELECT * FROM equipment e " +
                 "LEFT JOIN Category c ON e.category_id = c.id " +
-                "WHERE e.id = ?";
+                "WHERE e.id = ? AND e.is_active = true";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setInt(1, id);
@@ -58,7 +58,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     public Equipment getEquipmentByCode(String code) throws SQLException {
         String sql = "SELECT * FROM equipment e " +
                 "LEFT JOIN Category c ON e.category_id = c.id " +
-                "WHERE e.code = ?";
+                "WHERE e.code = ? AND e.is_active = true";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setString(1, code);
@@ -81,7 +81,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public List<Equipment> getEquipments() throws SQLException {
         List<Equipment> equipments = new ArrayList<>();
-        String sql = "SELECT e.* FROM equipment e";
+        String sql = "SELECT e.* FROM equipment e WHERE e.is_active = true";
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement stm = conn.prepareStatement(sql);
              ResultSet rs = stm.executeQuery()) {
@@ -93,6 +93,29 @@ public class EquipmentServiceImpl implements EquipmentService {
             return equipments;
         } catch (SQLException e) {
             throw new SQLException("Failed to get all equipments: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new SQLException("An unexpected error occurred while accessing the database", e);
+        }
+    }
+
+    @Override
+    public List<Equipment> getEquipments(String query) throws SQLException {
+        List<Equipment> equipments = new ArrayList<>();
+        String sql = "SELECT e.* FROM equipment e WHERE (e.code LIKE ? OR e.name LIKE ?) AND e.is_active = true";
+
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stm = conn.prepareStatement(sql)) {
+            stm.setString(1, "%" + query + "%");
+            stm.setString(2, "%" + query + "%");
+
+            try (ResultSet rs = stm.executeQuery()) {
+                while (rs.next()) {
+                    equipments.add(extractEquipment(rs));
+                }
+            }
+            return equipments;
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get equipments: " + e.getMessage(), e);
         } catch (Exception e) {
             throw new SQLException("An unexpected error occurred while accessing the database", e);
         }
@@ -116,7 +139,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         try (Connection conn = JdbcUtils.getConn()) {
             StringBuilder sqlBuilder = new StringBuilder(
-                    "SELECT e.* FROM equipment e WHERE (e.code LIKE ? OR e.name LIKE ?) ");
+                    "SELECT e.* FROM equipment e WHERE (e.code LIKE ? OR e.name LIKE ?) AND e.is_active = true ");
 
             boolean hasFilterCondition = key != null && !key.isEmpty() && value != null && !value.isEmpty();
             if (hasFilterCondition) {
@@ -159,7 +182,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     public List<EquipmentMaintenance> getEquipmentMaintainances(int id) throws SQLException {
         List<EquipmentMaintenance> maintenanceList = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT * FROM equipment_maintenance WHERE equipment_id = ?";
+            String sql = "SELECT * FROM equipment_maintenance WHERE equipment_id = ? AND is_active = true";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setInt(1, id);
                 try (ResultSet rs = stm.executeQuery()) {

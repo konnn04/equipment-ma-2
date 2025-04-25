@@ -54,9 +54,8 @@ CREATE TABLE IF NOT EXISTS `Equipment_Maintenance` (
                                                        `equipment_id` int NOT NULL,
                                                        `maintenance_id` int NOT NULL,
                                                        `technician_id` int NOT NULL,
-                                                       `description` text NOT NULL,
+                                                       `description` text,
                                                        `result` int,
-                                                       `repair_name` nvarchar(255),
                                                        `repair_price` int CHECK (repair_price >= 0),
                                                        `inspection_date` timestamp,
                                                        `is_active` boolean NOT NULL DEFAULT '1',
@@ -91,7 +90,7 @@ ALTER TABLE `User` ADD CONSTRAINT `User_fk10` FOREIGN KEY (`avatar_id`) REFERENC
 
 ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk1` FOREIGN KEY (`equipment_id`) REFERENCES `Equipment`(`id`);
 
-ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk5` FOREIGN KEY (`maintenance_id`) REFERENCES `Maintenance`(`id`);
+ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk5` FOREIGN KEY (`maintenance_id`) REFERENCES `Maintenance`(`id`)  ON DELETE CASCADE;
 
 ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk3` FOREIGN KEY (`technician_id`) REFERENCES `User`(`id`);
 

@@ -32,9 +32,12 @@ public class App extends Application {
         return SecurityManager.hasPermission(currentUser, permission);
     }
 
+
+
     @Override
     public void start(Stage stage) throws IOException, SQLException {
         User admin = UserServiceImpl.createSuperUser();
+        // bypass login
         setCurrentUser(admin);
         primaryStage = stage;
 
@@ -74,8 +77,19 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         primaryStage.setScene(scene);
-
         primaryStage.setMaximized(true);
+    }
+
+    public static void switchToLogin() {
+        try {
+            currentUser = null;
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("login-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Login");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

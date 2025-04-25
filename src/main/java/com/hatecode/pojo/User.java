@@ -134,4 +134,5 @@ public class User
     public void setAvatarId(int avatarId) {
         this.avatarId = avatarId;
     }
+
 }

@@ -5,7 +5,7 @@ import java.util.List;
 public enum Role {
     ALL_USER(0,"All Roles"),
     ADMIN(1, "Administrator"),
-    USER(2, "Technician"),
+    TECHNICIAN(2, "Technician"),
     MANAGER(3, "Manager");
 
     private int id;

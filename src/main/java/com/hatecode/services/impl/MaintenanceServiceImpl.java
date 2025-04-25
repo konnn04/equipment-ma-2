@@ -1,4 +1,5 @@
 package com.hatecode.services.impl;
+import com.hatecode.pojo.EquipmentMaintenance;
 import com.hatecode.pojo.MaintenanceStatus;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
@@ -6,6 +7,7 @@ import com.hatecode.pojo.Maintenance;
 import com.hatecode.services.MaintenanceService;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +99,23 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     }
 
     @Override
+    public List<EquipmentMaintenance> getEquipmentMaintenancesByMaintenance(int id) throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
+        }
+        String sql = "SELECT * FROM `equipment_maintenance` WHERE maintenance_id = ? AND is_active=true";
+        List<EquipmentMaintenance> equipmentMaintenances = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                equipmentMaintenances.add(EquipmentMaintenanceServiceImpl.extractEquipmentMaintenance(rs));
+            }
+        }
+        return equipmentMaintenances;
+    }
+
+    @Override
     public boolean addMaintenance(Maintenance maintenance) throws SQLException {
         if (maintenance == null) {
             return false;
@@ -107,9 +126,19 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         if (maintenance.getStartDateTime().isAfter(maintenance.getEndDateTime())) {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_START_DATE_INVALID);
         }
+        
+        // Kiểm tra ngày bắt đầu phải là tương lai
+        if (maintenance.getStartDateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_START_DATE_IN_FUTURE);
+        }
+        
+        // Kiểm tra xung đột lịch bảo trì
+        checkOverlappingMaintenances(maintenance);
+        
         String sql = "INSERT INTO Maintenance (title, description, start_datetime, end_datetime) VALUES (?, ?, ? ,?)";
         int rowsAffected = 0;
-        try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
             stmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
@@ -121,8 +150,138 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                     maintenance.setId(rs.getInt(1));
                 }
             }
-            return stmt.executeUpdate() > 0;
+            return rowsAffected > 0;
         }
+    }
+
+    @Override
+    public boolean addMaintenance(Maintenance maintenance, List<EquipmentMaintenance> equipmentMaintenances) throws SQLException {
+        // Validate input
+        if (maintenance == null) {
+            return false;
+        }
+        if (maintenance.getTitle() == null || maintenance.getTitle().isEmpty()) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_NAME_EMPTY);
+        }
+        if (maintenance.getStartDateTime().isAfter(maintenance.getEndDateTime())) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_START_DATE_INVALID);
+        }
+        
+        // Kiểm tra ngày bắt đầu phải là tương lai
+        if (maintenance.getStartDateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_START_DATE_IN_FUTURE);
+        }
+        
+        Connection conn = null;
+        boolean result = false;
+        
+        try {
+            conn = JdbcUtils.getConn();
+            // Tắt auto-commit để bật transaction
+            conn.setAutoCommit(false);
+            
+            // Kiểm tra xung đột lịch bảo trì
+            String checkOverlapSql = 
+                "SELECT COUNT(*) FROM maintenance " +
+                "WHERE is_active = true AND " +
+                "(" +
+                "   (? BETWEEN start_datetime AND end_datetime) OR " +  // Start time trong khoảng thời gian hiện có
+                "   (? BETWEEN start_datetime AND end_datetime) OR " +  // End time trong khoảng thời gian hiện có
+                "   (start_datetime BETWEEN ? AND ?) OR " +            // Start time của lịch hiện tại trong khoảng mới
+                "   (end_datetime BETWEEN ? AND ?)" +                 // End time của lịch hiện tại trong khoảng mới
+                ")";
+            
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkOverlapSql)) {
+                checkStmt.setTimestamp(1, Timestamp.valueOf(maintenance.getStartDateTime()));
+                checkStmt.setTimestamp(2, Timestamp.valueOf(maintenance.getEndDateTime()));
+                checkStmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
+                checkStmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
+                checkStmt.setTimestamp(5, Timestamp.valueOf(maintenance.getStartDateTime()));
+                checkStmt.setTimestamp(6, Timestamp.valueOf(maintenance.getEndDateTime()));
+                
+                ResultSet rs = checkStmt.executeQuery();
+                if (rs.next() && rs.getInt(1) > 0) {
+                    throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_OVERLAP);
+                }
+            }
+            
+            // Thêm bảo trì mới
+            String insertMaintenanceSql = 
+                "INSERT INTO Maintenance (title, description, start_datetime, end_datetime) " +
+                "VALUES (?, ?, ?, ?)";
+                
+            try (PreparedStatement maintenanceStmt = 
+                    conn.prepareStatement(insertMaintenanceSql, Statement.RETURN_GENERATED_KEYS)) {
+                
+                maintenanceStmt.setString(1, maintenance.getTitle());
+                maintenanceStmt.setString(2, maintenance.getDescription());
+                maintenanceStmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
+                maintenanceStmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
+                
+                int maintenanceRows = maintenanceStmt.executeUpdate();
+                
+                if (maintenanceRows > 0) {
+                    // Lấy ID được sinh tự động
+                    try (ResultSet generatedKeys = maintenanceStmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            int maintenanceId = generatedKeys.getInt(1);
+                            maintenance.setId(maintenanceId);
+                            
+                            // Thêm các bản ghi equipment maintenance nếu có
+                            if (equipmentMaintenances != null && !equipmentMaintenances.isEmpty()) {
+                                String insertEquipmentSql = 
+                                    "INSERT INTO equipment_maintenance " +
+                                    "(equipment_id, maintenance_id, technician_id, description) " +
+                                    "VALUES (?, ?, ?, ?)";
+                                    
+                                try (PreparedStatement equipmentStmt = conn.prepareStatement(insertEquipmentSql)) {
+                                    for (EquipmentMaintenance em : equipmentMaintenances) {
+                                        em.setMaintenanceId(maintenanceId);
+                                        equipmentStmt.setInt(1, em.getEquipmentId());
+                                        equipmentStmt.setInt(2, maintenanceId);
+                                        equipmentStmt.setInt(3, em.getTechnicianId());
+                                        equipmentStmt.setString(4, em.getDescription());
+                                        equipmentStmt.addBatch();
+                                    }
+                                    equipmentStmt.executeBatch();
+                                }
+                            }
+                            result = true;
+                        }
+                    }
+                }
+            }
+            
+            // Commit transaction nếu mọi thứ thành công
+            if (result) {
+                conn.commit();
+            } else {
+                conn.rollback();
+            }
+            
+        } catch (SQLException | IllegalArgumentException e) {
+            // Rollback nếu có lỗi
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            throw e; // Ném lại exception để caller biết lỗi
+        } finally {
+            // Đặt lại auto-commit và đóng kết nối
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        return result;
     }
 
     @Override
@@ -139,8 +298,31 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         if (maintenance.getStartDateTime().isAfter(maintenance.getEndDateTime())) {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_START_DATE_INVALID);
         }
+        
+        // Lấy thông tin bảo trì hiện tại để kiểm tra
+        Maintenance existingMaintenance = getMaintenanceById(maintenance.getId());
+        if (existingMaintenance == null) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_NOT_FOUND_BY_ID + maintenance.getId());
+        }
+        
+        // Kiểm tra nếu bảo trì chưa bắt đầu (pending), thì start date phải là thời gian tương lai
+        if (existingMaintenance.getStartDateTime().isAfter(LocalDateTime.now()) && 
+            maintenance.getStartDateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_START_DATE_IN_FUTURE);
+        }
+        
+        // Kiểm tra nếu bảo trì đã bắt đầu, không cho phép thay đổi ngày bắt đầu thành ngày trong tương lai
+        if (existingMaintenance.getStartDateTime().isBefore(LocalDateTime.now()) && 
+            maintenance.getStartDateTime().isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_CANNOT_CHANGE_START_DATE);
+        }
+        
+        // Kiểm tra xung đột lịch bảo trì (bỏ qua chính nó)
+        checkOverlappingMaintenancesForUpdate(maintenance);
+        
         String sql = "UPDATE Maintenance SET title = ?, description = ?, start_datetime = ?, end_datetime = ? WHERE id = ? AND is_active=true";
-        try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, maintenance.getTitle());
             stmt.setString(2, maintenance.getDescription());
             stmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
@@ -163,12 +345,73 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         if (id <= 0) {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
         }
-        String sql = "UPDATE Maintenance SET is_active = false WHERE id = ? AND is_active=true";
+        String sql = "DELETE FROM `maintenance` WHERE id = ? AND is_active=true";
         try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             return false;
+        }
+    }
+
+    /**
+     * Kiểm tra xem có lịch bảo trì nào chồng chéo không
+     */
+    private void checkOverlappingMaintenances(Maintenance maintenance) throws SQLException {
+        String checkOverlapSql = 
+            "SELECT COUNT(*) FROM maintenance " +
+            "WHERE is_active = true AND " +
+            "(" +
+            "   (? BETWEEN start_datetime AND end_datetime) OR " +
+            "   (? BETWEEN start_datetime AND end_datetime) OR " +
+            "   (start_datetime BETWEEN ? AND ?) OR " +
+            "   (end_datetime BETWEEN ? AND ?)" +
+            ")";
+        
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement checkStmt = conn.prepareStatement(checkOverlapSql)) {
+            checkStmt.setTimestamp(1, Timestamp.valueOf(maintenance.getStartDateTime()));
+            checkStmt.setTimestamp(2, Timestamp.valueOf(maintenance.getEndDateTime()));
+            checkStmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
+            checkStmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
+            checkStmt.setTimestamp(5, Timestamp.valueOf(maintenance.getStartDateTime()));
+            checkStmt.setTimestamp(6, Timestamp.valueOf(maintenance.getEndDateTime()));
+            
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_OVERLAP);
+            }
+        }
+    }
+
+    /**
+     * Kiểm tra xem có lịch bảo trì nào chồng chéo không (trừ chính nó)
+     */
+    private void checkOverlappingMaintenancesForUpdate(Maintenance maintenance) throws SQLException {
+        String checkOverlapSql = 
+            "SELECT COUNT(*) FROM maintenance " +
+            "WHERE is_active = true AND id != ? AND " +
+            "(" +
+            "   (? BETWEEN start_datetime AND end_datetime) OR " +
+            "   (? BETWEEN start_datetime AND end_datetime) OR " +
+            "   (start_datetime BETWEEN ? AND ?) OR " +
+            "   (end_datetime BETWEEN ? AND ?)" +
+            ")";
+        
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement checkStmt = conn.prepareStatement(checkOverlapSql)) {
+            checkStmt.setInt(1, maintenance.getId());
+            checkStmt.setTimestamp(2, Timestamp.valueOf(maintenance.getStartDateTime()));
+            checkStmt.setTimestamp(3, Timestamp.valueOf(maintenance.getEndDateTime()));
+            checkStmt.setTimestamp(4, Timestamp.valueOf(maintenance.getStartDateTime()));
+            checkStmt.setTimestamp(5, Timestamp.valueOf(maintenance.getEndDateTime()));
+            checkStmt.setTimestamp(6, Timestamp.valueOf(maintenance.getStartDateTime()));
+            checkStmt.setTimestamp(7, Timestamp.valueOf(maintenance.getEndDateTime()));
+            
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_OVERLAP);
+            }
         }
     }
 }

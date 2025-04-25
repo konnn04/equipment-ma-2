@@ -3,6 +3,7 @@ package com.hatecode.equipmentma2;
 import com.hatecode.pojo.*;
 import com.hatecode.security.Permission;
 
+import com.hatecode.utils.AlertBox;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -34,6 +35,7 @@ public class MainController implements Initializable {
     @FXML private Tab notificationTab;
     @FXML private Label UIUsernameTextField;
     @FXML private Label UIRoleTextField;
+    @FXML private Button logoutButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -41,6 +43,7 @@ public class MainController implements Initializable {
             initializeTabs();
             setupLazyLoading();
             initUI();
+            initEvent();
             // Kiểm tra nếu không phải admin thì ẩn tab quản lý người dùng
             userManagerTab.setDisable(!App.hasPermission(Permission.USER_VIEW));
             // Load tab đầu tiên khi ứng dụng khởi động
@@ -100,8 +103,7 @@ public class MainController implements Initializable {
             case "maintenanceTab":
                 MaintenanceManagerController maintenanceController = (MaintenanceManagerController) loadTabContent(
                     tab, "maintenance-tab-view.fxml");
-                maintenanceController.fetchMaintenanceTableView();
-                maintenanceController.loadColumnMaintenanceTableView();
+                maintenanceController.init();
                 break;
                 
             case "maintenanceHistoryTab":
@@ -171,5 +173,14 @@ public class MainController implements Initializable {
     // Lấy controller của tab theo ID
     public Object getController(String tabId) {
         return controllers.get(tabId);
+    }
+
+    private void initEvent() {
+        // Sự kiện click nút đăng xuất
+        logoutButton.setOnAction(event -> {
+            boolean confirm = AlertBox.showConfirmation("Are you sure you want to log out?",
+                "You will be redirected to the login screen.");
+            App.switchToLogin();
+        });
     }
 }
