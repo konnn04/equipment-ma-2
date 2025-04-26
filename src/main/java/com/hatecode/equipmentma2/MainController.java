@@ -37,6 +37,17 @@ public class MainController implements Initializable {
     @FXML private Label UIRoleTextField;
     @FXML private Button logoutButton;
 
+    private void initTabs(){
+        if (!App.hasPermission(Permission.REPORT_VIEW))
+            tabPane.getTabs().remove(reportTab);
+
+        if (!App.hasPermission(Permission.USER_VIEW))
+            tabPane.getTabs().remove(userManagerTab);
+
+        if (!App.hasPermission(Permission.MAINTENANCE_SCHEDULE))
+            tabPane.getTabs().remove(maintenanceTab);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -45,7 +56,9 @@ public class MainController implements Initializable {
             initUI();
             initEvent();
             // Kiểm tra nếu không phải admin thì ẩn tab quản lý người dùng
-            userManagerTab.setDisable(!App.hasPermission(Permission.USER_VIEW));
+            initTabs();
+//            userManagerTab.setDisable(!App.hasPermission(Permission.USER_VIEW));
+
             // Load tab đầu tiên khi ứng dụng khởi động
             loadTab(tabPane.getSelectionModel().getSelectedItem());
         } catch (Exception e) {

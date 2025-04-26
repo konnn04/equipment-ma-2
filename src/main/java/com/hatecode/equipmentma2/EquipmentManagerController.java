@@ -4,6 +4,7 @@ import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.Status;
 import com.hatecode.pojo.Image;
+import com.hatecode.security.Permission;
 import com.hatecode.services.CloundinaryService;
 import com.hatecode.services.impl.*;
 import com.hatecode.services.CategoryService;
@@ -63,6 +64,25 @@ public class EquipmentManagerController {
     @FXML private Button deleteEquipmentButton;
 
     /**
+     * Init UI with user permission
+     **/
+    private void initPermission() {
+        if (!App.hasPermission(Permission.EQUIPMENT_CREATE)) {
+            addEquipmentButton.setDisable(true);
+        }
+
+        if (!App.hasPermission(Permission.EQUIPMENT_EDIT)){
+            modeComboBox.setDisable(true);
+            updateEquipmentButton.setDisable(true);
+        }
+
+        if (!App.hasPermission(Permission.EQUIPMENT_DELETE)){
+            modeComboBox.setDisable(true);
+            deleteEquipmentButton.setDisable(true);
+        }
+    }
+
+    /**
      * Initialize the controller
      */
     public void init() throws SQLException {
@@ -70,7 +90,8 @@ public class EquipmentManagerController {
         setupFilters();
         setupUIDefaults();
         setupEventHandlers();
-        
+        initPermission();
+
         // Load initial data
         loadCategories();
         refreshEquipmentData();
