@@ -15,4 +15,8 @@ public class AppConfig {
     public static final String DB_URL = dotenv.get("DB_URL");
     public static final String DB_USER = dotenv.get("DB_USER");
     public static final String DB_PASS = dotenv.get("DB_PASS");
+
+    // Email configuration
+    public static final String EMAIL_USERNAME = dotenv.get("EMAIL_USERNAME");
+    public static final String EMAIL_PASSWORD = dotenv.get("EMAIL_PASSWORD");
 }

@@ -103,6 +103,10 @@ public class MainController implements Initializable {
             case "maintenanceTab":
                 MaintenanceManagerController maintenanceController = (MaintenanceManagerController) loadTabContent(
                     tab, "maintenance-tab-view.fxml");
+
+                // Create and register the email notifier
+                MaintenanceEmailNotifier emailNotifier = new MaintenanceEmailNotifier();
+                maintenanceController.addMaintenanceChangeListener(emailNotifier);
                 maintenanceController.init();
                 break;
                 

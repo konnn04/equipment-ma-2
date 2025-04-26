@@ -314,7 +314,12 @@ public class MaintenanceManagerController {
                     LOGGER.info("Updated technician for equipment maintenance ID: " + 
                         selectedEquipmentMaintenance.getId() + " to user ID: " + newValue.getId());
                 }
-            });
+        });
+
+        // Click event to reload loadTechnicians()
+        technicianComboBox.setOnMouseClicked(event -> {
+            loadTechnicians();
+        });
 
         // Button event handlers
         newMaintenanceButton.setOnAction(event -> handleNewMaintenance());
