@@ -42,7 +42,7 @@ public class App extends Application {
             setCurrentUser(admin);
             primaryStage = stage;
 
-            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("login-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
             stage.setTitle("Equipment Management System");
             //        stage.setResizable(false);
@@ -62,7 +62,7 @@ public class App extends Application {
 
             // Start the maintenance status scheduler
             MaintenanceStatusScheduler.getInstance().start();
-            
+
             // Start maintenance check scheduler
             MaintenanceCheckScheduler.getInstance().start();
         } catch (Exception e) {

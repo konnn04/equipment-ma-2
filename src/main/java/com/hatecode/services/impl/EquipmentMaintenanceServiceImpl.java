@@ -197,6 +197,26 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
     }
 
     @Override
+    public double getTotalPriceEquipmentMaintenance(int maintenanceId) throws SQLException {
+        if (maintenanceId <= 0) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
+        }
+
+        return executeQuery(conn -> {
+            double totalPrice = 0;
+            String sql = "SELECT COALESCE(SUM(repair_price), 0) FROM equipmentma2.Equipment_Maintenance WHERE maintenance_id = ?";
+            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+                stm.setInt(1, maintenanceId);
+                ResultSet rs = stm.executeQuery();
+                if (rs.next()) {
+                    totalPrice = rs.getDouble(1);
+                }
+            }
+            return totalPrice;
+        });
+    }
+
+    @Override
     public boolean addEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
         validateEquipmentMaintenance(em);
         return executeQuery(conn -> {

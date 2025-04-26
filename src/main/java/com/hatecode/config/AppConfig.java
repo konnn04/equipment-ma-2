@@ -2,6 +2,10 @@ package com.hatecode.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
+import java.time.LocalDate;
+
+import static com.hatecode.utils.FormatDate.DATE_FORMATTER;
+
 public class AppConfig {
     private static final Dotenv dotenv = Dotenv.load();
     public static final Integer PAGE_SIZE = 15;
@@ -23,4 +27,7 @@ public class AppConfig {
     // Number day to warn before maintenance
     public static final int NUMBER_DAY_TO_WARN_BEFORE_MAINTENANCE = 3;
     // Number day to warn before maintenance
+
+    public static final LocalDate MIN_DATE = LocalDate.parse("01/01/2020", DATE_FORMATTER);
+    public static final LocalDate MAX_DATE = LocalDate.now().plusYears(1);
 }

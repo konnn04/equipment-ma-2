@@ -11,12 +11,8 @@ import com.hatecode.utils.MaintenanceStatusScheduler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -30,7 +26,7 @@ import java.util.logging.Logger;
 
 public class MainController implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
-    
+
     @FXML private TabPane tabPane;
     @FXML private Tab equipmentTab;
     @FXML private Tab maintenanceTab;
@@ -50,6 +46,17 @@ public class MainController implements Initializable {
     private final Map<String, Object> controllers = new HashMap<>();
     private final Map<String, Boolean> loadedTabs = new HashMap<>();
 
+    private void initTabs(){
+        if (!App.hasPermission(Permission.REPORT_VIEW))
+            tabPane.getTabs().remove(reportTab);
+
+        if (!App.hasPermission(Permission.USER_VIEW))
+            tabPane.getTabs().remove(userManagerTab);
+
+        if (!App.hasPermission(Permission.MAINTENANCE_SCHEDULE))
+            tabPane.getTabs().remove(maintenanceTab);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -57,19 +64,22 @@ public class MainController implements Initializable {
             setupTabChangeListener();
             initUI();
             initEvent();
-            
+
             // Kiểm tra nếu không phải admin thì ẩn tab quản lý người dùng
             userManagerTab.setDisable(!App.hasPermission(Permission.USER_VIEW));
-            
+
             // Initialize notification service
             notificationService = new NotificationServiceImpl();
-            
+
             // Setup notification button
             updateNotificationCount();
-            
+
+            initTabs();
+//            userManagerTab.setDisable(!App.hasPermission(Permission.USER_VIEW));
+
             // Load tab đầu tiên khi ứng dụng khởi động
             loadTab(tabPane.getSelectionModel().getSelectedItem());
-            
+
             updateStatusesButton.setOnAction(event -> {
                 try {
                     // Show a confirmation dialog
@@ -77,18 +87,18 @@ public class MainController implements Initializable {
                         "Update Maintenance Statuses",
                         "Do you want to update all maintenance and equipment statuses now?"
                     );
-                    
+
                     if (confirm) {
                         // Run the status update immediately
                         MaintenanceStatusScheduler.getInstance().runUpdate();
                         MaintenanceCheckScheduler.getInstance().runCheck();
-                        
+
                         // Show success message
                         AlertBox.showInfo(
                             "Status Update",
                             "Maintenance and equipment statuses have been updated successfully."
                         );
-                        
+
                         // Update notification count after status update
                         updateNotificationCount();
                     }
@@ -131,11 +141,11 @@ public class MainController implements Initializable {
                         // Tab is already loaded, just refresh its data
                         refreshTabData(newTab);
                     }
-                    
+
                     LOGGER.info("Tab changed to: " + newTab.getId());
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error loading tab: " + newTab.getId(), e);
-                    AlertBox.showError("Tab Loading Error", 
+                    AlertBox.showError("Tab Loading Error",
                         "Failed to load the tab content: " + e.getMessage());
                 }
             }
@@ -144,7 +154,7 @@ public class MainController implements Initializable {
 
     private void loadTab(Tab tab) throws IOException, SQLException {
         LOGGER.info("Loading tab: " + tab.getId());
-        
+
         switch (tab.getId()) {
             case "equipmentTab":
                 EquipmentManagerController e = (EquipmentManagerController) loadTabContent(tab, "equipment-tab-view.fxml");
@@ -174,7 +184,7 @@ public class MainController implements Initializable {
                 n.init();
                 break;
         }
-        
+
         loadedTabs.put(tab.getId(), true);
     }
 
@@ -185,7 +195,7 @@ public class MainController implements Initializable {
         
         switch (tabId) {
             case "equipmentTab":
-                EquipmentManagerController equipmentController = 
+                EquipmentManagerController equipmentController =
                     (EquipmentManagerController) controllers.get(tabId);
                 if (equipmentController != null) {
                     equipmentController.refreshData();
@@ -193,7 +203,7 @@ public class MainController implements Initializable {
                 break;
                 
             case "maintenanceTab":
-                MaintenanceManagerController maintenanceController = 
+                MaintenanceManagerController maintenanceController =
                     (MaintenanceManagerController) controllers.get(tabId);
                 if (maintenanceController != null) {
                     maintenanceController.refreshData();
@@ -201,7 +211,7 @@ public class MainController implements Initializable {
                 break;
                 
             case "maintenanceHistoryTab":
-                MaintenanceHistoryController historyController = 
+                MaintenanceHistoryController historyController =
                     (MaintenanceHistoryController) controllers.get(tabId);
                 if (historyController != null) {
                     historyController.refreshData();
@@ -209,7 +219,7 @@ public class MainController implements Initializable {
                 break;
                 
             case "recordNewRepairTab":
-                RecordNewRepairManagerController repairController = 
+                RecordNewRepairManagerController repairController =
                     (RecordNewRepairManagerController) controllers.get(tabId);
                 if (repairController != null) {
                     repairController.refreshData();
@@ -217,15 +227,15 @@ public class MainController implements Initializable {
                 break;
                 
             case "userManagerTab":
-                UserManagerController userController = 
+                UserManagerController userController =
                     (UserManagerController) controllers.get(tabId);
                 if (userController != null) {
                     userController.refreshData();
                 }
                 break;
-                
+
             case "notificationTab":
-                NotificationController notificationController = 
+                NotificationController notificationController =
                     (NotificationController) controllers.get(tabId);
                 if (notificationController != null) {
                     notificationController.refreshData();
@@ -258,7 +268,7 @@ public class MainController implements Initializable {
             UIRoleTextField.setText("Unknown");
         }
     }
-    
+
     private void initEvent() {
         logoutButton.setOnAction(event -> {
             App.switchToLogin();

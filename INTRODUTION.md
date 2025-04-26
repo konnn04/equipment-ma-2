@@ -195,6 +195,7 @@ Controller quản lý người dùng trong hệ thống.
 Dự án sử dụng JUnit 5 để thực hiện các bài kiểm thử đơn vị với cấu trúc:
 - `src/test/java/com/hatecode/services/`: Các lớp kiểm thử cho service
 - `src/test/resources/`: Dữ liệu CSV và tài nguyên khác cho kiểm thử
+- `src/test/resources/com/hatecode/services/`: Chứa các file CSV dùng cho các test tham số hóa
 
 ### 4.2. Các loại kiểm thử
 
@@ -208,12 +209,20 @@ Dự án sử dụng JUnit 5 để thực hiện các bài kiểm thử đơn v�
 - **ImageServiceImplTest**: Kiểm thử quản lý hình ảnh
 - **CloudinaryServiceTestSuite**: Kiểm thử tích hợp với dịch vụ lưu trữ hình ảnh Cloudinary
 
+#### 4.2.2. Phương pháp kiểm thử theo chức năng
+- **Kiểm thử CRUD**: Kiểm tra thêm, đọc, cập nhật, xóa dữ liệu
+- **Kiểm thử xác thực**: Kiểm tra đăng nhập, đăng xuất, mật khẩu
+- **Kiểm thử nghiệp vụ**: Kiểm tra logic lập lịch bảo trì, phát hiện trùng lịch
+- **Kiểm thử ràng buộc**: Kiểm tra các ràng buộc dữ liệu và xử lý ngoại lệ
+- **Kiểm thử giao dịch**: Kiểm tra tính nhất quán khi thực hiện nhiều thao tác cùng lúc
+
 ### 4.3. Phương pháp kiểm thử
 
 #### 4.3.1. Cài đặt kiểm thử
 - Sử dụng annotation `@ExtendWith(TestDatabaseConfig.class)` để cấu hình database kiểm thử
 - Phương thức `@BeforeEach` khởi tạo dữ liệu kiểm thử mới trước mỗi test
 - Phương thức `@AfterEach` dọn dẹp kết nối database sau mỗi test
+- Phương thức `@BeforeAll` thiết lập cấu hình chung cho tất cả các test trong class
 
 #### 4.3.2. Kiểu kiểm thử
 - **@Test**: Các phương thức kiểm thử đơn giản với một trường hợp
@@ -232,6 +241,116 @@ Chạy một bộ kiểm thử cụ thể:
 mvn -Dtest=EquipmentServiceImplTest test
 ```
 
+#### 4.3.4. Mẫu kiểm thử
+Mỗi phương thức kiểm thử tuân theo mẫu AAA (Arrange-Act-Assert):
+
+```java
+@Test
+void testGetEquipmentById_Success() throws SQLException {
+    // Arrange - Chuẩn bị dữ liệu và đối tượng cần test
+    EquipmentService equipmentService = new EquipmentServiceImpl();
+    
+    // Act - Thực thi phương thức cần kiểm tra
+    Equipment equipment = equipmentService.getEquipmentById(1);
+    
+    // Assert - Kiểm tra kết quả
+    assertNotNull(equipment, "Equipment should not be null");
+    assertEquals("ELEC001", equipment.getCode(), "Equipment code should match");
+    assertEquals("Laptop", equipment.getName(), "Equipment name should match");
+}
+```
+
+#### 4.3.5. Kiểm thử tham số hóa
+Sử dụng dữ liệu từ nhiều nguồn khác nhau để kiểm thử cùng một logic:
+
+```java
+@ParameterizedTest
+@CsvSource({
+    "1, ELEC001, Laptop, 2, 1, 1, 180, Máy tính xách tay văn phòng",
+    "2, MACH001, Máy khoan, 3, 2, 1, 90, Máy khoan công nghiệp"
+})
+void testGetEquipmentById(int id, String code, String name, int statusId, 
+                         int categoryId, int imageId, int regularMaintenanceDay,
+                         String description) throws SQLException {
+    EquipmentService equipmentService = new EquipmentServiceImpl();
+    Equipment equipment = equipmentService.getEquipmentById(id);
+    
+    assertEquals(id, equipment.getId());
+    assertEquals(code, equipment.getCode());
+    assertEquals(name, equipment.getName());
+    // Thêm các kiểm tra khác...
+}
+```
+
+#### 4.3.6. Kiểm thử ngoại lệ
+Xác minh rằng ngoại lệ được phát sinh đúng cách:
+
+```java
+@Test
+void testAddEquipmentWithInvalidData() {
+    EquipmentService equipmentService = new EquipmentServiceImpl();
+    Equipment e = new Equipment(null, "Test Equipment", Status.NORMAL, 0, 1, 30, "Description");
+    
+    assertThrows(SQLException.class, () -> equipmentService.addEquipment(e),
+            "Adding equipment with invalid data should throw SQLException");
+}
+```
+
+### 4.4. Tình huống kiểm thử đặc biệt
+
+#### 4.4.1. Kiểm thử giao dịch
+```java
+@Test
+void testTransactionalRollbackWhenUserUpdateFails() {
+    UserService userService = new UserServiceImpl();
+    User user = new User();
+    // Setup user with invalid data that will cause update to fail
+    
+    assertThrows(SQLException.class, () -> userService.updateUser(user, null));
+    // Verify database remains unchanged
+}
+```
+
+#### 4.4.2. Kiểm thử xác thực người dùng
+```java
+@Test
+void testAuthenticateUser_Success() {
+    UserService userService = new UserServiceImpl();
+    
+    // Setup test user
+    setupTestUser();
+    
+    // Test authentication
+    User user = userService.authenticateUser("testuser", "1");
+    
+    // Verify
+    assertNotNull(user);
+    assertEquals("testuser", user.getUsername());
+    
+    // Cleanup
+    cleanupTestUser();
+}
+```
+
+#### 4.4.3. Kiểm thử phát hiện lịch trùng
+```java
+@Test
+void testAddMaintenance_OverlappingSchedule() {
+    MaintenanceService maintenanceService = new MaintenanceServiceImpl();
+    
+    Maintenance maintenance = new Maintenance(
+        "Overlapping Maintenance",
+        "Should detect schedule conflict",
+        LocalDateTime.of(2025, 8, 1, 10, 0),
+        LocalDateTime.of(2025, 8, 10, 15, 0),
+        MaintenanceStatus.PENDING
+    );
+    
+    // Verify exception is thrown for overlapping maintenance
+    assertThrows(IllegalArgumentException.class, () -> maintenanceService.addMaintenance(maintenance));
+}
+```
+
 ## 5. Luồng hoạt động chính của ứng dụng
 
 ### 5.1. Quản lý thiết bị
@@ -239,11 +358,15 @@ mvn -Dtest=EquipmentServiceImplTest test
 2. Người dùng thêm thiết bị mới với thông tin cơ bản và chu kỳ bảo trì định kỳ
 3. Hệ thống tự động tính toán và đề xuất lịch bảo trì dựa trên chu kỳ
 
-### 5.2. Lập lịch bảo trì
+### 5.2. Lập lịch bảo trì và phát hiện xung đột
 1. Người dùng tạo lịch bảo trì mới với thời gian bắt đầu và kết thúc
 2. Người dùng chọn danh sách thiết bị cần bảo trì
 3. Người dùng phân công kỹ thuật viên cho từng thiết bị
-4. Hệ thống kiểm tra trùng lịch và xác nhận lịch bảo trì
+4. Hệ thống kiểm tra và phát hiện các xung đột:
+   - Xung đột thời gian: thiết bị đã có lịch bảo trì khác
+   - Xung đột kỹ thuật viên: kỹ thuật viên đã được phân công cho lịch khác
+   - Lịch trong quá khứ: ngăn chặn lập lịch cho thời gian đã qua
+5. Hệ thống thông báo xung đột và yêu cầu điều chỉnh
 
 ### 5.3. Ghi nhận kết quả bảo trì
 1. Kỹ thuật viên xem danh sách lịch bảo trì đang thực hiện
@@ -258,6 +381,29 @@ mvn -Dtest=EquipmentServiceImplTest test
 1. Hệ thống tự động kiểm tra lịch bảo trì sắp đến hạn
 2. Hệ thống tự động tạo thông báo cho người dùng
 3. Người dùng xem và đánh dấu đã đọc thông báo
+
+### 5.6. Báo cáo và thống kê
+1. Tạo báo cáo thời gian hoạt động/ngừng hoạt động của thiết bị
+2. Phân tích chi phí bảo trì và sửa chữa theo thời gian
+3. So sánh hiệu quả bảo trì giữa các kỹ thuật viên
+4. Dự báo nhu cầu bảo trì dựa trên lịch sử
+
+### 5.7. Xử lý ngoại lệ và phục hồi dữ liệu
+1. Hệ thống ghi log cho mọi thao tác trên dữ liệu
+2. Cơ chế sao lưu và phục hồi dữ liệu tự động
+3. Xử lý lỗi giao dịch đảm bảo tính nhất quán dữ liệu
+4. Thông báo chi tiết giúp người dùng khắc phục lỗi
+
+### 5.8. Quản lý người dùng và phân quyền nâng cao
+1. Quản trị viên quản lý người dùng (thêm, sửa, xóa)
+2. Hệ thống phân quyền dựa trên vai trò (Admin, Technician, Manager)
+3. Phân quyền chi tiết đến từng chức năng
+4. Ghi lại lịch sử đăng nhập và thao tác của người dùng
+
+### 5.9. Tích hợp dịch vụ đám mây
+1. Lưu trữ hình ảnh thiết bị và người dùng trên Cloudinary
+2. Sao lưu dữ liệu tự động lên đám mây
+3. Đồng bộ hóa dữ liệu giữa nhiều thiết bị
 
 ## 6. Kết luận
 

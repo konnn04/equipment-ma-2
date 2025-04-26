@@ -9,6 +9,7 @@ import com.hatecode.services.impl.EquipmentMaintenanceServiceImpl;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +22,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 @ExtendWith(TestDatabaseConfig.class)
 public class EquipmentMaintenanceServiceImplTest {
+    @BeforeAll
+    static void setupDatabase() throws SQLException {
+        JdbcUtils.fileName = "db";
+    }
+
     @BeforeEach
     void setupTestData() throws SQLException {
         // Reset database to clean state
