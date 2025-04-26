@@ -66,7 +66,7 @@ public class EquipmentManagerController {
     /**
      * Init UI with user permission
      **/
-    private void initPermisson() {
+    private void initPermission() {
         if (!App.hasPermission(Permission.EQUIPMENT_CREATE)) {
             addEquipmentButton.setDisable(true);
         }
