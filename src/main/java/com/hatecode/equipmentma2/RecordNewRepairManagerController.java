@@ -37,6 +37,8 @@ public class RecordNewRepairManagerController {
     @FXML
     TextField equipmentMaintenanceTechnician;
     @FXML
+    TextField equipmentMaintenancePrice;
+    @FXML
     TextArea equipmentMaintenanceDescription;
     @FXML
     DatePicker inspectionDate;
@@ -73,11 +75,14 @@ public class RecordNewRepairManagerController {
         TableColumn<EquipmentMaintenance, ?> colECodeId = recordNewRepairMaintenceEquipments.getColumns().get(0);
         colECodeId.setCellValueFactory(new PropertyValueFactory("id"));
 
-        TableColumn<EquipmentMaintenance, ?> colDescrtion = recordNewRepairMaintenceEquipments.getColumns().get(1);
-        colDescrtion.setCellValueFactory(new PropertyValueFactory("description"));
+        TableColumn<EquipmentMaintenance, ?> colEName = recordNewRepairMaintenceEquipments.getColumns().get(1);
+        colEName.setCellValueFactory(new PropertyValueFactory("equipmentName"));
 
         TableColumn<EquipmentMaintenance, ?> colResult = recordNewRepairMaintenceEquipments.getColumns().get(2);
         colResult.setCellValueFactory(new PropertyValueFactory("result"));
+
+        TableColumn<EquipmentMaintenance, ?> colDescrtion = recordNewRepairMaintenceEquipments.getColumns().get(3);
+        colDescrtion.setCellValueFactory(new PropertyValueFactory("description"));
 
         statusComboBox.getSelectionModel().clearSelection();
 
@@ -88,7 +93,7 @@ public class RecordNewRepairManagerController {
     }
 
     public void loadMaintenancesData(String query) throws SQLException {
-        List<Maintenance> res = maintenanceService.getMaintenances(query);
+        List<Maintenance> res = maintenanceService.getCurrentMaintenances(query);
         this.recordNewRepairMaintenance.setItems(FXCollections.observableList(res));
     }
 
@@ -142,11 +147,28 @@ public class RecordNewRepairManagerController {
             }
         });
 
+        // Xử lý thay đổi trạng thái
+        this.statusComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                if (newVal.getName().equals("Need repair")) {
+                    equipmentMaintenancePrice.clear();
+                    equipmentMaintenancePrice.setDisable(false);
+                } else {
+                    equipmentMaintenancePrice.setDisable(true);
+                    equipmentMaintenancePrice.setText("0");
+                }
+            } else {
+                equipmentMaintenancePrice.setDisable(true);
+                equipmentMaintenancePrice.setText("0");
+            }
+        });
+
     }
 
     public void showMaintenanceDetails(Maintenance m) throws SQLException {
         this.currentMaintenance = m;
-        List<EquipmentMaintenance> res = EquipmentMaintenanceService.getEquipmentMaintenance(m);
+        User currentUser = App.getCurrentUser();
+        List<EquipmentMaintenance> res = EquipmentMaintenanceService.getEquipmentMaintenance(m,currentUser);
         this.recordNewRepairMaintenceEquipments.setItems(FXCollections.observableList(res));
     }
 
@@ -156,6 +178,12 @@ public class RecordNewRepairManagerController {
         this.equipmentMaintenanceID.setText(String.valueOf(e.getId()));
         this.equipmentID.setText(String.valueOf(e.getEquipmentId()));
         User technician = userService.getUserById(e.getTechnicianId());
+        if(technician != null){
+            System.out.println(technician.getId());
+        }
+        else{
+            System.out.println("No user found");
+        }
         this.equipmentMaintenanceTechnician.setText(String.valueOf(technician.getLastName() + " " + technician.getFirstName()));
         // Xử lý
         LocalDateTime localDateTime = e.getInspectionDate();
@@ -186,6 +214,9 @@ public class RecordNewRepairManagerController {
 
         // Cập nhật thông tin từ các control vào đối tượng hiện tại
         currentEquipmentMaintenance.setDescription(equipmentMaintenanceDescription.getText());
+        if(currentEquipmentMaintenance.getResult().equals(Result.NEED_REPAIR)){
+            currentEquipmentMaintenance.setRepairPrice(Float.parseFloat(equipmentMaintenancePrice.getText()));
+        }
 
         // Cập nhật ngày kiểm tra
         if (inspectionDate.getValue() != null) {

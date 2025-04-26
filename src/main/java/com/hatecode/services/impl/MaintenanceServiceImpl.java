@@ -86,6 +86,35 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     }
 
     @Override
+    public List<Maintenance> getCurrentMaintenances(String query) throws SQLException {
+        if (query == null || query.isEmpty()) {
+            query = "";
+        }
+        List<Maintenance> res = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = "SELECT * FROM maintenance " +
+                "WHERE (title LIKE ? OR description LIKE ?) " +
+                "AND is_active = true " +
+                "AND start_datetime <= ? " +
+                "AND end_datetime >= ?";
+
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            stmt.setString(2, "%" + query + "%");
+            stmt.setTimestamp(3, Timestamp.valueOf(now));
+            stmt.setTimestamp(4, Timestamp.valueOf(now));
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                res.add(extractMaintenance(rs));
+            }
+        }
+        return res;
+    }
+
+    @Override
     public Maintenance getMaintenanceById(int id) throws SQLException {
         Maintenance maintenance = null;
         String sql = "SELECT * FROM Maintenance WHERE id = ? AND is_active=true";

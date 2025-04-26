@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
         User user = null;
         String sql = "SELECT u.*, i.* "
                 + "FROM `user` u "
-                + "JOIN `user` i "
+                + "JOIN `image` i "
                 + "ON u.avatar_id = i.id "
                 + "WHERE u.id = ? ";
 
