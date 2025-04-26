@@ -40,4 +40,11 @@ public class FormatDate {
         int second = 0;
         return LocalDateTime.of(date, LocalDateTime.of(0, 1, 1, hour, minute, second).toLocalTime());
     }
+
+    public static String formatDate(LocalDate localDate) {
+        if (localDate == null) {
+            return "";
+        }
+        return localDate.format(DATE_FORMATTER);
+    }
 }

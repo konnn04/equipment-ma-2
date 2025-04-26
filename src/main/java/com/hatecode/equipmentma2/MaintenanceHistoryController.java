@@ -298,4 +298,22 @@ public class MaintenanceHistoryController {
 
 
     }
+
+    public void refreshData() {
+
+    }
+
+    public void init() {
+        initMaintenanceHistory();
+        initSearchFields();
+        fetchMaintenanceHistory("");
+        this.maintenancesTableViewTable.getSelectionModel().selectFirst();
+        if (this.maintenancesTableViewTable.getSelectionModel().getSelectedItem() != null) {
+            try {
+                fetchEquipmentByEMId(this.maintenancesTableViewTable.getSelectionModel().getSelectedItem().getId(), null);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

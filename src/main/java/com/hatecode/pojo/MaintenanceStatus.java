@@ -1,10 +1,10 @@
 package com.hatecode.pojo;
 
 public enum MaintenanceStatus {
-    PENDING(0, "Pending"),
-    IN_PROGRESS(1, "In Progress"),
-    COMPLETED(2, "Completed"),
-    CANCELLED(3, "Cancelled");
+    PENDING(1, "Pending"),
+    IN_PROGRESS(2, "In Progress"),
+    COMPLETED(3, "Completed"),
+    CANCELLED(4, "Cancelled");
 
     private final int code;
     private final String name;

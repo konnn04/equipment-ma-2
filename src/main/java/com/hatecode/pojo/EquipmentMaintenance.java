@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class EquipmentMaintenance {
     private int id;
     private int equipmentId;
+    private String equipmentCode;
     private String equipmentName;
     private int maintenanceId;
     private int technicianId;
@@ -32,6 +33,7 @@ public class EquipmentMaintenance {
             int equipmentId,
             int maintenanceId,
             int technicianId,
+            String equipmentCode,
             String equipmentName,
             String description,
             Result result,
@@ -43,6 +45,7 @@ public class EquipmentMaintenance {
         this.equipmentId = equipmentId;
         this.maintenanceId = maintenanceId;
         this.technicianId = technicianId;
+        this.equipmentCode = equipmentCode;
         this.equipmentName = equipmentName;
         this.description = description;
         this.result = result;
@@ -56,10 +59,14 @@ public class EquipmentMaintenance {
             int equipmentId,
             int maintenanceId,
             int technicianId,
+            String equipmentCode,
+            String equipmentName,
             String description) {
         this.equipmentId = equipmentId;
         this.maintenanceId = maintenanceId;
         this.technicianId = technicianId;
+        this.equipmentCode = equipmentCode;
+        this.equipmentName = equipmentName;
         this.description = description;
     }
 
@@ -67,6 +74,8 @@ public class EquipmentMaintenance {
             int equipmentId,
             int maintenanceId,
             int technicianId,
+            String equipmentCode,
+            String equipmentName,
             String description,
             Result result,
             float repairPrice,
@@ -76,6 +85,8 @@ public class EquipmentMaintenance {
         this.equipmentId = equipmentId;
         this.maintenanceId = maintenanceId;
         this.technicianId = technicianId;
+        this.equipmentCode = equipmentCode;
+        this.equipmentName = equipmentName;
         this.description = description;
         this.result = result;
         this.repairPrice = repairPrice;
@@ -84,11 +95,11 @@ public class EquipmentMaintenance {
         this.isActive = isActive;
     }
 
-    public LocalDateTime getcreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setcreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -171,4 +182,16 @@ public class EquipmentMaintenance {
     public void setEquipmentName(String equipmentName) {
         this.equipmentName = equipmentName;
     }
+
+    public String getEquipmentCode() {
+        return equipmentCode;
+    }
+
+    public void setEquipmentCode(String equipmentCode) {
+        this.equipmentCode = equipmentCode;
+    }
+
+
+
+
 }

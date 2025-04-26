@@ -19,6 +19,7 @@ public class ExceptionMessage {
     public static final String MAINTENANCE_OVERLAP = "Maintenance dates overlap with another maintenance";
     public static final String MAINTENANCE_NOT_FOUND_BY_ID = "Maintenance not found by ID";
     public static final String MAINTENANCE_CANNOT_CHANGE_START_DATE = "Cannot change start date after maintenance has started";
+    public static final String MAINTENANCE_CANNOT_UPDATE_COMPLETED = "Cannot update completed maintenance";
     
     // EquipmentMaintenance
     public static final String EQUIPMENT_MAINTENANCE_ID_NULL = "EquipmentMaintenance ID cannot be null or empty";

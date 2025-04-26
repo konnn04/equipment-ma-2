@@ -55,27 +55,27 @@ VALUES ('Kiểm tra điện tử hàng quý', 'Kiểm tra tất cả thiết b�
        ('Bảo trì khẩn cấp', 'Xử lý sự cố đột xuất', '2023-12-10 08:00:00', '2023-12-10 14:00:00');
 
 INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result,
-                                   repair_price, inspection_date)
-VALUES (1, 1, 2, 'Kiểm tra laptop, hoạt động tốt', 1, 0, '2023-10-01 10:00:00'),            -- NORMALLY
-       (2, 2, 4, 'Máy khoan cần thay động cơ', 2, 1500000, '2023-11-16 14:00:00'),  -- NEEDS_REPAIR
-       (3, 3, 2, 'Xe tải hỏng động cơ, không sửa được', 3, 0, '2023-12-01 11:00:00'),       -- BROKEN
-       (4, 1, 4, 'Ghế vẫn tốt', 1,  0, '2023-10-01 11:00:00'),                               -- NORMALLY
-       (5, 2, 2, 'Bộ tua vít chưa sử dụng', 1,  0, '2023-11-17 09:00:00'),                   -- NORMALLY
-       (6, 1, 4, 'Máy chiếu cần thay bóng đèn', 2,  500000, '2023-10-01 12:00:00'), -- NEEDS_REPAIR
-       (7, 2, 2, 'Máy tiện hoạt động tốt', 1,  0, '2023-11-18 10:00:00'),                    -- NORMALLY
-       (8, 3, 4, 'Xe nâng cần thay lốp', 2,  2000000, '2023-12-01 13:00:00'),            -- NEEDS_REPAIR
-       (9, 1, 2, 'Bàn làm việc chắc chắn', 1,  0, '2023-10-01 13:00:00'),                    -- NORMALLY
-       (10, 2, 4, 'Bộ cờ lê đầy đủ', 1, 0, '2023-11-19 11:00:00'),                          -- NORMALLY
-       (11, 4, 2, 'Máy in sắp hết mực', 2, 200000, '2023-10-15 10:00:00'),              -- NEEDS_REPAIR
-       (12, 5, 4, 'Máy CNC cần hiệu chỉnh', 2, 1000000, '2023-11-01 11:00:00'),       -- NEEDS_REPAIR
-       (13, 3, 2, 'Xe máy hoạt động bình thường', 1,  0, '2023-12-01 14:00:00'),             -- NORMALLY
-       (14, 5, 4, 'Bàn họp bị xước', 2,  500000, '2023-11-01 12:00:00'),           -- NEEDS_REPAIR
-       (15, 4, 2, 'Máy khoan cầm tay pin yếu', 2,  300000, '2023-10-15 11:00:00'),       -- NEEDS_REPAIR
-       (16, 6, 7, 'Màn hình không lên nguồn', 3,  0, '2023-12-10 09:00:00'),                 -- BROKEN
-       (17, 2, 9, 'Máy hàn hoạt động tốt', 1, 0, '2023-11-18 12:00:00'),                    -- NORMALLY
-       (18, 3, 7, 'Xe ô tô đã thanh lý', 4,  0, '2023-12-01 15:00:00'),                      -- NEEDS_DISPOSAL
-       (19, 5, 9, 'Tủ hồ sơ vẫn tốt', 1,  0, '2023-11-01 13:00:00'),                         -- NORMALLY
-       (20, 4, 7, 'Búa không bị hư hại', 1, 0, '2023-10-15 10:30:00'); -- NORMALLY
+                                   repair_price, inspection_date, equipment_name, equipment_code)
+VALUES (1, 1, 2, 'Kiểm tra laptop, hoạt động tốt', 1, 0, '2023-10-01 10:00:00', 'Laptop', 'ELEC001'),          -- NORMALLY
+       (2, 2, 4, 'Máy khoan cần thay động cơ', 2, 1500000, '2023-11-16 14:00:00', 'Máy khoan','MACH001'),  -- NEEDS_REPAIR
+       (3, 3, 2, 'Xe tải hỏng động cơ, không sửa được', 3, 0, '2023-12-01 11:00:00', 'Xe tải', 'VEH001'),  -- BROKEN
+       (4, 1, 4, 'Ghế vẫn tốt', 1, 0, '2023-10-01 11:00:00', 'Ghế văn phòng', 'FURN001'),                -- NORMALLY
+       (5, 2, 2, 'Bộ tua vít chưa sử dụng', 1, 0, '2023-11-17 09:00:00', 'Bộ tua vít', 'TOOL001'),        -- NORMALLY
+       (6, 1, 4, 'Máy chiếu cần thay bóng đèn', 2, 500000, '2023-10-01 12:00:00', 'Máy chiếu', 'ELEC002'), -- NEEDS_REPAIR
+       (7, 2, 2, 'Máy tiện hoạt động tốt', 1, 0, '2023-11-18 10:00:00', 'Máy tiện', 'MACH002'),           -- NORMALLY
+       (8, 3, 4, 'Xe nâng cần thay lốp', 2, 2000000, '2023-12-01 13:00:00', 'Xe nâng', 'VEH002'),         -- NEEDS_REPAIR
+       (9, 1, 2, 'Bàn làm việc chắc chắn', 1, 0, '2023-10-01 13:00:00', 'Bàn làm việc', 'FURN002'),       -- NORMALLY
+       (10, 2, 4, 'Bộ cờ lê đầy đủ', 1, 0, '2023-11-19 11:00:00', 'Bộ cờ lê', 'TOOL002'),                -- NORMALLY
+       (11, 4, 2, 'Máy in sắp hết mực', 2, 200000, '2023-10-15 10:00:00', 'Máy in', 'ELEC003'),          -- NEEDS_REPAIR
+       (12, 5, 4, 'Máy CNC cần hiệu chỉnh', 2, 1000000, '2023-11-01 11:00:00', 'Máy CNC', 'MACH003'),    -- NEEDS_REPAIR
+       (13, 3, 2, 'Xe máy hoạt động bình thường', 1, 0, '2023-12-01 14:00:00', 'Xe máy', 'VEH003'),      -- NORMALLY
+       (14, 5, 4, 'Bàn họp bị xước', 2, 500000, '2023-11-01 12:00:00', 'Bàn họp', 'FURN003'),            -- NEEDS_REPAIR
+       (15, 4, 2, 'Máy khoan cầm tay pin yếu', 2, 300000, '2023-10-15 11:00:00', 'Máy khoan cầm tay', 'TOOL003'), -- NEEDS_REPAIR
+       (16, 6, 7, 'Màn hình không lên nguồn', 3, 0, '2023-12-10 09:00:00', 'Màn hình', 'ELEC004'),        -- BROKEN
+       (17, 2, 9, 'Máy hàn hoạt động tốt', 1, 0, '2023-11-18 12:00:00', 'Máy hàn', 'MACH004'),           -- NORMALLY
+       (18, 3, 7, 'Xe ô tô đã thanh lý', 4, 0, '2023-12-01 15:00:00', 'Xe ô tô', 'VEH004'),              -- NEEDS_DISPOSAL
+       (19, 5, 9, 'Tủ hồ sơ vẫn tốt', 1, 0, '2023-11-01 13:00:00', 'Tủ hồ sơ', 'FURN004'),              -- NORMALLY
+       (20, 4, 7, 'Búa không bị hư hại', 1, 0, '2023-10-15 10:30:00', 'Búa', 'TOOL004'); -- NORMALLY
 
 INSERT INTO Maintenance_Repair_Suggestion (name, description, suggest_price)
 VALUES ('Thay động cơ', 'Thay động cơ cho máy khoan', 1500000),

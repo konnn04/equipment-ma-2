@@ -20,6 +20,14 @@ public class AppConfig {
     public static final String DB_USER = dotenv.get("DB_USER");
     public static final String DB_PASS = dotenv.get("DB_PASS");
 
+    // Email configuration
+    public static final String EMAIL_USERNAME = dotenv.get("EMAIL_USERNAME");
+    public static final String EMAIL_PASSWORD = dotenv.get("EMAIL_PASSWORD");
+
+    // Number day to warn before maintenance
+    public static final int NUMBER_DAY_TO_WARN_BEFORE_MAINTENANCE = 3;
+    // Number day to warn before maintenance
+
     public static final LocalDate MIN_DATE = LocalDate.parse("01/01/2020", DATE_FORMATTER);
     public static final LocalDate MAX_DATE = LocalDate.now().plusYears(1);
 }
