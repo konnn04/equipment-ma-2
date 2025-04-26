@@ -135,7 +135,10 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         if (id <= 0) {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
         }
-        String sql = "SELECT * FROM `equipment_maintenance` WHERE maintenance_id = ? AND is_active=true";
+        String sql = "SELECT em.*, e.name AS equipmentName " +
+                "FROM equipment_maintenance em " +
+                "JOIN equipment e ON em.equipment_id = e.id " +
+                "WHERE em.is_active = true and em.maintenance_id = ?";
         List<EquipmentMaintenance> equipmentMaintenances = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
