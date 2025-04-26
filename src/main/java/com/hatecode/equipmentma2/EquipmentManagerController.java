@@ -90,6 +90,7 @@ public class EquipmentManagerController {
         setupFilters();
         setupUIDefaults();
         setupEventHandlers();
+        initPermission();
 
         // Load initial data
         loadCategories();
