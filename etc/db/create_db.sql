@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `Maintenance` (
                                              `description` text NOT NULL,
                                              `start_datetime` timestamp NOT NULL,
                                              `end_datetime` timestamp NOT NULL,
+                                             `status` int NOT NULL DEFAULT 1,
                                              `is_active` boolean NOT NULL DEFAULT '1',
                                              `created_at` timestamp NOT NULL default current_timestamp,
                                              PRIMARY KEY (`id`)
@@ -52,6 +53,8 @@ CREATE TABLE IF NOT EXISTS `Maintenance` (
 CREATE TABLE IF NOT EXISTS `Equipment_Maintenance` (
                                                        `id` int AUTO_INCREMENT NOT NULL UNIQUE,
                                                        `equipment_id` int NOT NULL,
+                                                       `equipment_name` nvarchar(255) NOT NULL,
+                                                        `equipment_code` nvarchar(255) NOT NULL,
                                                        `maintenance_id` int NOT NULL,
                                                        `technician_id` int NOT NULL,
                                                        `description` text,

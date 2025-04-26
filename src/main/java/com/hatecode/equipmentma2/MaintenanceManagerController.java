@@ -233,13 +233,13 @@ public class MaintenanceManagerController {
         TableColumn<EquipmentMaintenance, String> equipmentNameColumn = new TableColumn<>("Equipment Name");
         equipmentNameColumn.setPrefWidth(200);
         equipmentNameColumn.setCellValueFactory(
-                cellData -> new SimpleStringProperty(getEquipmentName(cellData.getValue().getEquipmentId())));
+                cellData -> new SimpleStringProperty(cellData.getValue().getEquipmentName()));
 
         // Equipment Code Column
         TableColumn<EquipmentMaintenance, String> equipmentCodeColumn = new TableColumn<>("Equipment Code");
         equipmentCodeColumn.setPrefWidth(200);
         equipmentCodeColumn.setCellValueFactory(
-                cellData -> new SimpleStringProperty(getEquipmentCode(cellData.getValue().getEquipmentId())));
+                cellData -> new SimpleStringProperty(cellData.getValue().getEquipmentCode()));
 
         // Technician Name Column
         TableColumn<EquipmentMaintenance, String> technicianColumn = new TableColumn<>("Technician Name");
@@ -437,11 +437,8 @@ public class MaintenanceManagerController {
         equipmentMaintenanceIdText.setText(String.valueOf(equipmentMaintenance.getId()));
 
         // Get equipment details from cache
-        Equipment equipment = getEquipmentById(equipmentMaintenance.getEquipmentId());
-        if (equipment != null) {
-            equipmentNameText.setText(equipment.getName());
-            equipmentCodeText.setText(equipment.getCode());
-        }
+        equipmentNameText.setText(equipmentMaintenance.getEquipmentName());
+        equipmentCodeText.setText(equipmentMaintenance.getEquipmentCode());
 
         // Find and select technician in the combobox
         int technicianId = equipmentMaintenance.getTechnicianId();
@@ -524,13 +521,13 @@ public class MaintenanceManagerController {
     private void handleModifyMaintenance() {
         // Kiểm tra xem đã chọn lịch bảo trì nào chưa
         if (selectedMaintenance == null) {
-            AlertBox.showError("Lỗi", "Vui lòng chọn một lịch bảo trì để sửa đổi");
+            AlertBox.showError("Error", "Please select a maintenance schedule to modify");
             return;
         }
 
         // Kiểm tra xem ngày bắt đầu của lịch bảo trì có trong tương lai không
         if (selectedMaintenance.getStartDateTime().isBefore(java.time.LocalDateTime.now())) {
-            AlertBox.showError("Lỗi", "Không thể sửa đổi lịch bảo trì đã bắt đầu");
+            AlertBox.showError("Error", "You cannot modify a maintenance schedule that has already started");
             return;
         }
 
@@ -603,6 +600,8 @@ public class MaintenanceManagerController {
                     equipmentCache.put(equipment.getId(), equipment);
                     EquipmentMaintenance newMaintenance = new EquipmentMaintenance();
                     newMaintenance.setEquipmentId(equipment.getId());
+                    newMaintenance.setEquipmentName(equipment.getName());
+                    newMaintenance.setEquipmentCode(equipment.getCode());
 
                     // Gán kỹ thuật viên mặc định nếu có
                     if (!userCache.isEmpty() && technicianComboBox.getItems().size() > 0) {

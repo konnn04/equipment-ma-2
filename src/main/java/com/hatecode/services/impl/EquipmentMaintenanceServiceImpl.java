@@ -28,7 +28,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 rs.getInt("equipment_id"),
                 rs.getInt("maintenance_id"),
                 rs.getInt("technician_id"),
-                rs.getString("equipmentName"),
+                rs.getString("equipment_name"),
+                rs.getString("equipment_code"),
                 rs.getString("description"),
                 rs.getInt("result") == 0 ? null : Result.fromCode(rs.getInt("result")),
                 rs.getFloat("repair_price"),
@@ -194,13 +195,15 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
     public boolean addEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
         validateEquipmentMaintenance(em);
         return executeQuery(conn -> {
-            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description)" +
-                    " VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, equipment_name, equipment_code)" +
+                    " VALUES (?, ?, ?, ?, ?, ?)";
             try (PreparedStatement stm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 stm.setInt(1, em.getEquipmentId());
                 stm.setInt(2, em.getMaintenanceId());
                 stm.setInt(3, em.getTechnicianId());
                 stm.setString(4, em.getDescription());
+                stm.setString(5, em.getEquipmentName());
+                stm.setString(6, em.getEquipmentCode());
 
                 int rowsAffected = stm.executeUpdate();
                 try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
@@ -220,8 +223,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         validateEquipmentMaintenance(em);
 
         return executeQuery(conn -> {
-            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result, repair_price, inspection_date)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result, repair_price, inspection_date, equipment_name, equipment_code)" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement stm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 stm.setInt(1, em.getEquipmentId());
                 stm.setInt(2, em.getMaintenanceId());
@@ -229,6 +232,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 stm.setString(4, em.getDescription());
                 stm.setInt(5, em.getResult().getCode());
                 stm.setFloat(6, em.getRepairPrice());
+                stm.setString(8, em.getEquipmentName());
+                stm.setString(9, em.getEquipmentCode());
                 if (em.getInspectionDate() != null) {
                     stm.setTimestamp(7, Timestamp.valueOf(em.getInspectionDate()));
                 } else {
@@ -252,17 +257,24 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         validateEquipmentMaintenance(em);
         return executeQuery(conn -> {
             String sql = "UPDATE equipment_maintenance" +
-                    " SET equipment_id = ?, maintenance_id = ?, technician_id = ?, description = ?, result = ?, repair_price = ?, inspection_date = ? " +
-                    " WHERE id = ?";
+                    " SET equipment_id = ?, maintenance_id = ?, technician_id = ? ";
+            if (em.getResult() != null) {
+                sql+=", description = ?, result = ?, repair_price = ?, inspection_date = ? ";
+            }
+            sql+= " WHERE id = ?";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setInt(1, em.getEquipmentId());
                 stm.setInt(2, em.getMaintenanceId());
                 stm.setInt(3, em.getTechnicianId());
-                stm.setString(4, em.getDescription());
-                stm.setInt(5, em.getResult().getCode());
-                stm.setFloat(6, em.getRepairPrice());
-                stm.setTimestamp(7, Timestamp.valueOf(em.getInspectionDate()));
-                stm.setInt(8, em.getId());
+                if (em.getResult() != null) {
+                    stm.setString(4, em.getDescription());
+                    stm.setInt(5, em.getResult().getCode());
+                    stm.setFloat(6, em.getRepairPrice());
+                    stm.setTimestamp(7, Timestamp.valueOf(em.getInspectionDate()));
+                    stm.setInt(8, em.getId());
+                } else {
+                    stm.setNull(4, em.getId());
+                }
                 return stm.executeUpdate() > 0;
             }
         });
