@@ -7,6 +7,7 @@ import com.hatecode.pojo.Maintenance;
 import com.hatecode.services.MaintenanceService;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,6 +115,49 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         }
         return equipmentMaintenances;
     }
+
+    @Override
+    public List<Maintenance> getMaintenances(String kw, LocalDate fromDate, LocalDate toDate) throws SQLException {
+        if (kw == null)
+            kw = "";
+
+        List<Maintenance> res = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * FROM maintenance WHERE 1=1";
+
+            boolean hasKw = kw != null && !kw.isEmpty();
+            boolean hasDate = fromDate != null && toDate != null;
+
+            if (hasKw)
+                sql += " AND (title LIKE ? OR description LIKE ?)";
+
+            if (hasDate)
+                sql += " AND start_datetime >= ? AND end_datetime <= ?";
+
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            int index = 1;
+
+            if (hasKw) {
+                stmt.setString(index++, "%" + kw + "%");
+                stmt.setString(index++, "%" + kw + "%");
+            }
+
+            if (hasDate) {
+                stmt.setDate(index++, Date.valueOf(fromDate));
+                stmt.setDate(index++, Date.valueOf(toDate));
+            }
+
+            System.out.println(stmt);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Maintenance maintenance = extractMaintenance(rs);
+                res.add(maintenance);
+            }
+        }
+        return res;
+    }
+
 
     @Override
     public boolean addMaintenance(Maintenance maintenance) throws SQLException {
