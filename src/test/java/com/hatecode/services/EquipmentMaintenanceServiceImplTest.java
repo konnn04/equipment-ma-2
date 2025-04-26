@@ -254,6 +254,7 @@ public class EquipmentMaintenanceServiceImplTest {
         EquipmentMaintenance em = new EquipmentMaintenance(
                 999, 1, 1, 1,
                 "Non-existent record",
+                "Name",
                 Result.NEED_REPAIR,
                 50.0f,
                 now,
@@ -336,5 +337,134 @@ public class EquipmentMaintenanceServiceImplTest {
         List<EquipmentMaintenance> result = equipmentMaintenanceService.getEquipmentsMaintenanceByEMId("NonExistent", 1);
         // Assert
         assertEquals(0, result.size());
+    }
+
+    /* =============================================================================
+     * Additional test cases for getEquipmentMaintenance(String query)
+     * ========================================================================== */
+    @Test
+    void testGetEquipmentMaintenanceByQuery_NullQuery() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        // Act
+        List<EquipmentMaintenance> result = equipmentMaintenanceService.getEquipmentMaintenance((Maintenance) null);
+        // Assert
+        assertNotNull(result);
+        // Should return all records (same as no query)
+        assertEquals(4, result.size());
+    }
+
+    /* =============================================================================
+     * Additional test cases for getEquipmentMaintenance(Maintenance m)
+     * ========================================================================== */
+    @Test
+    void testGetEquipmentMaintenanceByMaintenance_NullMaintenance() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        // Act
+        List<EquipmentMaintenance> result = equipmentMaintenanceService.getEquipmentMaintenance((Maintenance)null);
+        // Assert
+        assertNotNull(result);
+        // Should return all records
+        assertEquals(4, result.size());
+    }
+
+    /* =============================================================================
+     * Additional test cases for addEquipmentMaintenanceFull
+     * ========================================================================== */
+    @Test
+    void testAddEquipmentMaintenanceFull_InvalidData() {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        // Arrange
+        EquipmentMaintenance em = new EquipmentMaintenance();
+        em.setEquipmentId(0); // Invalid ID
+        em.setMaintenanceId(3);
+        em.setTechnicianId(1);
+        em.setDescription("Invalid data test");
+        em.setResult(Result.NEED_REPAIR);
+        em.setRepairPrice(100.0f);
+        em.setInspectionDate(LocalDateTime.now());
+
+        // Act & Assert
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            equipmentMaintenanceService.addEquipmentMaintenanceFull(em);
+        });
+        assertEquals(ExceptionMessage.EQUIPMENT_MAINTENANCE_NOT_INVALID, e.getMessage());
+    }
+
+    /* =============================================================================
+     * Additional test cases for updateEquipmentMaintenance
+     * ========================================================================== */
+    @Test
+    void testUpdateEquipmentMaintenance_NullObject() {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        
+        // Act & Assert
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            equipmentMaintenanceService.updateEquipmentMaintenance(null);
+        });
+        assertEquals(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL, e.getMessage());
+    }
+
+    @Test
+    void testUpdateEquipmentMaintenance_InvalidData() {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        
+        // Arrange
+        EquipmentMaintenance em = new EquipmentMaintenance(
+            1, 0, 1, 1, // Invalid equipment_id (0)
+            "Invalid equipment ID",
+            Result.NEED_REPAIR,
+            50.0f,
+            LocalDateTime.now(),
+            LocalDateTime.now(),
+            true
+        );
+        
+        // Act & Assert
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            equipmentMaintenanceService.updateEquipmentMaintenance(em);
+        });
+        assertEquals(ExceptionMessage.EQUIPMENT_MAINTENANCE_NOT_INVALID, e.getMessage());
+    }
+
+    /* =============================================================================
+     * Additional test cases for deleteEquipmentMaintenance(int id)
+     * ========================================================================== */
+    @Test
+    void testDeleteEquipmentMaintenance_InvalidId() {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        
+        // Act & Assert
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            equipmentMaintenanceService.deleteEquipmentMaintenance(-1);
+        });
+        assertEquals(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL, e.getMessage());
+    }
+
+    /* =============================================================================
+     * Additional test cases for getEquipmentsMaintenanceByEMId
+     * ========================================================================== */
+    @Test
+    void testGetEquipmentsMaintenanceByEMId_NullKeyword() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        
+        // Act
+        List<EquipmentMaintenance> result = equipmentMaintenanceService.getEquipmentsMaintenanceByEMId(null, 1);
+        
+        // Assert
+        assertNotNull(result);
+        // Should return all equipment maintenances for maintenance ID 1
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void testGetEquipmentsMaintenanceByEMId_InvalidMaintenanceId() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        
+        // Act
+        List<EquipmentMaintenance> result = equipmentMaintenanceService.getEquipmentsMaintenanceByEMId("Regular", -1);
+        
+        // Assert
+        assertNotNull(result);
+        assertEquals(0, result.size()); // No records found for invalid ID
     }
 }

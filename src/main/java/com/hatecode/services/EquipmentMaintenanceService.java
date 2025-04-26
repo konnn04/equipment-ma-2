@@ -7,6 +7,7 @@ package com.hatecode.services;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.EquipmentMaintenance;
 import com.hatecode.pojo.Maintenance;
+import com.hatecode.pojo.User;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -19,6 +20,7 @@ public interface EquipmentMaintenanceService {
     List<EquipmentMaintenance> getEquipmentMaintenance() throws SQLException;
     List<EquipmentMaintenance> getEquipmentMaintenance(String query) throws SQLException;
     List<EquipmentMaintenance> getEquipmentMaintenance(Maintenance m)  throws SQLException;
+    public List<EquipmentMaintenance> getEquipmentMaintenance(Maintenance m, User u) throws SQLException;
     EquipmentMaintenance getEquipmentMaintenanceById(int id) throws SQLException;
     List<EquipmentMaintenance> getEquipmentsMaintenanceByEMId(String kw, int maintenanceId) throws SQLException;
     Equipment getEquipmentByEquipmentMaintenance(int id) throws SQLException;

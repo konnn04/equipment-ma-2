@@ -83,8 +83,9 @@
                                     <TableView fx:id="recordNewRepairMaintenceEquipments" prefHeight="439.0" prefWidth="617.0">
                                        <columns>
                                           <TableColumn prefWidth="74.39999084472583" text="E.Code" />
-                                          <TableColumn prefWidth="217.59999084472656" text="Description" />
-                                          <TableColumn prefWidth="144.79998779296875" text="Status" />
+                                          <TableColumn prefWidth="150.4000244140625" text="E.Name" />
+                                          <TableColumn prefWidth="75.19999694824219" text="Status" />
+                                          <TableColumn prefWidth="150.4000244140625" text="Description" />
                                        </columns>
                                     </TableView>
                                     <GridPane hgap="20.0" prefHeight="486.0" prefWidth="500.0" vgap="15.0" HBox.hgrow="ALWAYS">
@@ -112,12 +113,11 @@
                                                 <Font name="SF Pro Text Semibold" size="14.0" />
                                              </font>
                                           </Label>
-                                          <Label styleClass="" text="Time:" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="2">
+                                          <Label styleClass="" text="Price:" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="2">
                                              <font>
                                                 <Font name="SF Pro Text Semibold" size="14.0" />
                                              </font>
                                           </Label>
-                                          <ComboBox fx:id="maintenanceTimeComboBox11111" prefHeight="31.0" prefWidth="408.0" styleClass="combo-box" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
                                           <Label styleClass="" text="Description:" wrapText="true" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                                              <font>
                                                 <Font name="SF Pro Text Semibold" size="14.0" />
@@ -137,13 +137,14 @@
                                           </Label>
                                           <TextField fx:id="equipmentID" disable="true" prefHeight="42.0" prefWidth="225.0" styleClass="text-field-disabled" GridPane.columnIndex="3" />
                                           <DatePicker fx:id="inspectionDate" prefHeight="42.0" prefWidth="462.0" style="-fx-background-color: rgb(232, 232, 237);" styleClass="date-picker" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-                                          <Label styleClass="" text="Status:" GridPane.rowIndex="3">
+                                          <Label styleClass="" text="Result" GridPane.rowIndex="3">
                                              <font>
                                                 <Font name="SF Pro Text Semibold" size="14.0" />
                                              </font>
                                           </Label>
                                           <ComboBox fx:id="statusComboBox" prefHeight="31.0" prefWidth="424.0" styleClass="combo-box" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                           <TextField fx:id="equipmentMaintenanceID" disable="true" prefHeight="44.0" prefWidth="406.0" styleClass="text-field-disabled" GridPane.columnIndex="1" />
+                                          <TextField fx:id="equipmentMaintenancePrice" prefHeight="44.0" prefWidth="171.0" styleClass="text-field-disabled" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                                        </children>
                                     </GridPane>
                                  </children>

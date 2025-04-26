@@ -12,6 +12,7 @@ import java.util.List;
 public interface MaintenanceService {
     List<Maintenance> getMaintenances() throws SQLException;
     List<Maintenance> getMaintenances(String query) throws SQLException;
+    List<Maintenance> getCurrentMaintenances(String query) throws SQLException;
     List<Maintenance> getMaintenances(String query, MaintenanceStatus status)  throws SQLException;
     Maintenance getMaintenanceById(int id) throws SQLException;
     List<Maintenance> getMaintenances(String kw, LocalDate fromDate, LocalDate toDate) throws SQLException;
