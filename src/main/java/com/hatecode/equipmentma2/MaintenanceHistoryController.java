@@ -130,8 +130,13 @@ public class MaintenanceHistoryController {
 
         this.searchEquipmentTextField.setOnKeyTyped(keyEvent -> {
             pause.setOnFinished(e -> {
+                if (currentMaintenance == null) {
+                    Platform.runLater(() -> AlertBox.showError("Choose a maintenance first", "Please choose a maintenance first"));
+                    return;
+                }
+
                 try {
-                    fetchEquipmentByEMId(maintenancesTableViewTable.getSelectionModel().getSelectedItems().getFirst().getId() ,searchEquipmentTextField.getText());
+                    fetchEquipmentByEMId(currentMaintenance.getId() ,searchEquipmentTextField.getText());
                     System.out.println("Search: " + searchEquipmentTextField.getText());
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
