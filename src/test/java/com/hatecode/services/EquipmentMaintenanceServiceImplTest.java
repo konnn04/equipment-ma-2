@@ -254,6 +254,7 @@ public class EquipmentMaintenanceServiceImplTest {
         EquipmentMaintenance em = new EquipmentMaintenance(
                 999, 1, 1, 1,
                 "Non-existent record",
+                "Name",
                 Result.NEED_REPAIR,
                 50.0f,
                 now,

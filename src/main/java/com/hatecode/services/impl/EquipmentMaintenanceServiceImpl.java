@@ -28,6 +28,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 rs.getInt("equipment_id"),
                 rs.getInt("maintenance_id"),
                 rs.getInt("technician_id"),
+                rs.getString("equipmentName"),
                 rs.getString("description"),
                 rs.getInt("result") == 0 ? null : Result.fromCode(rs.getInt("result")),
                 rs.getFloat("repair_price"),
@@ -50,7 +51,11 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
     public List<EquipmentMaintenance> getEquipmentMaintenance() throws SQLException {
         return executeQuery(conn -> {
             List<EquipmentMaintenance> result = new ArrayList<>();
-            try (PreparedStatement stm = conn.prepareStatement("SELECT * FROM equipment_maintenance WHERE is_active = true")) {
+            try (PreparedStatement stm = conn.prepareStatement(
+                    "SELECT em.*, e.name AS equipmentName " +
+                            "FROM equipment_maintenance em " +
+                            "JOIN equipment e ON em.equipment_id = e.id " +
+                            "WHERE em.is_active = true")) {
                 ResultSet rs = stm.executeQuery();
                 while (rs.next()) {
                     result.add(extractEquipmentMaintenance(rs));
@@ -68,9 +73,13 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
 
         return executeQuery(conn -> {
             List<EquipmentMaintenance> result = new ArrayList<>();
-            String sql = "SELECT * FROM equipment_maintenance WHERE is_active = true AND (description LIKE ?)";
+            String sql = "SELECT em.*, e.name AS equipmentName " +
+                    "FROM equipment_maintenance em " +
+                    "JOIN equipment e ON em.equipment_id = e.id " +
+                    "WHERE em.is_active = true AND (em.description LIKE ? OR e.name LIKE ?)";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setString(1, "%" + query + "%");
+                stm.setString(2, "%" + query + "%");
                 ResultSet rs = stm.executeQuery();
                 while (rs.next()) {
                     result.add(extractEquipmentMaintenance(rs));
@@ -88,9 +97,45 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
 
         return executeQuery(conn -> {
             List<EquipmentMaintenance> result = new ArrayList<>();
-            String sql = "SELECT * FROM equipment_maintenance WHERE maintenance_id = ? AND is_active = true";
+            String sql = "SELECT em.*, e.name AS equipmentName " +
+                    "FROM equipment_maintenance em " +
+                    "JOIN equipment e ON em.equipment_id = e.id " +
+                    "WHERE em.maintenance_id = ? AND em.is_active = true";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setInt(1, m.getId());
+                ResultSet rs = stm.executeQuery();
+                while (rs.next()) {
+                    result.add(extractEquipmentMaintenance(rs));
+                }
+            }
+            return result;
+        });
+    }
+
+    @Override
+    public List<EquipmentMaintenance> getEquipmentMaintenance(Maintenance m,User u) throws SQLException {
+        if (m == null || m.getId() <= 0) {
+            return getEquipmentMaintenance();
+        }
+
+        return executeQuery(conn -> {
+            List<EquipmentMaintenance> result = new ArrayList<>();
+            String sql = "SELECT em.*, e.name AS equipmentName " +
+                    "FROM equipment_maintenance em " +
+                    "JOIN equipment e ON em.equipment_id = e.id " +
+                    "WHERE em.maintenance_id = ? AND em.is_active = true";
+
+            if(u != null && !u.getRole().equals(Role.ADMIN)){
+                sql += " AND em.technician_id = ?";
+            }
+
+            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+                stm.setInt(1, m.getId());
+
+                if(u != null && !u.getRole().equals(Role.ADMIN)){
+                    stm.setInt(2,u.getId());
+                }
+
                 ResultSet rs = stm.executeQuery();
                 while (rs.next()) {
                     result.add(extractEquipmentMaintenance(rs));
@@ -107,7 +152,10 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         }
         return executeQuery(conn -> {
             EquipmentMaintenance em = null;
-            String sql = "SELECT * FROM equipment_maintenance WHERE id = ? AND is_active = true";
+            String sql = "SELECT em.*, e.name AS equipmentName " +
+                    "FROM equipment_maintenance em " +
+                    "JOIN equipment e ON em.equipment_id = e.id " +
+                    "WHERE em.id = ? AND em.is_active = true";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setInt(1, id);
                 ResultSet rs = stm.executeQuery();
@@ -247,7 +295,10 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
     public List<EquipmentMaintenance> getEquipmentsMaintenanceByEMId(String kw, int maintenanceId) throws SQLException {
         return executeQuery(conn -> {
             List<EquipmentMaintenance> maintenanceEquipments = new ArrayList<>();
-            String sql = "SELECT em.* FROM equipment_maintenance em JOIN equipment e ON em.equipment_id = e.id WHERE em.maintenance_id = ? AND em.is_active = true";
+            String sql = "SELECT em.*, e.name AS equipmentName " +
+                    "FROM equipment_maintenance em " +
+                    "JOIN equipment e ON em.equipment_id = e.id " +
+                    "WHERE em.maintenance_id = ? AND em.is_active = true";
             if (kw != null && !kw.isEmpty()) {
                 sql += " AND (e.name LIKE ? OR em.description LIKE ?)";
             }

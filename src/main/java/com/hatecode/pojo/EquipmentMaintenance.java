@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class EquipmentMaintenance {
     private int id;
     private int equipmentId;
+    private String equipmentName;
     private int maintenanceId;
     private int technicianId;
     private String description;
@@ -31,6 +32,7 @@ public class EquipmentMaintenance {
             int equipmentId,
             int maintenanceId,
             int technicianId,
+            String equipmentName,
             String description,
             Result result,
             float repairPrice,
@@ -41,6 +43,7 @@ public class EquipmentMaintenance {
         this.equipmentId = equipmentId;
         this.maintenanceId = maintenanceId;
         this.technicianId = technicianId;
+        this.equipmentName = equipmentName;
         this.description = description;
         this.result = result;
         this.repairPrice = repairPrice;
@@ -159,5 +162,13 @@ public class EquipmentMaintenance {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public String getEquipmentName() {
+        return equipmentName;
+    }
+
+    public void setEquipmentName(String equipmentName) {
+        this.equipmentName = equipmentName;
     }
 }
