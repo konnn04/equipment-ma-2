@@ -10,6 +10,8 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class MaintenanceServiceImpl implements MaintenanceService {
     public static Maintenance extractMaintenance(ResultSet rs) throws SQLException {
@@ -362,16 +364,15 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             "SELECT COUNT(*) FROM maintenance " +
             "WHERE is_active = true AND " +
             "(" +
-            "   (? BETWEEN start_datetime AND end_datetime) OR " +
-            "   (? BETWEEN start_datetime AND end_datetime) OR " +
-            "   (start_datetime BETWEEN ? AND ?) OR " +
-            "   (end_datetime BETWEEN ? AND ?)" +
+            "   (start_datetime <= ? AND end_datetime >= ?) OR " + // Kết thúc mới >= bắt đầu hiện có
+            "   (start_datetime <= ? AND end_datetime >= ?) OR " + // Bắt đầu mới <= kết thúc hiện có
+            "   (start_datetime >= ? AND end_datetime <= ?)" +     // Lịch hiện có nằm trong lịch mới
             ")";
         
         try (Connection conn = JdbcUtils.getConn();
              PreparedStatement checkStmt = conn.prepareStatement(checkOverlapSql)) {
-            checkStmt.setTimestamp(1, Timestamp.valueOf(maintenance.getStartDateTime()));
-            checkStmt.setTimestamp(2, Timestamp.valueOf(maintenance.getEndDateTime()));
+            checkStmt.setTimestamp(1, Timestamp.valueOf(maintenance.getEndDateTime()));
+            checkStmt.setTimestamp(2, Timestamp.valueOf(maintenance.getStartDateTime()));
             checkStmt.setTimestamp(3, Timestamp.valueOf(maintenance.getStartDateTime()));
             checkStmt.setTimestamp(4, Timestamp.valueOf(maintenance.getEndDateTime()));
             checkStmt.setTimestamp(5, Timestamp.valueOf(maintenance.getStartDateTime()));
@@ -388,7 +389,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
      * Kiểm tra xem có lịch bảo trì nào chồng chéo không (trừ chính nó)
      */
     private void checkOverlappingMaintenancesForUpdate(Maintenance maintenance) throws SQLException {
-        String checkOverlapSql = 
+        // Loại trừ maintenance hiện tại ra khỏi kiểm tra
+        String checkOverlapSql =
             "SELECT COUNT(*) FROM maintenance " +
             "WHERE is_active = true AND id != ? AND " +
             "(" +
@@ -411,6 +413,62 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             ResultSet rs = checkStmt.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {
                 throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_OVERLAP);
+            }
+        }
+    }
+
+    /**
+     * Kiểm tra xem có lịch bảo trì nào chồng chéo cho cùng thiết bị không
+     */
+    private void checkOverlappingMaintenancesForEquipment(Maintenance maintenance, List<EquipmentMaintenance> equipmentMaintenances) throws SQLException {
+        if (equipmentMaintenances == null || equipmentMaintenances.isEmpty()) {
+            return;
+        }
+
+        // Lấy danh sách ID thiết bị cho lịch bảo trì mới
+        List<Integer> equipmentIds = equipmentMaintenances.stream()
+                .map(EquipmentMaintenance::getEquipmentId)
+                .collect(Collectors.toList());
+        
+        // Nếu không có thiết bị nào, không cần kiểm tra
+        if (equipmentIds.isEmpty()) {
+            return;
+        }
+
+        // Tạo placeholders cho câu truy vấn SQL IN clause
+        String placeholders = String.join(",", Collections.nCopies(equipmentIds.size(), "?"));
+        
+        String checkOverlapSql = 
+            "SELECT COUNT(*) FROM maintenance m " +
+            "JOIN equipment_maintenance em ON m.id = em.maintenance_id " +
+            "WHERE m.is_active = true AND em.equipment_id IN (" + placeholders + ") AND " +
+            "(" +
+            "   (? BETWEEN m.start_datetime AND m.end_datetime) OR " +
+            "   (? BETWEEN m.start_datetime AND m.end_datetime) OR " +
+            "   (m.start_datetime BETWEEN ? AND ?) OR " +
+            "   (m.end_datetime BETWEEN ? AND ?)" +
+            ")";
+        
+        try (Connection conn = JdbcUtils.getConn();
+             PreparedStatement checkStmt = conn.prepareStatement(checkOverlapSql)) {
+            
+            // Đặt các tham số thiết bị
+            int paramIndex = 1;
+            for (Integer equipmentId : equipmentIds) {
+                checkStmt.setInt(paramIndex++, equipmentId);
+            }
+            
+            // Đặt các tham số thời gian
+            checkStmt.setTimestamp(paramIndex++, Timestamp.valueOf(maintenance.getStartDateTime()));
+            checkStmt.setTimestamp(paramIndex++, Timestamp.valueOf(maintenance.getEndDateTime()));
+            checkStmt.setTimestamp(paramIndex++, Timestamp.valueOf(maintenance.getStartDateTime()));
+            checkStmt.setTimestamp(paramIndex++, Timestamp.valueOf(maintenance.getEndDateTime()));
+            checkStmt.setTimestamp(paramIndex++, Timestamp.valueOf(maintenance.getStartDateTime()));
+            checkStmt.setTimestamp(paramIndex++, Timestamp.valueOf(maintenance.getEndDateTime()));
+            
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_TIME_CONFLICT);
             }
         }
     }
