@@ -2,8 +2,11 @@ package com.hatecode.utils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FormatDate {
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     public static String formatDateTime(LocalDateTime dateTime) {
         if (dateTime == null) {
             return "";

@@ -4,7 +4,9 @@ import com.hatecode.pojo.EquipmentMaintenance;
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.pojo.MaintenanceStatus;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface MaintenanceService {
@@ -12,6 +14,7 @@ public interface MaintenanceService {
     List<Maintenance> getMaintenances(String query) throws SQLException;
     List<Maintenance> getMaintenances(String query, MaintenanceStatus status)  throws SQLException;
     Maintenance getMaintenanceById(int id) throws SQLException;
+    List<Maintenance> getMaintenances(String kw, LocalDate fromDate, LocalDate toDate) throws SQLException;
 
     List<EquipmentMaintenance> getEquipmentMaintenancesByMaintenance(int id) throws SQLException;
 

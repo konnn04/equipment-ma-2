@@ -11,6 +11,7 @@ import com.hatecode.services.EquipmentMaintenanceService;
 import com.hatecode.services.EquipmentService;
 import com.hatecode.services.MaintenanceService;
 import com.hatecode.services.UserService;
+import com.hatecode.utils.FormatDate;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -22,6 +23,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+
+import static com.hatecode.utils.FormatDate.DATE_FORMATTER;
 
 public class MaintenanceHistoryController {
     MaintenanceService maintenanceService = new MaintenanceServiceImpl();
@@ -68,7 +71,7 @@ public class MaintenanceHistoryController {
         maintenanceStartDateColumn.setCellValueFactory(cellData -> {
             Maintenance maintenance = cellData.getValue();
             if (maintenance.getStartDateTime() != null) {
-                return new SimpleStringProperty(maintenance.getStartDateTime().toString());
+                return new SimpleStringProperty(DATE_FORMATTER.format(maintenance.getStartDateTime()));
             } else {
                 return new SimpleStringProperty("Not found");
             }
@@ -105,6 +108,7 @@ public class MaintenanceHistoryController {
     }
 
     private void initSearchFields(){
+
         PauseTransition pause = new PauseTransition(javafx.util.Duration.millis(500));
 
         this.searchMaintenanceTextField.setOnKeyTyped(keyEvent -> {
@@ -128,6 +132,32 @@ public class MaintenanceHistoryController {
         });
 
         // Init date picker
+        fromDatePicker.setConverter(new javafx.util.StringConverter<>() {
+
+            @Override
+            public String toString(LocalDate date) {
+                return date != null ? DATE_FORMATTER.format(date) : "";
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                return string != null && !string.isEmpty() ? LocalDate.parse(string, DATE_FORMATTER) : null;
+            }
+        });
+
+        toDatePicker.setConverter(new javafx.util.StringConverter<>() {
+
+            @Override
+            public String toString(LocalDate date) {
+                return date != null ? DATE_FORMATTER.format(date) : "";
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                return string != null && !string.isEmpty() ? LocalDate.parse(string, DATE_FORMATTER) : null;
+            }
+        });
+
         this.startDateTextField.setText(LocalDate.now().toString());
         this.endDateTextField.setText(LocalDate.now().toString());
 
@@ -153,14 +183,14 @@ public class MaintenanceHistoryController {
         try {
             List<Maintenance> maintenances;
             kw = kw == null ? "" : kw.trim();
-            Date fromDate = this.fromDatePicker.getValue() != null ? java.sql.Date.valueOf(this.fromDatePicker.getValue()) : null;
-            Date toDate = this.toDatePicker.getValue() != null ? java.sql.Date.valueOf(this.toDatePicker.getValue().plusDays(1)) : null;
+            LocalDate fromDate = this.fromDatePicker.getValue() != null ? this.fromDatePicker.getValue() : null;
+            LocalDate toDate = this.toDatePicker.getValue() != null ? this.toDatePicker.getValue().plusDays(1) : null;
 
             if (fromDate != null && toDate == null ) {
-                toDate = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
+                toDate = LocalDate.now().plusDays(1);
             }
 
-            maintenances = this.maintenanceService.getMaintenances(kw);
+            maintenances = this.maintenanceService.getMaintenances(kw, fromDate, toDate);
 
             this.maintenancesTableViewTable.setItems(FXCollections.observableList(maintenances));
 
