@@ -6,10 +6,15 @@ import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.EquipmentMaintenanceService;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceService {
+    private static final Logger LOGGER = Logger.getLogger(EquipmentMaintenanceServiceImpl.class.getName());
+
     // Generic method to execute database operations with proper connection handling
     private <T> T executeQuery(ThrowingFunction<Connection, T> dbOperation) throws SQLException {
         Connection conn = JdbcUtils.getConn();
@@ -328,6 +333,70 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             }
             return maintenanceEquipments;
         });
+    }
+
+    public boolean updateEquipmentMaintenanceResult(int equipmentMaintenanceId, Result result, 
+        String description, float repairPrice) throws SQLException {
+    
+        // Validate input
+        if (equipmentMaintenanceId <= 0) {
+            throw new IllegalArgumentException("Invalid equipment maintenance ID");
+        }
+        
+        // Get current equipment maintenance record
+        EquipmentMaintenance em = getEquipmentMaintenanceById(equipmentMaintenanceId);
+        if (em == null) {
+            throw new IllegalArgumentException("Equipment maintenance record not found: " + equipmentMaintenanceId);
+        }
+        
+        // Update the record with new result information
+        em.setResult(result);
+        em.setDescription(description);
+        em.setRepairPrice(repairPrice);
+        em.setInspectionDate(LocalDateTime.now());
+        
+        // Save to database
+        boolean updated = updateEquipmentMaintenance(em);
+        
+        // If the update was successful and the maintenance is completed,
+        // update the equipment status accordingly
+        if (updated) {
+            try {
+                // Get the parent maintenance
+                Maintenance maintenance = new MaintenanceServiceImpl().getMaintenanceById(em.getMaintenanceId());
+                
+                // Only update equipment status if maintenance is completed
+                if (maintenance != null && maintenance.getMaintenanceStatus() == MaintenanceStatus.COMPLETED) {
+                    // Get the equipment
+                    Equipment equipment = new EquipmentServiceImpl().getEquipmentById(em.getEquipmentId());
+                    
+                    if (equipment != null) {
+                        // Determine new status based on result
+                        Status newStatus;
+                        
+                        if (result == null || result == Result.NORMALLY || result == Result.NEED_REPAIR) {
+                            newStatus = Status.ACTIVE;
+                        } else if (result == Result.BROKEN || result == Result.NEEDS_DISPOSAL) {
+                            newStatus = Status.BROKEN;
+                        } else {
+                            // Keep current status for unhandled results
+                            newStatus = equipment.getStatus();
+                        }
+                        
+                        // Update equipment status if changed
+                        if (equipment.getStatus() != newStatus) {
+                            equipment.setStatus(newStatus);
+                            new EquipmentServiceImpl().updateEquipment(equipment);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Log error but don't fail the operation
+                LOGGER.log(Level.WARNING, "Error updating equipment status after maintenance result update", e);
+            }
+        }
+        
+        return updated;
     }
 
     // Functional interface for SQL operations that can throw SQLException

@@ -47,23 +47,24 @@ CREATE TABLE IF NOT EXISTS `Maintenance` (
                                              `status` int NOT NULL DEFAULT 1,
                                              `is_active` boolean NOT NULL DEFAULT '1',
                                              `created_at` timestamp NOT NULL default current_timestamp,
+                                            `last_status_check` timestamp default null,
                                              PRIMARY KEY (`id`)
 );
 
 CREATE TABLE IF NOT EXISTS `Equipment_Maintenance` (
-                                                       `id` int AUTO_INCREMENT NOT NULL UNIQUE,
-                                                       `equipment_id` int NOT NULL,
-                                                       `equipment_name` nvarchar(255) NOT NULL,
-                                                        `equipment_code` nvarchar(255) NOT NULL,
-                                                       `maintenance_id` int NOT NULL,
-                                                       `technician_id` int NOT NULL,
-                                                       `description` text,
-                                                       `result` int,
-                                                       `repair_price` int CHECK (repair_price >= 0),
-                                                       `inspection_date` timestamp,
-                                                       `is_active` boolean NOT NULL DEFAULT '1',
-                                                       `created_at` timestamp NOT NULL default current_timestamp,
-                                                       PRIMARY KEY (`id`)
+    `id` int AUTO_INCREMENT NOT NULL UNIQUE,
+    `equipment_id` int NOT NULL,
+    `equipment_name` nvarchar(255) NOT NULL,
+    `equipment_code` nvarchar(255) NOT NULL,
+    `maintenance_id` int NOT NULL,
+    `technician_id` int NOT NULL,
+    `description` text,
+    `result` int,
+    `repair_price` int CHECK (repair_price >= 0),
+    `inspection_date` timestamp,
+    `is_active` boolean NOT NULL DEFAULT '1',
+    `created_at` timestamp NOT NULL default current_timestamp,
+    PRIMARY KEY (`id`)
 );
 
 CREATE TABLE IF NOT EXISTS `Maintenance_Repair_Suggestion` (

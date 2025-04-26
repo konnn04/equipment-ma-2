@@ -4,6 +4,7 @@ import com.hatecode.pojo.*;
 import com.hatecode.security.Permission;
 
 import com.hatecode.utils.AlertBox;
+import com.hatecode.utils.MaintenanceStatusScheduler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -36,6 +37,7 @@ public class MainController implements Initializable {
     @FXML private Label UIUsernameTextField;
     @FXML private Label UIRoleTextField;
     @FXML private Button logoutButton;
+    @FXML private Button updateStatusesButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -48,6 +50,30 @@ public class MainController implements Initializable {
             userManagerTab.setDisable(!App.hasPermission(Permission.USER_VIEW));
             // Load tab đầu tiên khi ứng dụng khởi động
             loadTab(tabPane.getSelectionModel().getSelectedItem());
+            
+            updateStatusesButton.setOnAction(event -> {
+                try {
+                    // Show a confirmation dialog
+                    boolean confirm = AlertBox.showConfirmation(
+                        "Update Maintenance Statuses",
+                        "Do you want to update all maintenance and equipment statuses now?"
+                    );
+                    
+                    if (confirm) {
+                        // Run the status update immediately
+                        MaintenanceStatusScheduler.getInstance().runUpdate();
+                        
+                        // Show success message
+                        AlertBox.showInfo(
+                            "Status Update",
+                            "Maintenance and equipment statuses have been updated successfully."
+                        );
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Error updating statuses", e);
+                    AlertBox.showError("Error", "Failed to update statuses: " + e.getMessage());
+                }
+            });
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error initializing application", e);
             showErrorDialog("Application Error", 

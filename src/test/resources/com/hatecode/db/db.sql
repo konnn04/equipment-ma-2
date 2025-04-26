@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `Maintenance` (
                                              `status` int NOT NULL DEFAULT 1,
                                              `is_active` boolean NOT NULL DEFAULT '1',
                                              `created_at` timestamp NOT NULL default current_timestamp,
+                                             `last_status_check` timestamp default null,
                                              PRIMARY KEY (`id`)
 );
 

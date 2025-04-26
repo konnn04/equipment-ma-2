@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import com.hatecode.security.Permission;
 import com.hatecode.security.SecurityManager;
+import com.hatecode.utils.MaintenanceStatusScheduler;
 
 public class App extends Application {
     private static User currentUser;
@@ -32,32 +33,49 @@ public class App extends Application {
         return SecurityManager.hasPermission(currentUser, permission);
     }
 
+    @Override
+    public void start(Stage stage) {
+        try {
+            User admin = UserServiceImpl.createSuperUser();
+            // bypass login
+            setCurrentUser(admin);
+            primaryStage = stage;
 
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+            stage.setTitle("Equipment Management System");
+            //        stage.setResizable(false);
+
+            Image appIcon = new Image(App.class.getResourceAsStream("/com/hatecode/assets/app-icon.png"));
+            stage.getIcons().add(appIcon);
+
+            stage.setScene(scene);
+            stage.show();
+
+            stage.setOnCloseRequest(event -> {
+                event.consume(); // Prevent default close operation
+                showExitConfirmation();
+            });
+
+            stage.show();
+
+            // Start the maintenance status scheduler
+            MaintenanceStatusScheduler.getInstance().start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
-    public void start(Stage stage) throws IOException, SQLException {
-        User admin = UserServiceImpl.createSuperUser();
-        // bypass login
-        setCurrentUser(admin);
-        primaryStage = stage;
+    public void stop() {
+        try {
+            // Shutdown the scheduler gracefully when the application closes
+            MaintenanceStatusScheduler.getInstance().shutdown();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Equipment Management System");
-//        stage.setResizable(false);
-
-        Image appIcon = new Image(App.class.getResourceAsStream("/com/hatecode/assets/app-icon.png"));
-        stage.getIcons().add(appIcon);
-
-        stage.setScene(scene);
-        stage.show();
-
-        stage.setOnCloseRequest(event -> {
-            event.consume(); // Prevent default close operation
-            showExitConfirmation();
-        });
-
-        stage.show();
+            // ... any other cleanup
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void showExitConfirmation() {
