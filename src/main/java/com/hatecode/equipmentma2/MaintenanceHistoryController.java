@@ -55,6 +55,8 @@ public class MaintenanceHistoryController {
     @FXML
     TextField priceTextField;
     @FXML
+    TextField totalPriceTextField;
+    @FXML
     TextField maintenanceTypeTextField;
     @FXML
     TextField searchMaintenanceTextField;
@@ -272,6 +274,9 @@ public class MaintenanceHistoryController {
                 try {
                     currentMaintenance = newSelection;
                     fetchEquipmentByEMId(newSelection.getId(), null);
+
+                    totalPriceTextField.setText(String.valueOf(equipmentMaintainanceService.getTotalPriceEquipmentMaintenance(currentMaintenance.getId())));
+
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
