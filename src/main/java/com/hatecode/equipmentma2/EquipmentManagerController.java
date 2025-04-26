@@ -18,12 +18,18 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EquipmentManagerController {
     // Services
@@ -61,6 +67,11 @@ public class EquipmentManagerController {
     @FXML private Button saveEquipmentButton;
     @FXML private Button cancelEquipmentButton;
     @FXML private Button deleteEquipmentButton;
+
+    // Add these as class fields
+    private Timeline searchDebounceTimer;
+    private final int SEARCH_DELAY_MS = 500; // 500ms delay
+    private static final Logger LOGGER = Logger.getLogger(EquipmentManagerController.class.getName());
 
     /**
      * Initialize the controller
@@ -175,9 +186,25 @@ public class EquipmentManagerController {
     }
 
     /**
-     * Set up all event handlers
+     * Set up all event handlers with debouncing for search
      */
     private void setupEventHandlers() {
+        // Initialize the search debounce timer
+        searchDebounceTimer = new Timeline(
+            new KeyFrame(Duration.millis(SEARCH_DELAY_MS), event -> {
+                safeExecute(this::refreshEquipmentData);
+            })
+        );
+        searchDebounceTimer.setCycleCount(1);
+
+        // Search field listener with debounce
+        equipmentQueryTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            // Reset the timer every time the text changes
+            searchDebounceTimer.stop();
+            // Start the timer again
+            searchDebounceTimer.play();
+        });
+
         // Table selection listener
         equipmentTable.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
@@ -277,6 +304,7 @@ public class EquipmentManagerController {
         deleteEquipmentButton.setVisible(false);
         saveEquipmentButton.setVisible(true);
         modeComboBox.setVisible(false);
+        changeEquipmentImageButton.setVisible(true);
         modeLabel.setText("Adding ");
         
         // Clear form fields
@@ -344,21 +372,21 @@ public class EquipmentManagerController {
                 AlertBox.showError("Add Equipment", "Please fill all required fields");
                 return;
             }
-
-            // Create new equipment
             Equipment newEquipment = new Equipment(
-                equipmentCodeTextField.getText(),
-                equipmentNameTextField.getText(),
-                Status.ACTIVE,
-                equipmentCategoryComboBox.getSelectionModel().getSelectedItem().getId(),
-                uploadImage.getId(),
-                Integer.parseInt(regularMaintenanceTimeTextField.getText()),
-                equipmentDescriptionTextField.getText()
+                    equipmentCodeTextField.getText(),
+                    equipmentNameTextField.getText(),
+                    Status.ACTIVE,
+                    equipmentCategoryComboBox.getSelectionModel().getSelectedItem().getId(),
+                    Integer.parseInt(regularMaintenanceTimeTextField.getText()),
+                    equipmentDescriptionTextField.getText()
             );
-            
-            // Save to database
-            equipmentService.addEquipment(newEquipment);
-            
+            // Create new equipment
+            if (uploadImage != null) {
+                equipmentService.addEquipment(newEquipment, uploadImage);
+            } else {
+                equipmentService.addEquipment(newEquipment);
+            }
+
             // Show success and refresh
             AlertBox.showConfirmation("Add Equipment", "Equipment added successfully!");
             refreshEquipmentData();
@@ -452,27 +480,59 @@ public class EquipmentManagerController {
     }
 
     /**
-     * Display equipment details in the form
+     * Display equipment details in the form with async image loading
      */
     private void displayEquipmentDetails(Equipment equipment) throws SQLException {
+        // Reset image changed flag
         isImageChanged = false;
+        
+        // Display text data immediately
         equipmentIDTextField.setText(String.valueOf(equipment.getId()));
         equipmentCodeTextField.setText(equipment.getCode());
         equipmentNameTextField.setText(equipment.getName());
         equipmentCategoryComboBox.getSelectionModel().select(
-        categoryService.getCategoryById(equipment.getCategoryId()));
+            categoryService.getCategoryById(equipment.getCategoryId()));
         statusEquipmentText.setText(equipment.getStatus().getDescription());
         equipmentDescriptionTextField.setText(equipment.getDescription());
         lastMaintenanceDateTextField.setText(equipment.getLastMaintenanceTime().toString());
         regularMaintenanceTimeTextField.setText(String.valueOf(equipment.getRegularMaintenanceDay()));
-
-        // Load image
-        Image image = imageService.getImageById(equipment.getImageId());
-        if (image != null) {
-            equipmentImage.setImage(new ImageView(image.getPath()).getImage());
-        } else {
-            equipmentImage.setImage(null);
-        }
+        
+        // Clear previous image while loading
+        equipmentImage.setImage(null);
+        
+        // Load image asynchronously
+        Task<javafx.scene.image.Image> imageLoadTask = new Task<>() {
+            @Override
+            protected javafx.scene.image.Image call() throws Exception {
+                try {
+                    Image imageData = imageService.getImageById(equipment.getImageId());
+                    if (imageData != null) {
+                        return new javafx.scene.image.Image(imageData.getPath(), true); // true enables background loading
+                    }
+                    return null;
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Failed to load image: " + e.getMessage(), e);
+                    return null;
+                }
+            }
+        };
+        
+        // Set up callbacks for when image is loaded
+        imageLoadTask.setOnSucceeded(event -> {
+            javafx.scene.image.Image loadedImage = imageLoadTask.getValue();
+            Platform.runLater(() -> {
+                if (loadedImage != null) {
+                    equipmentImage.setImage(loadedImage);
+                }
+            });
+        });
+        
+        imageLoadTask.setOnFailed(event -> {
+            LOGGER.log(Level.WARNING, "Image loading failed", imageLoadTask.getException());
+        });
+        
+        // Start image loading in background
+        new Thread(imageLoadTask).start();
     }
 
     /**
@@ -554,7 +614,10 @@ public class EquipmentManagerController {
             handleException(e, "Database operation failed");
         }
     }
-    
+
+    public void refreshData() {
+    }
+
     /**
      * Functional interface for SQL operations
      */

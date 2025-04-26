@@ -257,7 +257,7 @@ public class RecordNewRepairManagerController {
         }
     }
 
-    private void refreshData() throws SQLException {
+    void refreshData() throws SQLException {
         if (currentMaintenance != null) {
             // Làm mới danh sách thiết bị bảo trì
             List<EquipmentMaintenance> updatedList =
@@ -266,6 +266,16 @@ public class RecordNewRepairManagerController {
 
             // Làm mới danh sách bảo trì
             loadMaintenancesData(recordNewRepairSearch.getText());
+        }
+    }
+
+    public void init() {
+        try {
+            loadColumnMaintenance();
+            loadColumnEquipmentMaintenance();
+            loadMaintenancesData("");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

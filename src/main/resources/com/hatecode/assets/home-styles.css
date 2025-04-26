@@ -442,3 +442,20 @@
     -fx-opacity: 1.0;
 }
 
+.notification-button {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+}
+
+.notification-button:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.notification-badge {
+    -fx-background-color: red;
+    -fx-text-fill: white;
+    -fx-background-radius: 100;
+    -fx-padding: 2 6;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}

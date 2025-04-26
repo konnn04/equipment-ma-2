@@ -467,4 +467,20 @@ public class UserManagerController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+    public void refreshData() {
+
+    }
+
+    public void init() {
+        try {
+            loadColumn();
+            loadRole();
+            loadUsers(null, 0);
+            setupHandler();
+            setupDetailForm();
+        } catch (SQLException e) {
+            showErrorAlert("Error", "Database Error", e.getMessage());
+        }
+    }
 }

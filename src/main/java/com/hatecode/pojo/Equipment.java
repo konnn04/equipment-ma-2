@@ -101,6 +101,15 @@ public class Equipment {
         this.isActive = isActive;
     }
 
+    public Equipment(String code, String name, Status status, int categoryId, int regularMaintenanceDay, String description) {
+        this.code = code;
+        this.name = name;
+        this.status = status;
+        this.categoryId = categoryId;
+        this.regularMaintenanceDay = regularMaintenanceDay;
+        this.description = description;
+    }
+
     public int getId() {
         return id;
     }

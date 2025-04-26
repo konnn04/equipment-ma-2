@@ -112,6 +112,10 @@ public class MaintenanceManagerController {
         this.userService = new UserServiceImpl();
     }
 
+    public void refreshData() {
+
+    }
+
     // Operation types for maintenance operations
     public enum OperationType {
         CREATE, UPDATE, DELETE

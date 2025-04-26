@@ -4,6 +4,7 @@ import com.hatecode.pojo.Role;
 import com.hatecode.pojo.User;
 import com.hatecode.services.UserService;
 import com.hatecode.services.impl.UserServiceImpl;
+import com.hatecode.utils.MaintenanceCheckScheduler;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -61,6 +62,9 @@ public class App extends Application {
 
             // Start the maintenance status scheduler
             MaintenanceStatusScheduler.getInstance().start();
+            
+            // Start maintenance check scheduler
+            MaintenanceCheckScheduler.getInstance().start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,10 +73,10 @@ public class App extends Application {
     @Override
     public void stop() {
         try {
-            // Shutdown the scheduler gracefully when the application closes
+            // Shutdown schedulers gracefully
+            MaintenanceCheckScheduler.getInstance().shutdown();
             MaintenanceStatusScheduler.getInstance().shutdown();
 
-            // ... any other cleanup
         } catch (Exception e) {
             e.printStackTrace();
         }

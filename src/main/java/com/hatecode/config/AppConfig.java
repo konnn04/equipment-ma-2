@@ -19,4 +19,8 @@ public class AppConfig {
     // Email configuration
     public static final String EMAIL_USERNAME = dotenv.get("EMAIL_USERNAME");
     public static final String EMAIL_PASSWORD = dotenv.get("EMAIL_PASSWORD");
+
+    // Number day to warn before maintenance
+    public static final int NUMBER_DAY_TO_WARN_BEFORE_MAINTENANCE = 3;
+    // Number day to warn before maintenance
 }
