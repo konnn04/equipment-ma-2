@@ -241,18 +241,18 @@ public class RecordNewRepairManagerController {
         if (success) {
             // Hiển thị thông báo thành công
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Thành công");
-            alert.setHeaderText("Cập nhật thành công");
-            alert.setContentText("Thông tin bảo trì đã được cập nhật");
+            alert.setTitle("Success");
+            alert.setHeaderText("Updated successfully");
+            alert.setContentText("Maintenance equipment information was updated successfully.");
             alert.showAndWait();
 
             // Làm mới dữ liệu
             refreshData();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
-            alert.setHeaderText("Không thể cập nhật");
-            alert.setContentText("Đã xảy ra lỗi khi cập nhật thông tin bảo trì");
+            alert.setTitle("Error");
+            alert.setHeaderText("An error occurred while updating the maintenance equipment.");
+            alert.setContentText("");
             alert.showAndWait();
         }
     }
