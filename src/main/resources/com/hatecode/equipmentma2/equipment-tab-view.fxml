@@ -40,9 +40,9 @@
                                  </font>
                               </Label>
                               <TextField fx:id="equipmentQueryTextField" promptText="Search equipment..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" />
-                              <HBox alignment="BOTTOM_LEFT" prefHeight="31.0" prefWidth="349.0" spacing="10.0" VBox.vgrow="ALWAYS">
+                              <HBox alignment="TOP_CENTER" fillHeight="false" prefHeight="31.0" prefWidth="349.0" spacing="10.0" VBox.vgrow="NEVER">
                                  <children>
-                                    <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                    <HBox fillHeight="false" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                                        <children>
                                           <Label prefHeight="31.0" prefWidth="68.0" styleClass="" text="Filter by" HBox.hgrow="NEVER">
                                              <font>
@@ -52,7 +52,7 @@
                                           <ComboBox fx:id="typeFilterComboBox" prefHeight="31.0" prefWidth="159.0" promptText="Select" style="-fx-background-color: rgb(232, 232, 237);" HBox.hgrow="NEVER" />
                                        </children>
                                     </HBox>
-                                    <Button fx:id="addEquipmentButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="primary-button" text="New" />
+                                    <Button fx:id="addEquipmentButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="primary-button" text="New" />
                                  </children>
                               </HBox>
                               <ComboBox fx:id="valueFilterComboBox" prefHeight="26.0" prefWidth="1246.0" promptText="All" style="-fx-background-color: rgb(232, 232, 237);" styleClass="combo-box" />
