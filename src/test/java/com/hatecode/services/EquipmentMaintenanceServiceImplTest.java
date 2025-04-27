@@ -270,6 +270,70 @@ public class EquipmentMaintenanceServiceImplTest {
         assertFalse(result);
     }
 
+    /* =============================================================================
+     * Test updateEquipmentMaintenanceResult method
+     * ========================================================================== */
+    @Test
+    void testUpdateEquipmentMaintenanceResult_Success() throws SQLException {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        
+        // Arrange
+        int equipmentMaintenanceId = 1; // Sử dụng ID đã tồn tại trong test data
+        Result result = Result.NORMALLY;
+        String description = "Updated via result method";
+        float repairPrice = 126f;
+        
+        // Act
+        boolean updated = equipmentMaintenanceService.updateEquipmentMaintenanceResult(
+            equipmentMaintenanceId, result, description, repairPrice);
+        
+        // Assert
+        assertTrue(updated);
+        
+        // Verify the update
+        EquipmentMaintenance em = equipmentMaintenanceService.getEquipmentMaintenanceById(equipmentMaintenanceId);
+        assertNotNull(em);
+        assertEquals(Result.NORMALLY, em.getResult());
+        assertEquals(description, em.getDescription());
+        assertEquals(repairPrice, em.getRepairPrice());
+        assertNotNull(em.getInspectionDate());
+    }
+    
+    @Test
+    void testUpdateEquipmentMaintenanceResult_InvalidId() {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        
+        // Arrange
+        int invalidId = -1;
+        Result result = Result.NORMALLY;
+        String description = "Invalid ID test";
+        float repairPrice = 50.0f;
+        
+        // Act & Assert
+        Exception e = assertThrows(IllegalArgumentException.class, () ->
+            equipmentMaintenanceService.updateEquipmentMaintenanceResult(
+                invalidId, result, description, repairPrice)
+        );
+        assertEquals("Invalid equipment maintenance ID", e.getMessage());
+    }
+    
+    @Test
+    void testUpdateEquipmentMaintenanceResult_NotFound() {
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        
+        // Arrange
+        int nonExistentId = 999;
+        Result result = Result.NORMALLY;
+        String description = "Non-existent ID test";
+        float repairPrice = 50.0f;
+        
+        // Act & Assert
+        Exception e = assertThrows(IllegalArgumentException.class, () ->
+            equipmentMaintenanceService.updateEquipmentMaintenanceResult(
+                nonExistentId, result, description, repairPrice)
+        );
+        assertEquals("Equipment maintenance record not found: " + nonExistentId, e.getMessage());
+    }
 
     /* =============================================================================
      * Test deleteEquipmentMaintenance

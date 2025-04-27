@@ -6,10 +6,12 @@ import com.hatecode.pojo.Role;
 import com.hatecode.pojo.User;
 import com.hatecode.services.impl.ImageServiceImpl;
 import com.hatecode.services.impl.UserServiceImpl;
+import com.hatecode.utils.EmailValidator;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.utils.PasswordUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +20,7 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,6 +29,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserServiceImplTest {
 
     User sampleUser;
+
+    @BeforeAll
+    static void setupDatabase() throws SQLException {
+        JdbcUtils.fileName = "db";
+    }
 
     @BeforeEach
     void setupTestData() throws SQLException {
@@ -418,5 +426,145 @@ VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '01
             }
             authConn.close();
         }
+    }
+
+    /*
+     * =============================================================================
+     * Get Users Tests
+     * ===========================================================================
+     */
+
+    @Test
+    void testGetUsersWithEmptyKeywordAndNoRole() throws SQLException {
+        UserService userService = new UserServiceImpl();
+        List<User> users = userService.getUsers("", 0);
+        
+        // Nên có ít nhất 2 người dùng
+        assertFalse(users.isEmpty());
+        assertTrue(users.size() >= 2, "Phải có ít nhất 3 người dùng");
+    }
+
+    @Test
+    void testGetUsersWithKeyword() throws SQLException {
+        UserService userService = new UserServiceImpl();
+        List<User> users = userService.getUsers("custom", 1);
+        
+        assertEquals(1, users.size());
+        assertEquals("customimg", users.get(0).getUsername());
+    }
+
+    @Test
+    void testGetUsersWithNumericKeyword() throws SQLException {
+        UserService userService = new UserServiceImpl();
+        
+        // Lấy ID của người dùng đầu tiên
+        User firstUser = userService.getUserByUsername("defaultimg");
+        assertNotNull(firstUser);
+        
+        // Tìm kiếm theo ID
+        List<User> users = userService.getUsers(String.valueOf(firstUser.getId()), 0);
+        
+        assertEquals(1, users.size());
+        assertEquals(firstUser.getId(), users.get(0).getId());
+    }
+
+    @Test
+    void testGetUsersByRoleId() throws SQLException {
+        UserService userService = new UserServiceImpl();
+        List<User> users = userService.getUsers("", Role.ADMIN.getId());
+        
+        assertFalse(users.isEmpty());
+        for (User user : users) {
+            assertEquals(Role.ADMIN.getId(), user.getRole().getId());
+        }
+    }
+
+    @Test
+    void testGetCount() {
+        UserService userService = new UserServiceImpl();
+        int count = userService.getCount();
+        
+        assertTrue(count >= 2); // Có ít nhất 2 người dùng từ setup
+    }
+    
+
+
+    @Test
+    void testEmailValidation() {
+        // Test các email hợp lệ
+        assertTrue(EmailValidator.isValidEmail("user@example.com"));
+        assertTrue(EmailValidator.isValidEmail("user.name+tag@example.co.uk"));
+        
+        // Test các email không hợp lệ
+        assertFalse(EmailValidator.isValidEmail("userexample.com")); // Thiếu @
+        assertFalse(EmailValidator.isValidEmail("user@")); // Thiếu domain
+        assertFalse(EmailValidator.isValidEmail("@example.com")); // Thiếu username
+        assertFalse(EmailValidator.isValidEmail("")); // Rỗng
+        assertFalse(EmailValidator.isValidEmail(null)); // Null
+    }
+
+    /* =============================================================================
+     * Test createSuperUser method
+     * ============================================================================*/
+    @Test
+    void testCreateSuperUser_FirstCreation() throws SQLException {
+        // First ensure admin doesn't exist
+        try (Connection conn = JdbcUtils.getConn();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("DELETE FROM User WHERE username = 'admin'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        // Act
+        UserService userService = new UserServiceImpl();
+        User admin = userService.createSuperUser();
+        
+        // Assert
+        assertNotNull(admin);
+        assertEquals("admin", admin.getUsername());
+        assertEquals(Role.ADMIN, admin.getRole());
+        assertEquals("Super", admin.getFirstName());
+        assertEquals("Admin", admin.getLastName());
+        
+        // Verify in database
+        User retrievedAdmin = userService.getUserByUsername("admin");
+        assertNotNull(retrievedAdmin);
+        assertEquals("admin", retrievedAdmin.getUsername());
+    }
+    
+    @Test
+    void testCreateSuperUser_AlreadyExists() throws SQLException {
+        UserService userService = new UserServiceImpl();
+        // First ensure admin exists
+        User admin1 = userService.createSuperUser();
+        assertNotNull(admin1);
+        
+        // Act - Try to create again
+        User admin2 = userService.createSuperUser();
+        
+        // Assert - Should return existing admin, not create new one
+        assertNotNull(admin2);
+        assertEquals(admin1.getId(), admin2.getId());
+        assertEquals("admin", admin2.getUsername());
+    }
+    
+    /* =============================================================================
+     * Test Password Utils methods
+     * ============================================================================*/
+    @Test
+    void testPasswordHashingAndVerification() throws Exception {
+        // Test hashing
+        String password = "testPassword123";
+        String hashedPassword = PasswordUtils.hashPassword(password);
+        
+        // Verify hash is not the original password
+        assertNotEquals(password, hashedPassword);
+        
+        // Verify password verification works
+        assertTrue(PasswordUtils.checkPassword(password, hashedPassword));
+        
+        // Verify wrong password fails
+        assertFalse(PasswordUtils.checkPassword("wrongPassword", hashedPassword));
     }
 }

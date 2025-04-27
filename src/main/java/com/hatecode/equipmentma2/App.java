@@ -37,7 +37,8 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            User admin = UserServiceImpl.createSuperUser();
+            UserService userService = new UserServiceImpl();
+            User admin = userService.createSuperUser();
             // bypass login
             setCurrentUser(admin);
             primaryStage = stage;
