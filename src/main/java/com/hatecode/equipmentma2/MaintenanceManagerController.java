@@ -174,6 +174,9 @@ public class MaintenanceManagerController {
             setupEventHandlers();
             loadInitialData();
             setupTimeFieldConstraints();
+
+            MaintenanceEmailNotifier emailNotifier = new MaintenanceEmailNotifier();
+            addMaintenanceChangeListener(emailNotifier);
         } catch (Exception e) {
             handleException(e, "Error initializing maintenance manager");
         }
