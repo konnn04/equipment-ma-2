@@ -69,6 +69,7 @@ public class RecordNewRepairManagerController {
         colPlanEndDate.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getEndDateTime().toString())
         );
+        equipmentMaintenancePrice.setDisable(true);
     }
 
     public void loadColumnEquipmentMaintenance() throws SQLException {
@@ -190,7 +191,7 @@ public class RecordNewRepairManagerController {
         if (localDateTime != null) {
             this.inspectionDate.setValue(LocalDate.from(localDateTime));
         } else {
-            this.inspectionDate.setValue(null); // hoặc set ngày mặc định nếu cần
+            this.inspectionDate.setValue(LocalDate.now()); // hoặc set ngày mặc định nếu cần
         }
         this.equipmentMaintenanceDescription.setText(String.valueOf(e.getDescription()));
 
@@ -212,9 +213,22 @@ public class RecordNewRepairManagerController {
             return;
         }
 
+        // Trong trường hợp sản phẩm mới được thêm vào bảo trì thì đặt mặc định là "Need Repair"
+        if(currentEquipmentMaintenance.getResult() == null){
+            currentEquipmentMaintenance.setResult(Result.NEED_REPAIR);
+        }
+
         // Cập nhật thông tin từ các control vào đối tượng hiện tại
         currentEquipmentMaintenance.setDescription(equipmentMaintenanceDescription.getText());
         if(currentEquipmentMaintenance.getResult().equals(Result.NEED_REPAIR)){
+            if(equipmentMaintenancePrice.getText().isEmpty()){
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Warning");
+                alert.setHeaderText("You must fill the price field !!!");
+                alert.setContentText("Please enter the maintenance cost.");
+                alert.showAndWait();
+                return;
+            }
             currentEquipmentMaintenance.setRepairPrice(Float.parseFloat(equipmentMaintenancePrice.getText()));
         }
 
@@ -222,9 +236,9 @@ public class RecordNewRepairManagerController {
         if (inspectionDate.getValue() != null) {
             LocalDate localDate = inspectionDate.getValue();
             Instant instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
-//            currentEquipmentMaintenance.setInspectionDate(
-//                    LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
-//            );
+            currentEquipmentMaintenance.setInspectionDate(
+                    LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+            );
         } else {
             currentEquipmentMaintenance.setInspectionDate(null);
         }
@@ -274,6 +288,7 @@ public class RecordNewRepairManagerController {
             loadColumnMaintenance();
             loadColumnEquipmentMaintenance();
             loadMaintenancesData("");
+            RecordNewRepairSetupHandler();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
