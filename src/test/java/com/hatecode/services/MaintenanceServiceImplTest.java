@@ -8,6 +8,7 @@ import com.hatecode.services.impl.UserServiceImpl;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(TestDatabaseConfig.class)
 public class MaintenanceServiceImplTest {
+    @BeforeAll
+    static void setupDatabase() throws SQLException {
+        JdbcUtils.fileName = "db";
+    }
 // Reset database to clean state
     @BeforeEach
     void setupTestData() throws SQLException {
@@ -406,20 +411,19 @@ public class MaintenanceServiceImplTest {
     @Test
     void testAddMaintenance_PastStartDate() {
         MaintenanceService maintenanceService = new MaintenanceServiceImpl();
-        
-        // Arrange - create maintenance with start date in the past
+        // Arrange
         Maintenance maintenance = new Maintenance(
-            "Past Maintenance",
-            "Should fail validation",
-            LocalDateTime.now().minusDays(1), // Past date
-            LocalDateTime.now().plusDays(1),
-            MaintenanceStatus.PENDING
+                "Maintenance with past start date",
+                "Testing past start date validation",
+                LocalDateTime.now().minusDays(2), // Quá khứ
+                LocalDateTime.now().plusDays(5),
+                MaintenanceStatus.PENDING
         );
         
         // Act & Assert
-        Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            maintenanceService.addMaintenance(maintenance);
-        });
+        Exception e = assertThrows(IllegalArgumentException.class, () -> 
+            maintenanceService.addMaintenance(maintenance)
+        );
         assertEquals(ExceptionMessage.MAINTENANCE_START_DATE_IN_FUTURE, e.getMessage());
     }
 
@@ -451,21 +455,26 @@ public class MaintenanceServiceImplTest {
     void testAddMaintenance_OverlappingSchedule() {
         MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         
-        // Arrange - create maintenance with schedule that overlaps existing one
+        // Arrange - Tạo lịch bảo trì chồng chéo với lịch hiện có
+        // Maintenance #5 - Regular từ 2025-08-01 đến 2025-08-03
         Maintenance maintenance = new Maintenance(
-            "Overlapping Maintenance",
-            "Should detect overlap",
-            LocalDateTime.of(2025, 8, 5, 8, 0), // Overlaps with #5 and #6
-            LocalDateTime.of(2025, 8, 15, 18, 0),
-            MaintenanceStatus.PENDING
+                "Overlapping Maintenance",
+                "This should detect overlap",
+                LocalDateTime.of(2025, 8, 2, 10, 0), // Chồng chéo với Maintenance #5
+                LocalDateTime.of(2025, 8, 5, 17, 0),
+                MaintenanceStatus.PENDING
         );
         
         // Act & Assert
-        Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            maintenanceService.addMaintenance(maintenance);
-        });
+        Exception e = assertThrows(IllegalArgumentException.class, () -> 
+            maintenanceService.addMaintenance(maintenance)
+        );
         assertEquals(ExceptionMessage.MAINTENANCE_OVERLAP, e.getMessage());
     }
+    
+    /* =============================================================================
+     * Test equipment-specific maintenance conflicts
+     * ========================================================================== */
 
     @Test
     void testUpdateMaintenance_InPast() throws SQLException {

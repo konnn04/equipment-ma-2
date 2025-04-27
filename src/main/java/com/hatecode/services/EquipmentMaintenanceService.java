@@ -4,10 +4,7 @@
  */
 package com.hatecode.services;
 
-import com.hatecode.pojo.Equipment;
-import com.hatecode.pojo.EquipmentMaintenance;
-import com.hatecode.pojo.Maintenance;
-import com.hatecode.pojo.User;
+import com.hatecode.pojo.*;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -30,4 +27,7 @@ public interface EquipmentMaintenanceService {
     boolean updateEquipmentMaintenance(EquipmentMaintenance em) throws SQLException;
     boolean deleteEquipmentMaintenance(int id) throws SQLException;
     boolean deleteEquipmentMaintenance(EquipmentMaintenance em) throws SQLException;
+
+    boolean updateEquipmentMaintenanceResult(int equipmentMaintenanceId, Result result,
+                                             String description, float repairPrice) throws SQLException;
 }

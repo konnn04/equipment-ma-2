@@ -8,7 +8,6 @@ import static com.hatecode.utils.FormatDate.DATE_FORMATTER;
 
 public class AppConfig {
     private static final Dotenv dotenv = Dotenv.load();
-    public static final Integer PAGE_SIZE = 15;
 
     // Cloudinary configuration
     public static final String CLOUD_NAME = dotenv.get("CLOUD_NAME");
@@ -28,6 +27,34 @@ public class AppConfig {
     public static final int NUMBER_DAY_TO_WARN_BEFORE_MAINTENANCE = 3;
     // Number day to warn before maintenance
 
+    // Number day to warn before maintenance
     public static final LocalDate MIN_DATE = LocalDate.parse("01/01/2020", DATE_FORMATTER);
     public static final LocalDate MAX_DATE = LocalDate.now().plusYears(1);
+
+    // Search delay for input
+    public static final int SEARCH_DELAY_MS = 500;
+
+    // Window size
+    public static final int DEFAULT_WINDOW_WIDTH = 800;
+    public static final int DEFAULT_WINDOW_HEIGHT = 600;
+
+    // Maintenance status check interval
+    public static final long MAINTENANCE_STATUS_CHECK_INTERVAL = 900000; // 15 minutes
+    // Maintenance check interval: 1 hour
+    public static final long MAINTENANCE_CHECK_INTERVAL = 3600000; // 1 hour 
+
+    // Maintenance duration limits
+    public static final int MAX_MAINTENANCE_DURATION_DAYS = 30;
+    public static final int DEFAULT_MAINTENANCE_INTERVAL_DAYS = 30; // // Default interval for maintenance scheduling
+
+    // Login attempts
+    public static final int MAX_LOGIN_ATTEMPTS = 5;
+
+    // Notification refresh interval
+    public static final long NOTIFICATION_REFRESH_INTERVAL = 300000; // 5 minutes
+
+    // Email configuration
+    public static final String EMAIL_SMTP_HOST = "smtp.gmail.com";
+    public static final int EMAIL_SMTP_PORT = 587;
+    public static final String EMAIL_FROM_NAME = "Equipment Management System";
 }

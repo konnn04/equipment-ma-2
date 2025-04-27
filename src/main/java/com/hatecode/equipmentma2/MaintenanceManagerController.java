@@ -175,6 +175,7 @@ public class MaintenanceManagerController {
             loadInitialData();
             setupTimeFieldConstraints();
 
+            // Init mail
             MaintenanceEmailNotifier emailNotifier = new MaintenanceEmailNotifier();
             addMaintenanceChangeListener(emailNotifier);
         } catch (Exception e) {

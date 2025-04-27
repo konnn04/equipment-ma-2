@@ -20,6 +20,11 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EquipmentServiceImplTest {
+    @BeforeAll
+    static void setupDatabase() throws SQLException {
+        JdbcUtils.fileName = "dbWithData";
+    }
+
     @AfterEach
     void clearTestChanges() throws SQLException {
         JdbcUtils.closeConnection();
@@ -29,7 +34,7 @@ public class EquipmentServiceImplTest {
     void setupTestData() throws SQLException {
         // Reset database to clean state
         JdbcUtils.resetDatabase();
-        JdbcUtils.fileName = "dbWithData";
+
         // Initialize test data
         String sql = """
                

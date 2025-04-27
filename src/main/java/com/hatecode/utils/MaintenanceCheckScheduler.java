@@ -1,5 +1,6 @@
 package com.hatecode.utils;
 
+import com.hatecode.config.AppConfig;
 import com.hatecode.services.MaintenanceCheckService;
 
 import java.util.concurrent.Executors;
@@ -10,7 +11,7 @@ import java.util.logging.Logger;
 
 public class MaintenanceCheckScheduler {
     private static final Logger LOGGER = Logger.getLogger(MaintenanceCheckScheduler.class.getName());
-    private static final int DEFAULT_CHECK_HOURS = 24; // Check mỗi 24 giờ
+    private static final long DEFAULT_CHECK_HOURS = AppConfig.MAINTENANCE_CHECK_INTERVAL;
     
     private static MaintenanceCheckScheduler instance;
     private final ScheduledExecutorService scheduler;
@@ -38,7 +39,7 @@ public class MaintenanceCheckScheduler {
     /**
      * Bắt đầu scheduler với chu kỳ tùy chỉnh
      */
-    public void start(int intervalHours) {
+    public void start(long intervalHours) {
         LOGGER.info("Starting maintenance check scheduler with interval: " + intervalHours + " hours");
         
         // Chạy kiểm tra ngay lập tức một lần
@@ -49,7 +50,7 @@ public class MaintenanceCheckScheduler {
             this::runCheck, 
             intervalHours, 
             intervalHours, 
-            TimeUnit.HOURS
+            TimeUnit.MILLISECONDS
         );
     }
     

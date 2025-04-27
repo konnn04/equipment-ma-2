@@ -1,8 +1,11 @@
 USE equipmentma2;
 
 INSERT INTO Image (filename, path)
-VALUES ('vector-sign-of-user-icon_zspnuk.jpg',
-        'https://res.cloudinary.com/dg66aou8q/image/upload/v1743568524/vector-sign-of-user-icon_zspnuk.jpg');
+VALUES
+('vector-sign-of-user-icon_zspnuk.jpg','https://res.cloudinary.com/dg66aou8q/image/upload/v1743568524/vector-sign-of-user-icon_zspnuk.jpg'),
+('laptop.png', 'https://png.pngtree.com/png-vector/20191026/ourmid/pngtree-laptop-icon-png-image_1871608.jpg'),
+('maykhoan.png','https://cuahangbosch.com/wp-content/uploads/2017/10/may-khoan-bua-bosch-gbh-2-24-RE.jpg'),
+('xetai.png','https://xetai-isuzu.vn/wp-content/uploads/2019/06/isuzu-15-t%E1%BA%A5n-gg.jpg');
 
 INSERT INTO Category (name)
 VALUES ('Electronics'),
@@ -25,9 +28,9 @@ VALUES ('Nguyen', 'Van A', 'adminfake', '1', 'admin1@example.com', '1234567890',
 
 INSERT INTO Equipment (code, name, status, category_id, regular_maintenance_day, last_maintenance_time, description,
                        image_id)
-VALUES ('ELEC001', 'Laptop', 2, 1, 180, CURRENT_TIMESTAMP, 'Máy tính xách tay văn phòng', 1),   -- ACTIVE
-       ('MACH001', 'Máy khoan', 3, 2, 90, CURRENT_TIMESTAMP, 'Máy khoan công nghiệp', 1),       -- UNDER_MAINTENANCE
-       ('VEH001', 'Xe tải', 4, 3, 365, CURRENT_TIMESTAMP, 'Xe tải giao hàng', 1),               -- BROKEN
+VALUES ('ELEC001', 'Laptop', 2, 1, 180, CURRENT_TIMESTAMP, 'Máy tính xách tay văn phòng', 2),   -- ACTIVE
+       ('MACH001', 'Máy khoan', 3, 2, 90, CURRENT_TIMESTAMP, 'Máy khoan công nghiệp', 3),       -- UNDER_MAINTENANCE
+       ('VEH001', 'Xe tải', 4, 3, 365, CURRENT_TIMESTAMP, 'Xe tải giao hàng', 4),               -- BROKEN
        ('FURN001', 'Ghế văn phòng', 2, 4, 30, CURRENT_TIMESTAMP, 'Ghế công thái học', 1),       -- ACTIVE
        ('TOOL001', 'Bộ tua vít', 1, 5, 30, CURRENT_TIMESTAMP, 'Bộ dụng cụ cơ bản', 1),          -- INACTIVE
        ('ELEC002', 'Máy chiếu', 2, 1, 180, CURRENT_TIMESTAMP, 'Máy chiếu phòng họp', 1),        -- ACTIVE
