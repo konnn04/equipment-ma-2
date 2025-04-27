@@ -410,13 +410,13 @@ public class UserServiceImpl implements UserService {
             conn.commit(); // Commit DB thành công
 
 //             3. Sau khi commit, mới xóa trên Cloudinary (ngoài transaction)
-            if (imgID > 1) {
-                boolean cloudDeleted = deleteUserImage(image.getPath());
-                if (!cloudDeleted) {
-                    System.err.println("Ảnh đã bị xóa khỏi DB nhưng không xóa được trên Cloudinary.");
-                    // Có thể log hoặc gửi cảnh báo tại đây
-                }
-            }
+//            if (imgID > 1) {
+//                boolean cloudDeleted = deleteUserImage(image.getPath());
+//                if (!cloudDeleted) {
+//                    System.err.println("Ảnh đã bị xóa khỏi DB nhưng không xóa được trên Cloudinary.");
+//                    // Có thể log hoặc gửi cảnh báo tại đây
+//                }
+//            }
 
             return true;
         } catch (SQLException | NullPointerException ex) {
