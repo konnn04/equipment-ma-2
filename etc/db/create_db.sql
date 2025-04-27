@@ -44,23 +44,27 @@ CREATE TABLE IF NOT EXISTS `Maintenance` (
                                              `description` text NOT NULL,
                                              `start_datetime` timestamp NOT NULL,
                                              `end_datetime` timestamp NOT NULL,
+                                             `status` int NOT NULL DEFAULT 1,
                                              `is_active` boolean NOT NULL DEFAULT '1',
                                              `created_at` timestamp NOT NULL default current_timestamp,
+                                            `last_status_check` timestamp default null,
                                              PRIMARY KEY (`id`)
 );
 
 CREATE TABLE IF NOT EXISTS `Equipment_Maintenance` (
-                                                       `id` int AUTO_INCREMENT NOT NULL UNIQUE,
-                                                       `equipment_id` int NOT NULL,
-                                                       `maintenance_id` int NOT NULL,
-                                                       `technician_id` int NOT NULL,
-                                                       `description` text,
-                                                       `result` int,
-                                                       `repair_price` int CHECK (repair_price >= 0),
-                                                       `inspection_date` timestamp,
-                                                       `is_active` boolean NOT NULL DEFAULT '1',
-                                                       `created_at` timestamp NOT NULL default current_timestamp,
-                                                       PRIMARY KEY (`id`)
+    `id` int AUTO_INCREMENT NOT NULL UNIQUE,
+    `equipment_id` int NOT NULL,
+    `equipment_name` nvarchar(255) NOT NULL,
+    `equipment_code` nvarchar(255) NOT NULL,
+    `maintenance_id` int NOT NULL,
+    `technician_id` int NOT NULL,
+    `description` text,
+    `result` int,
+    `repair_price` int CHECK (repair_price >= 0),
+    `inspection_date` timestamp,
+    `is_active` boolean NOT NULL DEFAULT '1',
+    `created_at` timestamp NOT NULL default current_timestamp,
+    PRIMARY KEY (`id`)
 );
 
 CREATE TABLE IF NOT EXISTS `Maintenance_Repair_Suggestion` (
@@ -82,6 +86,18 @@ CREATE TABLE IF NOT EXISTS `Image` (
                                        PRIMARY KEY (`id`)
 );
 
+CREATE TABLE IF NOT EXISTS `Notifications` (
+    `id` int AUTO_INCREMENT NOT NULL UNIQUE,
+    `equipment_id` int NOT NULL,
+    `equipment_code` varchar(255) NOT NULL,
+    `equipment_name` nvarchar(255) NOT NULL,
+    `maintenance_due_date` timestamp NOT NULL,
+    `created_at` timestamp NOT NULL default current_timestamp,
+    `is_read` boolean NOT NULL DEFAULT '0',
+    `type` int NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`)
+);
+
 ALTER TABLE `Equipment` ADD CONSTRAINT `Equipment_fk3` FOREIGN KEY (`image_id`) REFERENCES `Image`(`id`);
 
 ALTER TABLE `Equipment` ADD CONSTRAINT `Equipment_fk4` FOREIGN KEY (`category_id`) REFERENCES `Category`(`id`)  ON DELETE CASCADE;
@@ -94,6 +110,7 @@ ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk5` F
 
 ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk3` FOREIGN KEY (`technician_id`) REFERENCES `User`(`id`);
 
+ALTER TABLE `Notifications` ADD CONSTRAINT `Notifications_Equipment` FOREIGN KEY (`equipment_id`) REFERENCES `Equipment`(`id`);
 
 -- Tạo chỉ mục
 CREATE INDEX idx_equipment_code ON Equipment (code);

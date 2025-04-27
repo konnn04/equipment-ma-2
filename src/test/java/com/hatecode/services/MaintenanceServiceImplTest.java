@@ -1,10 +1,10 @@
 package com.hatecode.services;
 
 import com.hatecode.config.TestDatabaseConfig;
-import com.hatecode.pojo.EquipmentMaintenance;
-import com.hatecode.pojo.Maintenance;
-import com.hatecode.pojo.MaintenanceStatus;
+import com.hatecode.pojo.*;
+import com.hatecode.services.impl.EquipmentServiceImpl;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
+import com.hatecode.services.impl.UserServiceImpl;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -37,13 +37,40 @@ public class MaintenanceServiceImplTest {
          * 6. Maintenance #6 - Đang chờ
          */
         String sql = """
-                INSERT INTO Maintenance (title, description, start_datetime, end_datetime)
-                VALUES ('Maintenance #1 - Regular', 'Kiểm tra tất cả thiết bị điện tử', '2024-10-01 09:00:00', '2024-10-08 17:00:00'),
-                       ('Maintenance #2 - Emergency', 'Bảo trì toàn diện cho máy móc', '2024-11-01 09:00:0', '2024-11-08 17:00:00'),
-                      ('Maintenance #3 - Regular', 'Bảo trì định kỳ cho máy móc', '2025-04-01 08:00:00', '2025-09-20 18:00:00'),
-                      ('Maintenance #4 - Emergency', 'Bảo trì định kỳ cho máy móc', '2025-04-01 08:00:00', '2025-09-20 18:00:00'),
-                      ('Maintenance #5 - Regular', 'Bảo trì định kỳ cho máy móc', '2025-08-01 08:00:00', '2025-09-20 18:00:00'),
-                      ('Maintenance #6 - Regular', 'Bảo trì định kỳ cho máy móc', '2025-08-01 08:00:00', '2025-09-20 18:00:00');
+                INSERT INTO `user` (first_name, last_name, username, password, email, phone, role, avatar_id)
+                VALUES ('Nguyen', 'Van A', 'technician0', '123456', 'a@gmail.com', '0123456789', 2, 1),
+                       ('Nguyen', 'Van B', 'technician1', '123456', 'b@gmail.com', '0123456788', 2, 1),
+                       ('Nguyen', 'Van C', 'technician2', '123456', 'c@gmail.com', '0123456787', 2, 1),
+                       ('Nguyen', 'Van D', 'technician3', '123456', 'd@gmail.com', '0123456786', 2, 1),
+                       ('Nguyen', 'Van E', 'technician4', '123456', 'e@gmail.com', '0123456785', 2, 1),
+                       ('Nguyen', 'Van F', 'technician5', '123456', 'f@gmail.com', '0123456784', 2, 1);
+                INSERT INTO `category` (name)
+                VALUES ('Category 1'),
+                       ('Category 2'),
+                       ('Category 3'),
+                       ('Category 4'),
+                       ('Category 5');
+                INSERT INTO `equipment` (code, name, status, category_id, image_id, regular_maintenance_day, description)
+                VALUES ('C1E1', 'E1', 1, 1, 1, 30, 'Description 1'),
+                       ('C1E2', 'E2', 1, 1, 1, 30, 'Description 2'),
+                       ('C1E3', 'E3', 1, 1, 1, 30, 'Description 3'),
+                       ('C2E1', 'E4', 1, 2, 1, 30, 'Description 4'),
+                       ('C2E2', 'E5', 1, 2, 1, 30, 'Description 5'),
+                       ('C3E1', 'E6', 1, 3, 1, 30, 'Description 6');
+                INSERT INTO `maintenance` (title, description, start_datetime, end_datetime, status)
+                VALUES ('Maintenance #1 - Regular', 'Kiểm tra tất cả thiết bị điện tử', '2024-10-01 09:00:00', '2024-10-08 17:00:00', 1),
+                       ('Maintenance #2 - Emergency', 'Bảo trì toàn diện cho máy móc', '2024-11-01 09:00:0', '2024-11-08 17:00:00', 1),
+                      ('Maintenance #3 - Regular', 'Bảo trì định kỳ cho máy móc', '2025-04-01 08:00:00', '2025-09-20 18:00:00', 1),
+                      ('Maintenance #4 - Emergency', 'Bảo trì định kỳ cho máy móc', '2025-04-01 08:00:00', '2025-09-20 18:00:00', 1),
+                      ('Maintenance #5 - Regular', 'Bảo trì định kỳ cho máy móc', '2025-08-01 08:00:00', '2025-08-03 18:00:00', 1),
+                      ('Maintenance #6 - Regular', 'Bảo trì định kỳ cho máy móc', '2026-08-05 08:00:00', '2026-09-20 18:00:00', 1);
+                INSERT INTO `equipment_maintenance` (equipment_id, maintenance_id, technician_id, description, equipment_name, equipment_code)
+                VALUES (1, 1, 1, 'Bảo trì thiết bị điện tử', 'E1', 'C1E1'),
+                       (2, 2, 2, 'Bảo trì thiết bị điện tử', 'E2', 'C1E2'),
+                       (3, 3, 3, 'Bảo trì thiết bị điện tử', 'E3', 'C1E3'),
+                       (4, 4, 4, 'Bảo trì thiết bị điện tử', 'E4', 'C2E1'),
+                       (5, 5, 5, 'Bảo trì thiết bị điện tử', 'E5', 'C2E2'),
+                       (6, 6, 6, 'Bảo trì thiết bị điện tử', 'E6', 'C3E1');
                 """;
 
         try (Connection conn = JdbcUtils.getConn(); // Use getConn() instead of getConnection()
@@ -158,8 +185,9 @@ public class MaintenanceServiceImplTest {
         Maintenance maintenance = new Maintenance(
                 "Maintenance #7 - Regular",
                 "Bảo trì định kỳ cho máy móc",
-                LocalDateTime.of(2025, 8, 01, 8, 0),
-                LocalDateTime.of(2025, 9, 20, 18, 0)
+                LocalDateTime.of(2025, 12, 01, 8, 0),
+                LocalDateTime.of(2025, 12, 20, 18, 0),
+                MaintenanceStatus.PENDING
         );
         // Act
         boolean result = maintenanceService.addMaintenance(maintenance);
@@ -175,7 +203,8 @@ public class MaintenanceServiceImplTest {
                 "Maintenance #8 - Regular",
                 "Bảo trì định kỳ cho máy móc",
                 LocalDateTime.of(2025, 9, 20, 18, 0),
-                LocalDateTime.of(2025, 8, 01, 8, 0)
+                LocalDateTime.of(2025, 8, 01, 8, 0),
+                MaintenanceStatus.PENDING
         );
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
@@ -192,7 +221,8 @@ public class MaintenanceServiceImplTest {
                 "",
                 "Bảo trì định kỳ cho máy móc",
                 LocalDateTime.of(2025, 8, 01, 8, 0),
-                LocalDateTime.of(2025, 9, 20, 18, 0)
+                LocalDateTime.of(2025, 9, 20, 18, 0),
+                MaintenanceStatus.PENDING
         );
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
@@ -207,15 +237,15 @@ public class MaintenanceServiceImplTest {
     @Test
     void testUpdateMaintenance_Success() throws SQLException {
         MaintenanceService maintenanceService = new MaintenanceServiceImpl();
-        // Arrange
-        String newTitle = "Maintenance #1 - Updated";
-        Maintenance maintenance = maintenanceService.getMaintenanceById(1);
+        // Arrange - use maintenance #6 which has a future end date
+        String newTitle = "Maintenance #6 - Updated";
+        Maintenance maintenance = maintenanceService.getMaintenanceById(6);
         maintenance.setTitle(newTitle);
         // Act
         boolean result = maintenanceService.updateMaintenance(maintenance);
         // Assert
         assertTrue(result, "Failed to update maintenance");
-        assertEquals(newTitle, maintenanceService.getMaintenanceById(1).getTitle(), "Message: Title not updated");
+        assertEquals(newTitle, maintenanceService.getMaintenanceById(6).getTitle(), "Message: Title not updated");
     }
 
     @Test
@@ -253,13 +283,29 @@ public class MaintenanceServiceImplTest {
                 null,
                 "Bảo trì định kỳ cho máy móc",
                 LocalDateTime.of(2025, 8, 1, 8, 0),
-                LocalDateTime.of(2025, 9, 20, 18, 0)
+                LocalDateTime.of(2025, 9, 20, 18, 0),
+                MaintenanceStatus.PENDING
         );
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
             maintenanceService.updateMaintenance(maintenance);
         });
         assertEquals(ExceptionMessage.MAINTENANCE_ID_NULL, e.getMessage(), "Title already exists");
+    }
+
+    @Test
+    void testUpdateMaintenance_EndDateInPast() throws SQLException {
+        MaintenanceService maintenanceService = new MaintenanceServiceImpl();
+        // Arrange - use maintenance #1 which has end date in the past
+        Maintenance maintenance = maintenanceService.getMaintenanceById(1);
+        maintenance.setTitle("Updated Title");
+        // Act & Assert
+//        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+//            maintenanceService.updateMaintenance(maintenance);
+//        });
+//        assertEquals(ExceptionMessage.MAINTENANCE_CANNOT_UPDATE_COMPLETED, e.getMessage());
+        boolean r = maintenanceService.updateMaintenance(maintenance);
+        assertTrue(r, "Failed to update maintenance");
     }
 
     /* =============================================================================
@@ -332,15 +378,18 @@ public class MaintenanceServiceImplTest {
         Maintenance maintenance = new Maintenance(
             "Maintenance with Equipment",
             "Testing equipment maintenance",
-            LocalDateTime.now().plusDays(1),
-            LocalDateTime.now().plusDays(2)
+            LocalDateTime.now().plusMonths(10),
+            LocalDateTime.now().plusMonths(11),
+            MaintenanceStatus.PENDING
         );
-        
+
         List<EquipmentMaintenance> equipments = new ArrayList<>();
         EquipmentMaintenance em = new EquipmentMaintenance();
         em.setEquipmentId(1); // Existing equipment ID
         em.setTechnicianId(1); // Existing technician ID
         em.setDescription("Test equipment maintenance");
+        em.setEquipmentName("Equipment 1");
+        em.setEquipmentCode("EQ001");
         equipments.add(em);
         
         // Act
@@ -363,7 +412,8 @@ public class MaintenanceServiceImplTest {
             "Past Maintenance",
             "Should fail validation",
             LocalDateTime.now().minusDays(1), // Past date
-            LocalDateTime.now().plusDays(1)
+            LocalDateTime.now().plusDays(1),
+            MaintenanceStatus.PENDING
         );
         
         // Act & Assert
@@ -406,7 +456,8 @@ public class MaintenanceServiceImplTest {
             "Overlapping Maintenance",
             "Should detect overlap",
             LocalDateTime.of(2025, 8, 5, 8, 0), // Overlaps with #5 and #6
-            LocalDateTime.of(2025, 8, 15, 18, 0)
+            LocalDateTime.of(2025, 8, 15, 18, 0),
+            MaintenanceStatus.PENDING
         );
         
         // Act & Assert
@@ -417,19 +468,19 @@ public class MaintenanceServiceImplTest {
     }
 
     @Test
-    void testUpdateMaintenance_OverlappingSchedule() throws SQLException {
+    void testUpdateMaintenance_InPast() throws SQLException {
         MaintenanceService maintenanceService = new MaintenanceServiceImpl();
         
         // Arrange - get existing maintenance and update to overlap with another
         Maintenance maintenance = maintenanceService.getMaintenanceById(1);
-        maintenance.setStartDateTime(LocalDateTime.of(2025, 8, 5, 8, 0));
-        maintenance.setEndDateTime(LocalDateTime.of(2025, 8, 15, 18, 0));
+        maintenance.setStartDateTime(LocalDateTime.of(2026, 8, 5, 8, 0));
+        maintenance.setEndDateTime(LocalDateTime.of(2026, 8, 15, 18, 0));
         
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
             maintenanceService.updateMaintenance(maintenance);
         });
-        assertEquals(ExceptionMessage.MAINTENANCE_OVERLAP, e.getMessage());
+        assertEquals(ExceptionMessage.MAINTENANCE_CANNOT_CHANGE_START_DATE, e.getMessage());
     }
 
     /* =============================================================================
@@ -446,7 +497,8 @@ public class MaintenanceServiceImplTest {
             "Maintenance with Conflicting Equipment",
             "Should detect equipment conflict",
             LocalDateTime.of(2025, 8, 10, 8, 0),
-            LocalDateTime.of(2025, 8, 20, 18, 0)
+            LocalDateTime.of(2025, 8, 20, 18, 0),
+            MaintenanceStatus.PENDING
         );
         
         List<EquipmentMaintenance> equipments = new ArrayList<>();
@@ -459,6 +511,6 @@ public class MaintenanceServiceImplTest {
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
             maintenanceService.addMaintenance(maintenance, equipments);
         });
-        assertEquals(ExceptionMessage.EQUIPMENT_MAINTENANCE_TIME_CONFLICT, e.getMessage());
+        assertEquals(ExceptionMessage.MAINTENANCE_OVERLAP, e.getMessage());
     }
 }

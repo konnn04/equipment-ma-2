@@ -9,6 +9,7 @@ import com.hatecode.services.impl.EquipmentMaintenanceServiceImpl;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +22,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 @ExtendWith(TestDatabaseConfig.class)
 public class EquipmentMaintenanceServiceImplTest {
+    @BeforeAll
+    static void setupDatabase() throws SQLException {
+        JdbcUtils.fileName = "db";
+    }
+
     @BeforeEach
     void setupTestData() throws SQLException {
         // Reset database to clean state
@@ -37,22 +44,19 @@ public class EquipmentMaintenanceServiceImplTest {
                 VALUES (1, 'EQ001', 'Equipment 1', 1, 1, 1, 30, 'Test Equipment 1'),
                     (2, 'EQ002', 'Equipment 2', 1, 1, 1, 60, 'Test Equipment 2'),
                     (3, 'EQ003', 'Equipment 3', 1, 2, 1, 45, 'Test Equipment 3');
-                    
                 INSERT INTO Maintenance (id, title, description, start_datetime, end_datetime)
                 VALUES (1, 'Maintenance 1', 'Regular maintenance', '2025-01-01 09:00:00', '2025-01-01 17:00:00'),
                     (2, 'Maintenance 2', 'Emergency maintenance', '2025-02-01 08:00:00', '2025-02-02 18:00:00'),
                     (3, 'Maintenance 3', 'Special maintenance', '2025-03-01 10:00:00', '2025-03-05 15:00:00');
-                    
                 INSERT INTO "USER" (id, username, password, first_name, last_name, phone, email, role, avatar_id)
                 VALUES (1, 'tech1', 'password1', 'John', 'Doe', '1234567890', 'john@example.com', 2, 1),
                     (2, 'tech2', 'password2', 'Jane', 'Smith', '0987654321', 'jane@example.com', 2, 1);
-                    
-                INSERT INTO equipment_maintenance (id, equipment_id, maintenance_id, technician_id, description, result, repair_price, inspection_date, is_active)
-                VALUES (1, 1, 1, 1, 'Regular check for Equipment 1', 1, 50.0, '2025-01-01 10:00:00', true),
-                    (2, 2, 1, 2, 'Regular check for Equipment 2', 2, 30.0, '2025-01-01 11:00:00', true),
-                    (3, 3, 2, 1, 'Emergency repair', 1, 500.0, '2025-02-01 09:00:00', true),
-                    (4, 1, 3, 2, 'Special maintenance', 0, 100.0, '2025-03-01 12:00:00', true),
-                    (5, 2, 2, 1, 'Inactive record', 1, 75.0, '2025-02-02 14:00:00', false);
+                INSERT INTO equipment_maintenance (id, equipment_id, maintenance_id, technician_id, description, result, repair_price, inspection_date, is_active, equipment_code, equipment_name)
+                VALUES (1, 1, 1, 1, 'Regular check for Equipment 1', 1, 50.0, '2025-01-01 10:00:00', true, 'EQ001', 'Equipment 1'),
+                    (2, 2, 1, 2, 'Regular check for Equipment 2', 2, 30.0, '2025-01-01 11:00:00', true, 'EQ002', 'Equipment 2'),
+                    (3, 3, 2, 1, 'Emergency repair', 1, 500.0, '2025-02-01 09:00:00', true, 'EQ003', 'Equipment 3'),
+                    (4, 1, 3, 2, 'Special maintenance', 0, 100.0, '2025-03-01 12:00:00', true, 'EQ004', 'Equipment 4'),
+                    (5, 2, 2, 1, 'Inactive record', 1, 75.0, '2025-02-02 14:00:00', false, 'EQ005', 'Equipment 5');
                 -- Reset sequences to avoid ID conflicts
                 ALTER TABLE equipment_maintenance ALTER COLUMN id RESTART WITH 10;
             """;
@@ -170,7 +174,7 @@ public class EquipmentMaintenanceServiceImplTest {
         EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         EquipmentMaintenance em = new EquipmentMaintenance(
-                2, 3, 1,
+                2, 3, 1, "EQU002", "Equipment 2",
                 "New maintenance for Equipment 2");        
         // Act
         boolean result = equipmentMaintenanceService.addEquipmentMaintenance(em);
@@ -187,7 +191,7 @@ public class EquipmentMaintenanceServiceImplTest {
         EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         EquipmentMaintenance em = new EquipmentMaintenance(
-                0, 3, 1,
+                0, 3, 1, "None", "None",
                 "Invalid equipment ID"
         );
         // Act & Assert
@@ -203,7 +207,7 @@ public class EquipmentMaintenanceServiceImplTest {
         EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         // Arrange
         EquipmentMaintenance em = new EquipmentMaintenance(
-                2, 3, 1,
+                2, 3, 1, "EQ002", "Equipment 2",
                 "Full maintenance for Equipment 2",
                 Result.NEED_REPAIR,
                 100.0f,
@@ -252,9 +256,8 @@ public class EquipmentMaintenanceServiceImplTest {
         // Arrange
         LocalDateTime now = LocalDateTime.now();
         EquipmentMaintenance em = new EquipmentMaintenance(
-                999, 1, 1, 1,
+                999, 1, 1, 1, "EQ999", "Equipment 999",
                 "Non-existent record",
-                "Name",
                 Result.NEED_REPAIR,
                 50.0f,
                 now,
@@ -410,8 +413,8 @@ public class EquipmentMaintenanceServiceImplTest {
         
         // Arrange
         EquipmentMaintenance em = new EquipmentMaintenance(
-            1, 0, 1, 1, // Invalid equipment_id (0)
-            "Invalid equipment ID",
+            1, 0, 1, "EQ001","Equipment 1",
+            "Invalid data test",
             Result.NEED_REPAIR,
             50.0f,
             LocalDateTime.now(),

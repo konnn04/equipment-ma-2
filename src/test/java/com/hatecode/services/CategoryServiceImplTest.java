@@ -17,28 +17,32 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(TestDatabaseConfig.class)
 public class CategoryServiceImplTest {
 
+    @BeforeAll
+    static void setupDatabase() throws SQLException {
+        JdbcUtils.fileName = "db";
+    }
+
     @BeforeEach
     void setupTestData() throws SQLException {
         // Reset database to clean state
         JdbcUtils.resetDatabase();
         // Khởi tạo dữ liệu mẫu
         String sql = """
-                INSERT INTO Category (name)
-                VALUES ('Category 1'),
-                       ('Category 2'),
-                       ('Category 3'),
-                       ('Category 4'),
-                       ('Category 5');
-                INSERT INTO `Category` (name, is_active)
-                VALUES ('Category non-active', false);
-
-                INSERT INTO Equipment (code, name, status, category_id, image_id, regular_maintenance_day, description)
-                VALUES ('C1E1', 'E1', 1, 1, 1, 30, 'Description 1'),
-                       ('C1E2', 'E2', 1, 1, 1, 30, 'Description 2'),
-                       ('C1E3', 'E3', 1, 1, 1, 30, 'Description 3'),
-                       ('C2E1', 'E4', 1, 2, 1, 30, 'Description 4'),
-                       ('C2E2', 'E5', 1, 2, 1, 30, 'Description 5'),
-                       ('C3E1', 'E6', 1, 3, 1, 30, 'Description 6');
+            INSERT INTO Category (name)
+            VALUES ('Category 1'),
+                   ('Category 2'),
+                   ('Category 3'),
+                   ('Category 4'),
+                   ('Category 5');
+            INSERT INTO Category (name, is_active)
+            VALUES ('Category non-active', false);
+            INSERT INTO Equipment (code, name, status, category_id, image_id, regular_maintenance_day, description)
+            VALUES ('C1E1', 'E1', 1, 1, 1, 30, 'Description 1'),
+                   ('C1E2', 'E2', 1, 1, 1, 30, 'Description 2'),
+                   ('C1E3', 'E3', 1, 1, 1, 30, 'Description 3'),
+                   ('C2E1', 'E4', 1, 2, 1, 30, 'Description 4'),
+                   ('C2E2', 'E5', 1, 2, 1, 30, 'Description 5'),
+                   ('C3E1', 'E6', 1, 3, 1, 30, 'Description 6');
                 """;
 
         try (Connection conn = JdbcUtils.getConn(); // Use getConn() instead of getConnection()

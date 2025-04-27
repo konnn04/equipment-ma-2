@@ -22,6 +22,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 rs.getString("description"),
                 rs.getTimestamp("start_datetime").toLocalDateTime(),
                 rs.getTimestamp("end_datetime").toLocalDateTime(),
+                MaintenanceStatus.fromCode(rs.getInt("status")),
                 rs.getBoolean("is_active"),
                 rs.getTimestamp("created_at").toLocalDateTime()
         );
@@ -135,7 +136,10 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         if (id <= 0) {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
         }
-        String sql = "SELECT * FROM `equipment_maintenance` WHERE maintenance_id = ? AND is_active=true";
+        String sql = "SELECT em.*, e.name AS equipmentName " +
+                "FROM equipment_maintenance em " +
+                "JOIN equipment e ON em.equipment_id = e.id " +
+                "WHERE em.is_active = true and em.maintenance_id = ?";
         List<EquipmentMaintenance> equipmentMaintenances = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn();PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -306,8 +310,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                             if (equipmentMaintenances != null && !equipmentMaintenances.isEmpty()) {
                                 String insertEquipmentSql = 
                                     "INSERT INTO equipment_maintenance " +
-                                    "(equipment_id, maintenance_id, technician_id, description) " +
-                                    "VALUES (?, ?, ?, ?)";
+                                    "(equipment_id, maintenance_id, technician_id, description, equipment_code, equipment_name) "+
+                                    "VALUES (?, ?, ?, ?, ?, ?)";
                                     
                                 try (PreparedStatement equipmentStmt = conn.prepareStatement(insertEquipmentSql)) {
                                     for (EquipmentMaintenance em : equipmentMaintenances) {
@@ -316,6 +320,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                                         equipmentStmt.setInt(2, maintenanceId);
                                         equipmentStmt.setInt(3, em.getTechnicianId());
                                         equipmentStmt.setString(4, em.getDescription());
+                                        equipmentStmt.setString(5, em.getEquipmentCode());
+                                        equipmentStmt.setString(6, em.getEquipmentName());
                                         equipmentStmt.addBatch();
                                     }
                                     equipmentStmt.executeBatch();

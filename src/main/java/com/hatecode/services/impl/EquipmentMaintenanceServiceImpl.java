@@ -6,10 +6,15 @@ import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.EquipmentMaintenanceService;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceService {
+    private static final Logger LOGGER = Logger.getLogger(EquipmentMaintenanceServiceImpl.class.getName());
+
     // Generic method to execute database operations with proper connection handling
     private <T> T executeQuery(ThrowingFunction<Connection, T> dbOperation) throws SQLException {
         Connection conn = JdbcUtils.getConn();
@@ -28,7 +33,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 rs.getInt("equipment_id"),
                 rs.getInt("maintenance_id"),
                 rs.getInt("technician_id"),
-                rs.getString("equipmentName"),
+                rs.getString("equipment_name"),
+                rs.getString("equipment_code"),
                 rs.getString("description"),
                 rs.getInt("result") == 0 ? null : Result.fromCode(rs.getInt("result")),
                 rs.getFloat("repair_price"),
@@ -191,16 +197,38 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
     }
 
     @Override
+    public double getTotalPriceEquipmentMaintenance(int maintenanceId) throws SQLException {
+        if (maintenanceId <= 0) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
+        }
+
+        return executeQuery(conn -> {
+            double totalPrice = 0;
+            String sql = "SELECT COALESCE(SUM(repair_price), 0) FROM equipmentma2.Equipment_Maintenance WHERE maintenance_id = ?";
+            try (PreparedStatement stm = conn.prepareStatement(sql)) {
+                stm.setInt(1, maintenanceId);
+                ResultSet rs = stm.executeQuery();
+                if (rs.next()) {
+                    totalPrice = rs.getDouble(1);
+                }
+            }
+            return totalPrice;
+        });
+    }
+
+    @Override
     public boolean addEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
         validateEquipmentMaintenance(em);
         return executeQuery(conn -> {
-            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description)" +
-                    " VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, equipment_name, equipment_code)" +
+                    " VALUES (?, ?, ?, ?, ?, ?)";
             try (PreparedStatement stm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 stm.setInt(1, em.getEquipmentId());
                 stm.setInt(2, em.getMaintenanceId());
                 stm.setInt(3, em.getTechnicianId());
                 stm.setString(4, em.getDescription());
+                stm.setString(5, em.getEquipmentName());
+                stm.setString(6, em.getEquipmentCode());
 
                 int rowsAffected = stm.executeUpdate();
                 try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
@@ -220,8 +248,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         validateEquipmentMaintenance(em);
 
         return executeQuery(conn -> {
-            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result, repair_price, inspection_date)" +
-                    " VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result, repair_price, inspection_date, equipment_name, equipment_code)" +
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement stm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 stm.setInt(1, em.getEquipmentId());
                 stm.setInt(2, em.getMaintenanceId());
@@ -229,6 +257,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 stm.setString(4, em.getDescription());
                 stm.setInt(5, em.getResult().getCode());
                 stm.setFloat(6, em.getRepairPrice());
+                stm.setString(8, em.getEquipmentName());
+                stm.setString(9, em.getEquipmentCode());
                 if (em.getInspectionDate() != null) {
                     stm.setTimestamp(7, Timestamp.valueOf(em.getInspectionDate()));
                 } else {
@@ -252,17 +282,24 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         validateEquipmentMaintenance(em);
         return executeQuery(conn -> {
             String sql = "UPDATE equipment_maintenance" +
-                    " SET equipment_id = ?, maintenance_id = ?, technician_id = ?, description = ?, result = ?, repair_price = ?, inspection_date = ? " +
-                    " WHERE id = ?";
+                    " SET equipment_id = ?, maintenance_id = ?, technician_id = ? ";
+            if (em.getResult() != null) {
+                sql+=", description = ?, result = ?, repair_price = ?, inspection_date = ? ";
+            }
+            sql+= " WHERE id = ?";
             try (PreparedStatement stm = conn.prepareStatement(sql)) {
                 stm.setInt(1, em.getEquipmentId());
                 stm.setInt(2, em.getMaintenanceId());
                 stm.setInt(3, em.getTechnicianId());
-                stm.setString(4, em.getDescription());
-                stm.setInt(5, em.getResult().getCode());
-                stm.setFloat(6, em.getRepairPrice());
-                stm.setTimestamp(7, Timestamp.valueOf(em.getInspectionDate()));
-                stm.setInt(8, em.getId());
+                if (em.getResult() != null) {
+                    stm.setString(4, em.getDescription());
+                    stm.setInt(5, em.getResult().getCode());
+                    stm.setFloat(6, em.getRepairPrice());
+                    stm.setTimestamp(7, Timestamp.valueOf(em.getInspectionDate()));
+                    stm.setInt(8, em.getId());
+                } else {
+                    stm.setNull(4, em.getId());
+                }
                 return stm.executeUpdate() > 0;
             }
         });
@@ -316,6 +353,70 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
             }
             return maintenanceEquipments;
         });
+    }
+
+    public boolean updateEquipmentMaintenanceResult(int equipmentMaintenanceId, Result result, 
+        String description, float repairPrice) throws SQLException {
+    
+        // Validate input
+        if (equipmentMaintenanceId <= 0) {
+            throw new IllegalArgumentException("Invalid equipment maintenance ID");
+        }
+        
+        // Get current equipment maintenance record
+        EquipmentMaintenance em = getEquipmentMaintenanceById(equipmentMaintenanceId);
+        if (em == null) {
+            throw new IllegalArgumentException("Equipment maintenance record not found: " + equipmentMaintenanceId);
+        }
+        
+        // Update the record with new result information
+        em.setResult(result);
+        em.setDescription(description);
+        em.setRepairPrice(repairPrice);
+        em.setInspectionDate(LocalDateTime.now());
+        
+        // Save to database
+        boolean updated = updateEquipmentMaintenance(em);
+        
+        // If the update was successful and the maintenance is completed,
+        // update the equipment status accordingly
+        if (updated) {
+            try {
+                // Get the parent maintenance
+                Maintenance maintenance = new MaintenanceServiceImpl().getMaintenanceById(em.getMaintenanceId());
+                
+                // Only update equipment status if maintenance is completed
+                if (maintenance != null && maintenance.getMaintenanceStatus() == MaintenanceStatus.COMPLETED) {
+                    // Get the equipment
+                    Equipment equipment = new EquipmentServiceImpl().getEquipmentById(em.getEquipmentId());
+                    
+                    if (equipment != null) {
+                        // Determine new status based on result
+                        Status newStatus;
+                        
+                        if (result == null || result == Result.NORMALLY || result == Result.NEED_REPAIR) {
+                            newStatus = Status.ACTIVE;
+                        } else if (result == Result.BROKEN || result == Result.NEEDS_DISPOSAL) {
+                            newStatus = Status.BROKEN;
+                        } else {
+                            // Keep current status for unhandled results
+                            newStatus = equipment.getStatus();
+                        }
+                        
+                        // Update equipment status if changed
+                        if (equipment.getStatus() != newStatus) {
+                            equipment.setStatus(newStatus);
+                            new EquipmentServiceImpl().updateEquipment(equipment);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Log error but don't fail the operation
+                LOGGER.log(Level.WARNING, "Error updating equipment status after maintenance result update", e);
+            }
+        }
+        
+        return updated;
     }
 
     // Functional interface for SQL operations that can throw SQLException

@@ -11,8 +11,10 @@ import com.hatecode.services.EquipmentMaintenanceService;
 import com.hatecode.services.EquipmentService;
 import com.hatecode.services.MaintenanceService;
 import com.hatecode.services.UserService;
+import com.hatecode.utils.AlertBox;
 import com.hatecode.utils.FormatDate;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -24,11 +26,15 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
+import static com.hatecode.config.AppConfig.MAX_DATE;
+import static com.hatecode.config.AppConfig.MIN_DATE;
 import static com.hatecode.utils.FormatDate.DATE_FORMATTER;
 
 public class MaintenanceHistoryController {
     MaintenanceService maintenanceService = new MaintenanceServiceImpl();
     EquipmentMaintenanceService equipmentMaintainanceService = new EquipmentMaintenanceServiceImpl();
+
+    Maintenance currentMaintenance;
 
     @FXML
     TableView<Maintenance> maintenancesTableViewTable;
@@ -48,6 +54,8 @@ public class MaintenanceHistoryController {
     TextArea descriptionTextArea;
     @FXML
     TextField priceTextField;
+    @FXML
+    TextField totalPriceTextField;
     @FXML
     TextField maintenanceTypeTextField;
     @FXML
@@ -83,8 +91,11 @@ public class MaintenanceHistoryController {
         TableColumn<EquipmentMaintenance, String> equipmentIDColumn = new TableColumn<>("E.ID");
         equipmentIDColumn.setCellValueFactory(
                 new PropertyValueFactory<>("equipmentId"));
+        equipmentIDColumn.prefWidthProperty().bind(equipmentsTableViewTable.widthProperty().multiply(0.5));
 
         TableColumn<EquipmentMaintenance, String> equipmentNameColumn = new TableColumn<>("E.Name");
+        equipmentNameColumn.prefWidthProperty().bind(equipmentsTableViewTable.widthProperty().multiply(0.5));
+
 //        equipmentNameColumn.setCellValueFactory(cellData -> {
 //            EquipmentService equipmentService = new EquipmentServiceImpl();
 //            Equipment equipment = null;
@@ -109,7 +120,7 @@ public class MaintenanceHistoryController {
 
     private void initSearchFields(){
 
-        PauseTransition pause = new PauseTransition(javafx.util.Duration.millis(500));
+        PauseTransition pause = new PauseTransition(javafx.util.Duration.millis(1000));
 
         this.searchMaintenanceTextField.setOnKeyTyped(keyEvent -> {
             pause.setOnFinished(e -> {
@@ -121,8 +132,13 @@ public class MaintenanceHistoryController {
 
         this.searchEquipmentTextField.setOnKeyTyped(keyEvent -> {
             pause.setOnFinished(e -> {
+                if (currentMaintenance == null) {
+                    Platform.runLater(() -> AlertBox.showError("Choose a maintenance first", "Please choose a maintenance first"));
+                    return;
+                }
+
                 try {
-                    fetchEquipmentByEMId(maintenancesTableViewTable.getSelectionModel().getSelectedItems().getFirst().getId() ,searchEquipmentTextField.getText());
+                    fetchEquipmentByEMId(currentMaintenance.getId() ,searchEquipmentTextField.getText());
                     System.out.println("Search: " + searchEquipmentTextField.getText());
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -183,11 +199,23 @@ public class MaintenanceHistoryController {
         try {
             List<Maintenance> maintenances;
             kw = kw == null ? "" : kw.trim();
+            if (kw.length() > 255){
+                Platform.runLater(() -> AlertBox.showError("Keyword too long", "Please enter a keyword less than 255 characters"));
+                return;
+            }
+
             LocalDate fromDate = this.fromDatePicker.getValue() != null ? this.fromDatePicker.getValue() : null;
             LocalDate toDate = this.toDatePicker.getValue() != null ? this.toDatePicker.getValue().plusDays(1) : null;
 
             if (fromDate != null && toDate == null ) {
                 toDate = LocalDate.now().plusDays(1);
+            }
+
+            if (fromDate != null && toDate != null) {
+                if (fromDate.isBefore(MIN_DATE) || toDate.isAfter(MAX_DATE) ||fromDate.isAfter(toDate)) {
+                    Platform.runLater(() -> AlertBox.showError("Date out of range", "Please choose a date between " + MIN_DATE + " and " + MAX_DATE));
+                    return;
+                }
             }
 
             maintenances = this.maintenanceService.getMaintenances(kw, fromDate, toDate);
@@ -202,6 +230,13 @@ public class MaintenanceHistoryController {
 
     public void fetchEquipmentByEMId(int id, String kw) throws SQLException {
         List<EquipmentMaintenance> equipments;
+        kw = kw == null ? "" : kw.trim();
+
+        if (kw.length() > 255){
+            Platform.runLater(() -> AlertBox.showError("Keyword too long", "Please enter a keyword less than 255 characters"));
+            return;
+        }
+
         if (kw != null && !kw.isEmpty())
             equipments = this.equipmentMaintainanceService.getEquipmentsMaintenanceByEMId(kw, id);
         else
@@ -219,8 +254,8 @@ public class MaintenanceHistoryController {
         this.equipmentNameTextField.setText(equipment.getName());
         this.equipmentTechnicianTextField.setText(userService.getUserById(equipmentMaintainance.getTechnicianId()).getLastName());
 
-        this.startDateTextField.setText(this.maintenancesTableViewTable.getSelectionModel().getSelectedItems().getFirst().getStartDateTime().toString());
-        this.endDateTextField.setText(this.maintenancesTableViewTable.getSelectionModel().getSelectedItems().getFirst().getEndDateTime().toString());
+        this.startDateTextField.setText(DATE_FORMATTER.format(currentMaintenance.getStartDateTime()));
+        this.endDateTextField.setText(DATE_FORMATTER.format(currentMaintenance.getEndDateTime()));
 
         this.priceTextField.setText(String.valueOf(equipmentMaintainance.getRepairPrice()));
         this.descriptionTextArea.setText(equipmentMaintainance.getDescription());
@@ -237,7 +272,11 @@ public class MaintenanceHistoryController {
         this.maintenancesTableViewTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 try {
+                    currentMaintenance = newSelection;
                     fetchEquipmentByEMId(newSelection.getId(), null);
+
+                    totalPriceTextField.setText(String.valueOf(equipmentMaintainanceService.getTotalPriceEquipmentMaintenance(currentMaintenance.getId())));
+
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -258,5 +297,23 @@ public class MaintenanceHistoryController {
 
 
 
+    }
+
+    public void refreshData() {
+
+    }
+
+    public void init() {
+        initMaintenanceHistory();
+        initSearchFields();
+        fetchMaintenanceHistory("");
+        this.maintenancesTableViewTable.getSelectionModel().selectFirst();
+        if (this.maintenancesTableViewTable.getSelectionModel().getSelectedItem() != null) {
+            try {
+                fetchEquipmentByEMId(this.maintenancesTableViewTable.getSelectionModel().getSelectedItem().getId(), null);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

@@ -155,7 +155,7 @@
                                                       <Font name="SF Pro Text Semibold" size="14.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="maintenanceTitleTextField" prefHeight="44.0" prefWidth="237.0" promptText="Search equipment..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                                                <TextField fx:id="maintenanceTitleTextField" prefHeight="44.0" prefWidth="237.0" promptText="Title..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
                                              </children>
                                           </GridPane>
                                           <Separator prefWidth="200.0" />

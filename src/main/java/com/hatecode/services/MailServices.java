@@ -4,6 +4,8 @@
  */
 package com.hatecode.services;
 
+import com.hatecode.pojo.EquipmentMaintenance;
+import com.hatecode.pojo.Maintenance;
 import java.util.List;
 
 /**
@@ -11,5 +13,19 @@ import java.util.List;
  * @author ADMIN
  */
 public interface MailServices {
-    void sendEmailNotify(String receivedUser, String subject, List<Integer> maintainanceIds, String username, String password);
+    void sendEmailNotify(String receivedUser, String subject, List<Integer> maintainanceIds);
+    
+    /**
+     * Send enhanced email with detailed maintenance information
+     * 
+     * @param receivedUser Email address of the recipient
+     * @param subject Email subject
+     * @param maintenance The maintenance schedule
+     * @param equipmentMaintenanceList List of equipment maintenance records 
+     */
+    void sendEnhancedMaintenanceEmail(
+            String receivedUser, 
+            String subject,
+            Maintenance maintenance, 
+            List<EquipmentMaintenance> equipmentMaintenanceList);
 }

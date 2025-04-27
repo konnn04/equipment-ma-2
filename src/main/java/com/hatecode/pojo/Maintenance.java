@@ -9,6 +9,7 @@ public class Maintenance {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private boolean isActive;
+    private MaintenanceStatus maintenanceStatus;
     private LocalDateTime createdAt;
 
     public Maintenance() {
@@ -21,6 +22,7 @@ public class Maintenance {
             String description,
             LocalDateTime startDatetime,
             LocalDateTime endDatetime,
+            MaintenanceStatus maintenanceStatus,
             boolean isActive,
             LocalDateTime createdAt) {
         this.id = id;
@@ -28,6 +30,7 @@ public class Maintenance {
         this.description = description;
         this.startDateTime = startDatetime;
         this.endDateTime = endDatetime;
+        this.maintenanceStatus = maintenanceStatus;
         this.isActive = isActive;
         this.createdAt = createdAt;
     }
@@ -36,11 +39,13 @@ public class Maintenance {
             String title,
             String description,
             LocalDateTime startDatetime,
-            LocalDateTime endDatetime) {
+            LocalDateTime endDatetime,
+            MaintenanceStatus maintenanceStatus){
         this.title = title;
         this.description = description;
         this.startDateTime = startDatetime;
         this.endDateTime = endDatetime;
+        this.maintenanceStatus = maintenanceStatus;
     }
 
     public int getId() {
@@ -83,11 +88,11 @@ public class Maintenance {
         this.endDateTime = endDateTime;
     }
 
-    public LocalDateTime getcreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setcreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -97,6 +102,14 @@ public class Maintenance {
 
     public void setActive(boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public MaintenanceStatus getMaintenanceStatus() {
+        return maintenanceStatus;
+    }
+
+    public void setMaintenanceStatus(MaintenanceStatus maintenanceStatus) {
+        this.maintenanceStatus = maintenanceStatus;
     }
 
 }

@@ -24,6 +24,7 @@ public interface EquipmentMaintenanceService {
     EquipmentMaintenance getEquipmentMaintenanceById(int id) throws SQLException;
     List<EquipmentMaintenance> getEquipmentsMaintenanceByEMId(String kw, int maintenanceId) throws SQLException;
     Equipment getEquipmentByEquipmentMaintenance(int id) throws SQLException;
+    double getTotalPriceEquipmentMaintenance(int maintenanceId) throws SQLException;
     boolean addEquipmentMaintenance(EquipmentMaintenance em) throws SQLException;
     boolean addEquipmentMaintenanceFull(EquipmentMaintenance em) throws SQLException;
     boolean updateEquipmentMaintenance(EquipmentMaintenance em) throws SQLException;
