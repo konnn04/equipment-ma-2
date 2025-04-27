@@ -1,5 +1,6 @@
 package com.hatecode.utils;
 
+import com.hatecode.config.AppConfig;
 import com.hatecode.services.impl.MaintenanceStatusUpdateServiceImpl;
 
 import java.util.concurrent.Executors;
@@ -10,8 +11,9 @@ import java.util.logging.Logger;
 
 public class MaintenanceStatusScheduler {
     private static final Logger LOGGER = Logger.getLogger(MaintenanceStatusScheduler.class.getName());
-    private static final int DEFAULT_INTERVAL_MINUTES = 15; // Check every 15 minutes
+    private static final long DEFAULT_INTERVAL_MINUTES = AppConfig.MAINTENANCE_STATUS_CHECK_INTERVAL;
     
+    // Convert milliseconds to minutes
     private static MaintenanceStatusScheduler instance;
     private final ScheduledExecutorService scheduler;
     private final MaintenanceStatusUpdateServiceImpl statusUpdateService;
@@ -38,7 +40,7 @@ public class MaintenanceStatusScheduler {
     /**
      * Start the scheduler with custom interval
      */
-    public void start(int intervalMinutes) {
+    public void start(long intervalMinutes) {
         LOGGER.info("Starting maintenance status scheduler with interval: " + intervalMinutes + " minutes");
         
         // Run the update process immediately once
@@ -49,7 +51,7 @@ public class MaintenanceStatusScheduler {
             this::runUpdate, 
             intervalMinutes, 
             intervalMinutes, 
-            TimeUnit.MINUTES
+            TimeUnit.MILLISECONDS
         );
     }
     

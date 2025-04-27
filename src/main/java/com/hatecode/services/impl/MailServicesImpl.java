@@ -5,14 +5,13 @@
 package com.hatecode.services.impl;
 
 import com.hatecode.config.AppConfig;
+import com.hatecode.equipmentma2.App;
 import com.hatecode.pojo.EquipmentMaintenance;
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.services.MailServices;
 import com.hatecode.utils.FormatDate;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,8 +34,8 @@ public class MailServicesImpl implements MailServices {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.host", AppConfig.EMAIL_SMTP_HOST);
+        props.put("mail.smtp.port", AppConfig.EMAIL_SMTP_PORT);
         props.put("mail.smtp.auth.mechanisms", "PLAIN LOGIN"); // Bắt buộc dùng cơ chế cơ bản
         props.put("mail.smtp.auth.plain.disable", "false");
         props.put("mail.smtp.auth.login.disable", "false");

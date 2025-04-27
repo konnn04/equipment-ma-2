@@ -36,7 +36,8 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    public static User createSuperUser() throws SQLException {
+    @Override
+    public User createSuperUser() throws SQLException {
         User superUser = null;
         String sql = "SELECT * FROM `User` WHERE username = 'admin'";
         try (Connection conn = JdbcUtils.getConn();
@@ -77,20 +78,21 @@ public class UserServiceImpl implements UserService {
         if (kw == null) {
             kw = "";
         }
-        String sql = "SELECT u.* FROM user u WHERE 1=1 ";
-        // Thêm điều kiện tìm kiếm
+        // Add backticks or double quotes around "user" table name
+        String sql = "SELECT u.* FROM `user` u WHERE 1=1 ";
+
+        // Rest of the method remains the same
         if (!kw.isEmpty()) {
             sql += "AND (u.username LIKE CONCAT('%', ?, '%') ";
             try {
-                Integer.parseInt(kw); // Kiểm tra nếu kw là số
+                Integer.parseInt(kw); // Check if kw is a number
                 sql += "OR u.id = ? ";
             } catch (NumberFormatException e) {
-                sql += "OR FALSE "; // Không tìm theo ID nếu kw không phải số
+                sql += "OR FALSE "; // Don't search by ID if kw isn't a number
             }
             sql += ") ";
         }
 
-        // Thêm điều kiện role
         if (roleId != 0) {
             sql += "AND u.role = ? ";
         }

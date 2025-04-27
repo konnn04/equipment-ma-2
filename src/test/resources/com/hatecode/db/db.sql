@@ -84,6 +84,18 @@ CREATE TABLE IF NOT EXISTS `Image` (
                                        PRIMARY KEY (`id`)
 );
 
+CREATE TABLE IF NOT EXISTS `Notifications` (
+                                               `id` int AUTO_INCREMENT NOT NULL UNIQUE,
+                                               `equipment_id` int NOT NULL,
+                                               `equipment_code` varchar(255) NOT NULL,
+                                               `equipment_name` nvarchar(255) NOT NULL,
+                                               `maintenance_due_date` timestamp NOT NULL,
+                                               `created_at` timestamp NOT NULL default current_timestamp,
+                                               `is_read` boolean NOT NULL DEFAULT '0',
+                                               `type` int NOT NULL DEFAULT '0',
+                                               PRIMARY KEY (`id`)
+);
+
 ALTER TABLE `Equipment` ADD CONSTRAINT `Equipment_fk3` FOREIGN KEY (`image_id`) REFERENCES `Image`(`id`);
 
 ALTER TABLE `Equipment` ADD CONSTRAINT `Equipment_fk4` FOREIGN KEY (`category_id`) REFERENCES `Category`(`id`)  ON DELETE CASCADE;
@@ -95,6 +107,8 @@ ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk1` F
 ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk5` FOREIGN KEY (`maintenance_id`) REFERENCES `Maintenance`(`id`)  ON DELETE CASCADE;
 
 ALTER TABLE `Equipment_Maintenance` ADD CONSTRAINT `Equipment_Maintenance_fk3` FOREIGN KEY (`technician_id`) REFERENCES `User`(`id`);
+
+ALTER TABLE `Notifications` ADD CONSTRAINT `Notifications_Equipment` FOREIGN KEY (`equipment_id`) REFERENCES `Equipment`(`id`);
 -- RUN THIS AFTER THE TABLES ARE CREATED
 INSERT INTO Image (filename, path)
 VALUES ('vector-sign-of-user-icon_zspnuk.jpg',

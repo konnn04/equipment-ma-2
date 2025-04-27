@@ -355,8 +355,9 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         });
     }
 
-    public boolean updateEquipmentMaintenanceResult(int equipmentMaintenanceId, Result result, 
-        String description, float repairPrice) throws SQLException {
+    @Override
+    public boolean updateEquipmentMaintenanceResult(int equipmentMaintenanceId, Result result,
+                                                    String description, float repairPrice) throws SQLException {
     
         // Validate input
         if (equipmentMaintenanceId <= 0) {
