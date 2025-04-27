@@ -179,12 +179,6 @@ public class RecordNewRepairManagerController {
         this.equipmentMaintenanceID.setText(String.valueOf(e.getId()));
         this.equipmentID.setText(String.valueOf(e.getEquipmentId()));
         User technician = userService.getUserById(e.getTechnicianId());
-        if(technician != null){
-            System.out.println(technician.getId());
-        }
-        else{
-            System.out.println("No user found");
-        }
         this.equipmentMaintenanceTechnician.setText(String.valueOf(technician.getLastName() + " " + technician.getFirstName()));
         // Xử lý
         LocalDateTime localDateTime = e.getInspectionDate();
@@ -194,6 +188,7 @@ public class RecordNewRepairManagerController {
             this.inspectionDate.setValue(LocalDate.now()); // hoặc set ngày mặc định nếu cần
         }
         this.equipmentMaintenanceDescription.setText(String.valueOf(e.getDescription()));
+        this.equipmentMaintenancePrice.clear();
 
         // Thiết lập giá trị status trong comboBox
         if (e.getResult() != null) {
@@ -203,13 +198,17 @@ public class RecordNewRepairManagerController {
         }
     }
 
+    private void showAlert(Alert.AlertType type,String title, String headerText, String contentText){
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        alert.showAndWait();
+    }
+
     public void saveEquipmentMaintenance() throws SQLException {
         if (currentEquipmentMaintenance == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Cảnh báo");
-            alert.setHeaderText("Không có thiết bị được chọn");
-            alert.setContentText("Vui lòng chọn một thiết bị để cập nhật thông tin");
-            alert.showAndWait();
+            showAlert(Alert.AlertType.WARNING,"Warning","No equipment selected!!","Please select equipment to update the information.");
             return;
         }
 
@@ -218,19 +217,41 @@ public class RecordNewRepairManagerController {
             currentEquipmentMaintenance.setResult(Result.NEED_REPAIR);
         }
 
-        // Cập nhật thông tin từ các control vào đối tượng hiện tại
-        currentEquipmentMaintenance.setDescription(equipmentMaintenanceDescription.getText());
-        if(currentEquipmentMaintenance.getResult().equals(Result.NEED_REPAIR)){
-            if(equipmentMaintenancePrice.getText().isEmpty()){
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Warning");
-                alert.setHeaderText("You must fill the price field !!!");
-                alert.setContentText("Please enter the maintenance cost.");
-                alert.showAndWait();
-                return;
-            }
-            currentEquipmentMaintenance.setRepairPrice(Float.parseFloat(equipmentMaintenancePrice.getText()));
+        if(currentEquipmentMaintenance.getResult().equals(Result.NEED_REPAIR) && equipmentMaintenancePrice.getText().isEmpty()){
+            showAlert(Alert.AlertType.WARNING,"Warning","You must fill the price field !!!","Please enter the maintenance cost.");
+            return;
         }
+
+        // Kiểm tra giá tiền
+        String priceText = equipmentMaintenancePrice.getText();
+
+        try {
+            float price = Float.parseFloat(priceText); // parse đúng float
+            if (currentEquipmentMaintenance.getResult().equals(Result.NEED_REPAIR)) {
+                if (price < 100000f || price > 100000000f) {
+                    showAlert(Alert.AlertType.WARNING,"Warning","Invalid Price Range!!","The maintenance cost must be between 100,000\n and 100,000,000.");
+                    return;
+                } else {
+                    currentEquipmentMaintenance.setRepairPrice(price);
+                }
+            } else {
+                // Nếu không phải NEED_REPAIR, luôn đặt giá = 0
+                currentEquipmentMaintenance.setRepairPrice(0f);
+            }
+            // Cập nhật mô tả
+            currentEquipmentMaintenance.setDescription(equipmentMaintenanceDescription.getText());
+        } catch (NumberFormatException e) {
+            if (currentEquipmentMaintenance.getResult().equals(Result.NEED_REPAIR)) {
+                showAlert(Alert.AlertType.WARNING,"Warning","Invalid Input!!","Please enter a valid number for the maintenance cost.");
+                return;
+            } else {
+                // Nếu không phải NEED_REPAIR thì mặc định giá = 0
+                currentEquipmentMaintenance.setRepairPrice(0f);
+                currentEquipmentMaintenance.setDescription(equipmentMaintenanceDescription.getText());
+            }
+        }
+
+
 
         // Cập nhật ngày kiểm tra
         if (inspectionDate.getValue() != null) {
@@ -254,20 +275,22 @@ public class RecordNewRepairManagerController {
 
         if (success) {
             // Hiển thị thông báo thành công
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setHeaderText("Updated successfully");
-            alert.setContentText("Maintenance equipment information was updated successfully.");
-            alert.showAndWait();
+//            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//            alert.setTitle("Success");
+//            alert.setHeaderText("Success");
+//            alert.setContentText("Maintenance equipment information was updated successfully.");
+//            alert.showAndWait();
+            showAlert(Alert.AlertType.INFORMATION,"Success","Success","Maintenance equipment information was updated successfully.");
 
             // Làm mới dữ liệu
             refreshData();
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("An error occurred while updating the maintenance equipment.");
-            alert.setContentText("");
-            alert.showAndWait();
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("Error");
+//            alert.setHeaderText("An error occurred while updating the maintenance equipment.");
+//            alert.setContentText("");
+//            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR,"Error","An error occurred while updating the maintenance equipment.","");
         }
     }
 
