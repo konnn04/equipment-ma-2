@@ -93,7 +93,13 @@ public class UserManagerController {
         List<Role> data = Role.getAllRoles();
         ObservableList<Role> roleList = FXCollections.observableArrayList(data);
         roles.setItems(roleList);
-        roleComboBox.setItems(roleList);
+
+        // Tạo danh sách bỏ "All Roles"
+        List<Role> rolesWithoutAll = data.stream()
+                .filter(role -> role != Role.ALL_USER) // bỏ ALL_USER ra
+                .toList();
+        ObservableList<Role> roleComboBoxList = FXCollections.observableArrayList(rolesWithoutAll);
+        roleComboBox.setItems(roleComboBoxList); // roleComboBox: không có "All Roles"
     }
 
     public void setupHandler() {

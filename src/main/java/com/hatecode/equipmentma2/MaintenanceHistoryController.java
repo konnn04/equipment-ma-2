@@ -12,7 +12,6 @@ import com.hatecode.services.EquipmentService;
 import com.hatecode.services.MaintenanceService;
 import com.hatecode.services.UserService;
 import com.hatecode.utils.AlertBox;
-import com.hatecode.utils.FormatDate;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -23,7 +22,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import static com.hatecode.config.AppConfig.MAX_DATE;

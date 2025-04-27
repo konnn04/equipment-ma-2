@@ -6,6 +6,7 @@ import com.hatecode.services.impl.MaintenanceRepairSuggestionServiceImpl;
 
 import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,12 +23,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(TestDatabaseConfig.class)
 public class MaintenanceRepairSuggestionServiceImplTest {
+    @BeforeAll
+    static void setupDatabase() throws SQLException {
+        JdbcUtils.fileName = "dbWithData";
+    }
 
     @BeforeEach
     void setupTestData() throws SQLException {
         // Reset database to clean state
         JdbcUtils.resetDatabase();
-        JdbcUtils.fileName = "dbWithData";
         // Initialize test data
         String sql = """
                        """;

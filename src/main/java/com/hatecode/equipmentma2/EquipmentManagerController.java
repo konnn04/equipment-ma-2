@@ -1,5 +1,6 @@
 package com.hatecode.equipmentma2;
 
+import com.hatecode.config.AppConfig;
 import com.hatecode.pojo.Category;
 import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.Status;
@@ -71,7 +72,7 @@ public class EquipmentManagerController {
 
     // Add these as class fields
     private Timeline searchDebounceTimer;
-    private final int SEARCH_DELAY_MS = 500; // 500ms delay
+    private final int SEARCH_DELAY_MS = AppConfig.SEARCH_DELAY_MS;
     private static final Logger LOGGER = Logger.getLogger(EquipmentManagerController.class.getName());
 
     /**
@@ -218,14 +219,6 @@ public class EquipmentManagerController {
         );
         searchDebounceTimer.setCycleCount(1);
 
-        // Search field listener with debounce
-        equipmentQueryTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            // Reset the timer every time the text changes
-            searchDebounceTimer.stop();
-            // Start the timer again
-            searchDebounceTimer.play();
-        });
-
         // Table selection listener
         equipmentTable.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
@@ -237,7 +230,14 @@ public class EquipmentManagerController {
 
         // Search field listener
         equipmentQueryTextField.textProperty().addListener(
-            (observable, oldValue, newValue) -> safeExecute(this::refreshEquipmentData));
+                (observable, oldValue, newValue) -> {
+                    if (searchDebounceTimer != null) {
+                        searchDebounceTimer.stop();
+                    }
+                    if (!newValue.equals(oldValue)) {
+                        searchDebounceTimer.playFromStart();
+                    }
+                });
 
         // Mode selection listener
         modeComboBox.getSelectionModel().selectedItemProperty().addListener(
