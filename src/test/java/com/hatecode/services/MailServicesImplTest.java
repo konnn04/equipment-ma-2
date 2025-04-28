@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 //@ExtendWith({TestDatabaseConfig.class, MockitoExtension.class})
 public class MailServicesImplTest {
-    
     private MailServices mailServices;
     
     @BeforeEach

@@ -456,6 +456,45 @@ public class EquipmentMaintenanceServiceImplTest {
         });
         assertEquals(ExceptionMessage.EQUIPMENT_MAINTENANCE_NOT_INVALID, e.getMessage());
     }
+    /* =============================================================================
+     * Can not update or add equipment maintenance when it completed
+     * ========================================================================== */
+
+    @Test
+    void testUpdateEquipmentMaintenance_NotCompletedWithCompletedMaintenance() throws SQLException {
+        // Maintenance ID 1 is completed in the test data
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        EquipmentMaintenance em = equipmentMaintenanceService.getEquipmentMaintenanceById(1);
+        em.setDescription("Updated description");
+        em.setRepairPrice(75.0f);
+
+        // Act & Assert
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            equipmentMaintenanceService.updateEquipmentMaintenance(em);
+        });
+
+        assertEquals(ExceptionMessage.EQUIPMENT_MAINTENANCE_CANNOT_UPDATE_AFTER_MAINTENANCE_COMPLETED, e.getMessage());
+    }
+
+    @Test
+    void testAddEquipmentMaintenance_NotCompletedWithCompletedMaintenance() throws SQLException {
+        // Maintenance ID 1 is completed in the test data
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        EquipmentMaintenance em = new EquipmentMaintenance(
+                2, 3, 1, "EQ002", "Equipment 2",
+                "New maintenance for Equipment 2");
+        equipmentMaintenanceService.addEquipmentMaintenance(em);
+
+        // Act & Assert
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            equipmentMaintenanceService.addEquipmentMaintenance(em);
+        });
+
+        assertEquals(ExceptionMessage.EQUIPMENT_MAINTENANCE_CANNOT_UPDATE_AFTER_MAINTENANCE_COMPLETED, e.getMessage());
+    }
+
+
+
 
     /* =============================================================================
      * Additional test cases for updateEquipmentMaintenance
