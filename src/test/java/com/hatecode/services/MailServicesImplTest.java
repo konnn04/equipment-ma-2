@@ -5,33 +5,19 @@ import com.hatecode.pojo.EquipmentMaintenance;
 import com.hatecode.pojo.Maintenance;
 import com.hatecode.pojo.MaintenanceStatus;
 import com.hatecode.services.impl.MailServicesImpl;
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@ExtendWith({TestDatabaseConfig.class, MockitoExtension.class})
+//@ExtendWith({TestDatabaseConfig.class, MockitoExtension.class})
 public class MailServicesImplTest {
-
     private MailServices mailServices;
     
     @BeforeEach
