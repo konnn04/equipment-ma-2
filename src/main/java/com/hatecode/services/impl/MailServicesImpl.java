@@ -73,21 +73,21 @@ public class MailServicesImpl implements MailServices {
 
     /**
      * Send enhanced email with detailed maintenance and equipment information
-     * 
-     * @param receivedUser Email address of the recipient
-     * @param subject Email subject
-     * @param maintenance The maintenance schedule
+     *
+     * @param receivedUser             Email address of the recipient
+     * @param subject                  Email subject
+     * @param maintenance              The maintenance schedule
      * @param equipmentMaintenanceList List of equipment maintenance records
      */
     public void sendEnhancedMaintenanceEmail(
-            String receivedUser, 
-            String subject, 
+            String receivedUser,
+            String subject,
             Maintenance maintenance,
             List<EquipmentMaintenance> equipmentMaintenanceList) {
-        
+
         String username = AppConfig.EMAIL_USERNAME;
         String password = AppConfig.EMAIL_PASSWORD;
-        
+
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -147,32 +147,32 @@ public class MailServicesImpl implements MailServices {
         sb.append("</body></html>");
         return sb.toString();
     }
-    
+
     /**
      * Build enhanced HTML content for the maintenance notification email
      */
     private static String buildEnhancedEmailContent(
-            String employeeName, 
-            Maintenance maintenance, 
+            String employeeName,
+            Maintenance maintenance,
             List<EquipmentMaintenance> equipmentMaintenanceList) {
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>");
         sb.append("<h2>Kính gửi anh/chị ").append(employeeName).append(",</h2>");
-        
+
         // Add maintenance schedule information
         sb.append("<div style='background-color: #f9f9f9; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px;'>");
         sb.append("<h3 style='color: #0066cc; margin-top: 0;'>Thông Tin Lịch Bảo Trì</h3>");
         sb.append("<p><strong>Tiêu đề:</strong> ").append(maintenance.getTitle()).append("</p>");
-        
+
         if (maintenance.getDescription() != null && !maintenance.getDescription().isEmpty()) {
             sb.append("<p><strong>Mô tả:</strong> ").append(maintenance.getDescription()).append("</p>");
         }
-        
+
         sb.append("<p><strong>Thời gian bắt đầu:</strong> ").append(FormatDate.formatDateTime(maintenance.getStartDateTime())).append("</p>");
         sb.append("<p><strong>Thời gian kết thúc:</strong> ").append(FormatDate.formatDateTime(maintenance.getEndDateTime())).append("</p>");
         sb.append("</div>");
-        
+
         // Add equipment table with more details
         sb.append("<h3 style='color: #0066cc;'>Danh Sách Thiết Bị Cần Bảo Trì</h3>");
         sb.append("<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 20px;'>");
@@ -185,14 +185,14 @@ public class MailServicesImpl implements MailServices {
         for (int i = 0; i < equipmentMaintenanceList.size(); i++) {
             EquipmentMaintenance em = equipmentMaintenanceList.get(i);
             sb.append("<tr>")
-                .append("<td style='padding: 8px; text-align: center;'>").append(i + 1).append("</td>")
-                .append("<td style='padding: 8px;'>").append(em.getEquipmentCode()).append("</td>")
-                .append("<td style='padding: 8px;'>").append(em.getEquipmentName()).append("</td>")
-                .append("</tr>");
+                    .append("<td style='padding: 8px; text-align: center;'>").append(i + 1).append("</td>")
+                    .append("<td style='padding: 8px;'>").append(em.getEquipmentName()).append("</td>")
+                    .append("<td style='padding: 8px;'>").append(em.getEquipmentCode()).append("</td>")
+                    .append("</tr>");
         }
 
         sb.append("</table>");
-        
+
         // Add additional instructions
         sb.append("<div style='background-color: #f9f9f9; border: 1px solid #ddd; padding: 15px;'>");
         sb.append("<p><strong>Lưu ý:</strong></p>");
@@ -202,11 +202,11 @@ public class MailServicesImpl implements MailServices {
         sb.append("<li>Liên hệ quản lý nếu gặp vấn đề hoặc có câu hỏi</li>");
         sb.append("</ul>");
         sb.append("</div>");
-        
+
         // Add footer
         sb.append("<p style='margin-top: 20px;'>Trân trọng,<br><strong>Phòng Kỹ Thuật</strong></p>");
         sb.append("</body></html>");
-        
+
         return sb.toString();
     }
 }

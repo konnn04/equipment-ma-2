@@ -326,6 +326,15 @@ public class UserManagerController {
                 return;
             }
 
+            // Kiểm tra định dạng số điện thoại
+            if (!phone.matches("\\d{10}")) {
+                showErrorAlert("Invalid Phone Number", "Phone Format Error",
+                        "Phone number must contain exactly 10 digits and no other characters");
+                return;
+            }
+
+
+
             // Xử lý avatar
             com.hatecode.pojo.Image avatar = null;
             if (selectedAvatarFile != null) {

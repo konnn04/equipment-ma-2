@@ -178,6 +178,7 @@ public class MaintenanceManagerController {
             // Init mail
             MaintenanceEmailNotifier emailNotifier = new MaintenanceEmailNotifier();
             addMaintenanceChangeListener(emailNotifier);
+//            removeMaintenanceChangeListener(emailNotifier);
         } catch (Exception e) {
             handleException(e, "Error initializing maintenance manager");
         }
