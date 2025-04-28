@@ -37,18 +37,20 @@ public class SelectEquipmentPopUpController {
     private final EquipmentService equipmentService = new EquipmentServiceImpl();
     private ObservableList<Equipment> allAvailableEquipments;
     private ObservableList<Equipment> selectedEquipments;
+    private ObservableList<Equipment> backupEquipments;
     private FilteredList<Equipment> filteredAvailableEquipments;
     private FilteredList<Equipment> filteredSelectedEquipments;
-    
+
     public void initialize(List<Integer> existingEquipmentIds) {
         // Khởi tạo danh sách
         allAvailableEquipments = FXCollections.observableArrayList();
         selectedEquipments = FXCollections.observableArrayList();
+
         
         // Cài đặt filtered lists
         filteredAvailableEquipments = new FilteredList<>(allAvailableEquipments, p -> true);
         filteredSelectedEquipments = new FilteredList<>(selectedEquipments, p -> true);
-        
+        backupEquipments = new FilteredList<>(selectedEquipments, p -> true);
         // Thiết lập cột cho bảng thiết bị có sẵn
         setupTableColumns(availableEquipmentTableView);
         
@@ -222,7 +224,7 @@ public class SelectEquipmentPopUpController {
     @FXML
     public void handleCancel() {
         // Xóa lựa chọn và đóng cửa sổ
-        selectedEquipments.clear();
+        selectedEquipments = backupEquipments;
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }

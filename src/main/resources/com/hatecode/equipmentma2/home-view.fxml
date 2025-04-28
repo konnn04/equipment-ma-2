@@ -6,11 +6,12 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
@@ -18,7 +19,7 @@
     <top>
         <HBox alignment="CENTER" prefHeight="35.0" prefWidth="1433.0" style="-fx-background-color: FFFFFFFF;" BorderPane.alignment="CENTER_RIGHT">
             <children>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Equipment Management" wrappingWidth="709.46484375">
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Equipment Management" wrappingWidth="324.46484375">
                     <font>
                         <Font name="SF Pro Display Bold" size="24.0" />
                     </font>
@@ -26,9 +27,11 @@
                         <Insets left="30.0" />
                     </HBox.margin>
                 </Text>
-                <HBox alignment="CENTER_RIGHT" prefHeight="46.0" prefWidth="616.0" spacing="10.0" HBox.hgrow="ALWAYS">
+            <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                <HBox alignment="CENTER_RIGHT" prefHeight="48.0" prefWidth="557.0" spacing="10.0">
                     <children>
-                        <VBox alignment="CENTER_LEFT" prefHeight="46.0" prefWidth="147.0">
+                  <ImageView fx:id="avatarImageView" fitHeight="48.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
+                        <VBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="178.0" HBox.hgrow="ALWAYS">
                             <children>
                                 <Label fx:id="UIUsernameTextField" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="116.0" styleClass="" text="User name">
                                     <font>
@@ -45,12 +48,7 @@
                                 </Label>
                             </children>
                         </VBox>
-                        <Circle fill="#dfe5eb" radius="22.0" stroke="BLACK" strokeType="INSIDE">
-                            <HBox.margin>
-                                <Insets left="20.0" />
-                            </HBox.margin>
-                        </Circle>
-                        <Button fx:id="updateStatusesButton" mnemonicParsing="false" prefHeight="36.0" prefWidth="139.0" styleClass="secondary-button" text="Update status">
+                        <Button fx:id="updateStatusesButton" maxWidth="60.0" minWidth="60.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="60.0" styleClass="secondary-button" text="🔄">
                      <HBox.margin>
                         <Insets left="20.0" />
                      </HBox.margin></Button>

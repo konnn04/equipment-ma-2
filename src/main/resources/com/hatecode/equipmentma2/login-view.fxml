@@ -42,7 +42,7 @@
          <children>
             <VBox alignment="CENTER" prefHeight="472.0" prefWidth="366.0" AnchorPane.bottomAnchor="54.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Label text="Hệ thống Quản lý Thiết bị" VBox.vgrow="ALWAYS">
+                  <Label text="Maintenance management system" VBox.vgrow="ALWAYS">
                      <font>
                         <Font name="SF Pro Display Bold" size="24.0" />
                      </font>
@@ -62,7 +62,7 @@
                         <RowConstraints />
                      </rowConstraints>
                      <children>
-                        <Label text="Tên đăng nhập:">
+                        <Label text="Username">
                            <font>
                               <Font name="SF Pro Text Medium" size="13.0" />
                            </font>
@@ -70,7 +70,7 @@
                               <Insets left="10.0" />
                            </GridPane.margin></Label>
                         <TextField fx:id="usernameField" onAction="#onEnterLogin" onKeyPressed="#onEnterLogin" prefHeight="0.0" prefWidth="70.0" GridPane.columnIndex="1" />
-                        <Label text="Mật khẩu:" GridPane.rowIndex="1">
+                        <Label text="Password:" GridPane.rowIndex="1">
                            <font>
                               <Font name="SF Pro Text Medium" size="13.0" />
                            </font>
@@ -84,12 +84,12 @@
                      </VBox.margin>
                   </GridPane>
                   <Label fx:id="errorMessageLabel" />
-                  <Button onAction="#onClickLogin" prefHeight="26.0" prefWidth="119.0" text="Đăng nhập">
+                  <Button onAction="#onClickLogin" prefHeight="26.0" prefWidth="119.0" text="Login">
                      <VBox.margin>
                         <Insets bottom="10.0" />
                      </VBox.margin>
                   </Button>
-                  <Label text="Quên Mật Khẩu?" />
+                  <Label text="Forgot password?" />
                </children>
             </VBox>
          </children>

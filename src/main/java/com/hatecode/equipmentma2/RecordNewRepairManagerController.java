@@ -10,6 +10,7 @@ import com.hatecode.services.UserService;
 import com.hatecode.services.impl.EquipmentMaintenanceServiceImpl;
 import com.hatecode.services.impl.MaintenanceServiceImpl;
 import com.hatecode.services.impl.UserServiceImpl;
+import com.hatecode.utils.AlertBox;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -70,6 +71,7 @@ public class RecordNewRepairManagerController {
                 new SimpleStringProperty(cellData.getValue().getEndDateTime().toString())
         );
         equipmentMaintenancePrice.setDisable(true);
+        recordNewRepairMaintenance.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     public void loadColumnEquipmentMaintenance() throws SQLException {
@@ -91,6 +93,8 @@ public class RecordNewRepairManagerController {
         List<Result> results = Result.getAllResults();
         // Set items after ensuring list is valid
         statusComboBox.setItems(FXCollections.observableArrayList(results));
+        recordNewRepairMaintenceEquipments.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
     }
 
     public void loadMaintenancesData(String query) throws SQLException {
@@ -140,11 +144,11 @@ public class RecordNewRepairManagerController {
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 // Hiển thị thông báo lỗi cho người dùng
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi");
-                alert.setHeaderText("Không thể lưu thông tin");
-                alert.setContentText("Đã xảy ra lỗi khi lưu thông tin bảo trì: " + ex.getMessage());
-                alert.showAndWait();
+                AlertBox.showError("Error", "An error occurred while saving the maintenance information: " + ex.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Hiển thị thông báo lỗi cho người dùng
+                AlertBox.showError("Error", "An error occurred while saving the maintenance information: " + e.getMessage());
             }
         });
 
@@ -217,7 +221,7 @@ public class RecordNewRepairManagerController {
             currentEquipmentMaintenance.setResult(Result.NEED_REPAIR);
         }
 
-        if(currentEquipmentMaintenance.getResult().equals(Result.NEED_REPAIR) && equipmentMaintenancePrice.getText().isEmpty()){
+        if(statusComboBox.getSelectionModel().getSelectedItem().equals(Result.NEED_REPAIR) && equipmentMaintenancePrice.getText().isEmpty()){
             showAlert(Alert.AlertType.WARNING,"Warning","You must fill the price field !!!","Please enter the maintenance cost.");
             return;
         }
@@ -227,7 +231,7 @@ public class RecordNewRepairManagerController {
 
         try {
             float price = Float.parseFloat(priceText); // parse đúng float
-            if (currentEquipmentMaintenance.getResult().equals(Result.NEED_REPAIR)) {
+            if (statusComboBox.getSelectionModel().getSelectedItem().equals(Result.NEED_REPAIR)) {
                 if (price < 100000f || price > 100000000f) {
                     showAlert(Alert.AlertType.WARNING,"Warning","Invalid Price Range!!","The maintenance cost must be between 100,000\n and 100,000,000.");
                     return;

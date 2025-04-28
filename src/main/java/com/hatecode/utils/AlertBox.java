@@ -47,6 +47,14 @@ public class AlertBox {
         return alert.showAndWait().orElse(cancelButton) == okButton;
     }
 
+    // Success Alert
+    public static void showSuccess(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
     // Input Alert
     public static String showInputDialog(String title, String headerText, String contentText) {
         TextInputDialog dialog = new TextInputDialog();

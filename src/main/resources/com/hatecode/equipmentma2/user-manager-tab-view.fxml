@@ -39,17 +39,16 @@
                                  </font>
                               </Label>
                               <TextField fx:id="txtSearchUser" prefHeight="39.0" prefWidth="440.0" promptText="Search user..." style="-fx-background-color: rgb(232, 232, 237);" styleClass="search-field" />
-                              <HBox alignment="BOTTOM_LEFT" prefHeight="31.0" prefWidth="349.0" spacing="10.0" VBox.vgrow="NEVER">
+                              <HBox alignment="CENTER_LEFT" prefHeight="31.0" prefWidth="349.0" spacing="10.0">
                                  <children>
-                                    <Label prefHeight="31.0" styleClass="" text="Filter by" HBox.hgrow="NEVER">
+                                    <Label prefHeight="31.0" prefWidth="99.0" styleClass="" text="Filter by" HBox.hgrow="ALWAYS">
                                        <font>
                                           <Font name="SF Pro Text Semibold" size="16.0" />
                                        </font>
                                     </Label>
-                                    <ComboBox prefHeight="31.0" promptText="Select" style="-fx-background-color: rgb(232, 232, 237);" />
+                                    <ComboBox fx:id="roles" prefHeight="26.0" prefWidth="162.0" promptText="All Roles" style="-fx-background-color: rgb(232, 232, 237);" styleClass="combo-box" HBox.hgrow="ALWAYS" />
                                  </children>
                               </HBox>
-                              <ComboBox fx:id="roles" prefHeight="26.0" prefWidth="1246.0" promptText="All Roles" style="-fx-background-color: rgb(232, 232, 237);" styleClass="combo-box" />
                               <TableView fx:id="users" prefHeight="478.0" prefWidth="388.0" VBox.vgrow="ALWAYS">
                                  <columns>
                                     <TableColumn prefWidth="113.0" text="User ID" />

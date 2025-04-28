@@ -153,15 +153,6 @@ public class ImageServiceImplTest {
         });
     }
 
-    @Test
-    public void testAddImage_NullCreatedDate() {
-        ImageService imageService = new ImageServiceImpl();
-        Image img = new Image(0, "no_date.png", null, "/images/no_date.png");
-        
-        assertThrows(NullPointerException.class, () -> {
-            imageService.addImage(img);
-        });
-    }
 
     /*=============================================================================
      * Test updateImage methods

@@ -47,7 +47,7 @@ public class EquipmentMaintenanceServiceImplTest {
                 INSERT INTO Maintenance (id, title, description, start_datetime, end_datetime)
                 VALUES (1, 'Maintenance 1', 'Regular maintenance', '2025-01-01 09:00:00', '2025-01-01 17:00:00'),
                     (2, 'Maintenance 2', 'Emergency maintenance', '2025-02-01 08:00:00', '2025-02-02 18:00:00'),
-                    (3, 'Maintenance 3', 'Special maintenance', '2025-03-01 10:00:00', '2025-03-05 15:00:00');
+                    (3, 'Maintenance 3', 'Special maintenance', '2025-04-01 10:00:00', '2025-10-05 15:00:00');
                 INSERT INTO "USER" (id, username, password, first_name, last_name, phone, email, role, avatar_id)
                 VALUES (1, 'tech1', 'password1', 'John', 'Doe', '1234567890', 'john@example.com', 2, 1),
                     (2, 'tech2', 'password2', 'Jane', 'Smith', '0987654321', 'jane@example.com', 2, 1);
@@ -232,8 +232,8 @@ public class EquipmentMaintenanceServiceImplTest {
     @Test
     void testUpdateEquipmentMaintenance_Success() throws SQLException {
         EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
-        // Arrange
-        EquipmentMaintenance em = equipmentMaintenanceService.getEquipmentMaintenanceById(1);
+        // Arrange 4.. is in test data
+        EquipmentMaintenance em = equipmentMaintenanceService.getEquipmentMaintenanceById(4);
         em.setDescription("Updated description");
         em.setRepairPrice(75.0f);
         em.setResult(Result.NORMALLY);
@@ -243,7 +243,7 @@ public class EquipmentMaintenanceServiceImplTest {
         // Assert
         assertTrue(result);
         // Verify
-        EquipmentMaintenance updated = equipmentMaintenanceService.getEquipmentMaintenanceById(1);
+        EquipmentMaintenance updated = equipmentMaintenanceService.getEquipmentMaintenanceById(4);
         assertEquals("Updated description", updated.getDescription());
         assertEquals(75.0f, updated.getRepairPrice());
         assertEquals(Result.NORMALLY, updated.getResult());
@@ -265,9 +265,11 @@ public class EquipmentMaintenanceServiceImplTest {
                 true
         );
         // Act
-        boolean result = equipmentMaintenanceService.updateEquipmentMaintenance(em);
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            equipmentMaintenanceService.updateEquipmentMaintenance(em);
+        });
         // Assert
-        assertFalse(result);
+        assertEquals(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL, e.getMessage());
     }
 
     /* =============================================================================
@@ -278,17 +280,15 @@ public class EquipmentMaintenanceServiceImplTest {
         EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         
         // Arrange
-        int equipmentMaintenanceId = 1; // Sử dụng ID đã tồn tại trong test data
+        int equipmentMaintenanceId = 4; // Sử dụng ID đã tồn tại trong test data
         Result result = Result.NORMALLY;
         String description = "Updated via result method";
         float repairPrice = 126f;
         
         // Act
-        boolean updated = equipmentMaintenanceService.updateEquipmentMaintenanceResult(
+        Boolean isUpdated = equipmentMaintenanceService.updateEquipmentMaintenanceResult(
             equipmentMaintenanceId, result, description, repairPrice);
-        
-        // Assert
-        assertTrue(updated);
+        assertTrue(isUpdated, "Update should be successful");
         
         // Verify the update
         EquipmentMaintenance em = equipmentMaintenanceService.getEquipmentMaintenanceById(equipmentMaintenanceId);
@@ -477,7 +477,7 @@ public class EquipmentMaintenanceServiceImplTest {
         
         // Arrange
         EquipmentMaintenance em = new EquipmentMaintenance(
-            1, 0, 1, "EQ001","Equipment 1",
+            4, 0, 1, "EQ001","Equipment 1",
             "Invalid data test",
             Result.NEED_REPAIR,
             50.0f,
