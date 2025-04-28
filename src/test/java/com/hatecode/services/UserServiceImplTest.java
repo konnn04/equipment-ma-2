@@ -10,6 +10,7 @@ import com.hatecode.utils.EmailValidator;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.utils.PasswordUtils;
+import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -104,9 +105,11 @@ VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '01
         try {
             boolean result = userService.addUser(user, null);
             assertEquals(expectedOutput, result);
+
         } catch (SQLException ex) {
             fail("SQLException occurred during test: " + ex.getMessage());
         }
+
     }
 
     @Test
@@ -511,7 +514,7 @@ VALUES ('Custom', 'Image', 'customimg', 'password123', 'custom@example.com', '01
         // First ensure admin doesn't exist
         try (Connection conn = JdbcUtils.getConn();
              Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("DELETE FROM User WHERE username = 'admin'");
+            stmt.executeUpdate("DELETE FROM `User` WHERE username = 'admin'");
         } catch (SQLException e) {
             e.printStackTrace();
         }

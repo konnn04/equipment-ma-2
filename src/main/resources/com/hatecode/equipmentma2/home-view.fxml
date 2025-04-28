@@ -28,10 +28,10 @@
                     </HBox.margin>
                 </Text>
             <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                <HBox alignment="CENTER_RIGHT" prefHeight="48.0" prefWidth="557.0" spacing="10.0">
+                <HBox alignment="CENTER_RIGHT" prefHeight="48.0" prefWidth="494.0" spacing="10.0">
                     <children>
                   <ImageView fx:id="avatarImageView" fitHeight="48.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
-                        <VBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="178.0" HBox.hgrow="ALWAYS">
+                        <VBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="138.0">
                             <children>
                                 <Label fx:id="UIUsernameTextField" contentDisplay="RIGHT" prefHeight="29.0" prefWidth="116.0" styleClass="" text="User name">
                                     <font>

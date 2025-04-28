@@ -24,7 +24,7 @@
    <children>
       <BorderPane layoutX="173.0" layoutY="125.0" style="-fx-background-color: #FFFFFF;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <center>
-            <SplitPane dividerPositions="0.3633360858794385" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <SplitPane dividerPositions="0.33402146985962017" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <items>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="609.0" prefWidth="497.0" style="-fx-background-color: white;">
                      <children>
@@ -80,7 +80,7 @@
                               </HBox>
                               <HBox prefHeight="503.0" prefWidth="888.0" spacing="15.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <TableView fx:id="recordNewRepairMaintenceEquipments" prefHeight="439.0" prefWidth="617.0">
+                                    <TableView fx:id="recordNewRepairMaintenceEquipments" prefHeight="439.0" prefWidth="523.0">
                                        <columns>
                                           <TableColumn prefWidth="74.39999084472583" text="E.Code" />
                                           <TableColumn prefWidth="150.4000244140625" text="E.Name" />
@@ -92,7 +92,7 @@
                                        <columnConstraints>
                                           <ColumnConstraints hgrow="NEVER" maxWidth="130.0" minWidth="50.0" prefWidth="107.19998779296876" />
                                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="461.666748046875" minWidth="10.0" prefWidth="148.80007324218752" />
-                                          <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="0.0" prefWidth="44.59995117187498" />
+                                          <ColumnConstraints hgrow="NEVER" maxWidth="303.33331298828125" minWidth="50.0" prefWidth="44.59995117187498" />
                                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="390.6666259765625" minWidth="0.0" prefWidth="137.40004882812497" />
                                        </columnConstraints>
                                        <rowConstraints>
@@ -130,7 +130,7 @@
                                              </font>
                                           </Label>
                                           <TextField fx:id="equipmentMaintenanceTechnician" disable="true" prefHeight="44.0" prefWidth="171.0" styleClass="text-field-disabled" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                                          <Label styleClass="" text="ECode" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="LEFT">
+                                          <Label styleClass="" text="ECode:" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="LEFT">
                                              <font>
                                                 <Font name="SF Pro Text Semibold" size="14.0" />
                                              </font>

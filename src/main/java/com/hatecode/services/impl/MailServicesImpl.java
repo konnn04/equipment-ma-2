@@ -206,8 +206,11 @@ public class MailServicesImpl implements MailServices {
         // Add footer
         sb.append("<p style='margin-top: 20px;'>Trân trọng,<br><strong>Phòng Kỹ Thuật</strong></p>");
         sb.append("</body></html>");
-        
+
+        logger.log(Level.INFO, "HTML: {0}", sb.toString());
+
         return sb.toString();
+
     }
 }
 

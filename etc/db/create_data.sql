@@ -58,7 +58,8 @@ VALUES ('Kiểm tra điện tử hàng quý', 'Kiểm tra tất cả thiết b�
        ('Kiểm tra xe hàng năm', 'Kiểm tra an toàn xe', '2023-12-01 10:00:00', '2023-12-01 16:00:00'),
        ('Kiểm tra dụng cụ hàng tháng', 'Kiểm tra tất cả dụng cụ', '2023-10-15 09:00:00', '2023-10-15 12:00:00'),
        ('Đánh giá nội thất', 'Kiểm tra tình trạng nội thất', '2023-11-01 10:00:00', '2023-11-01 15:00:00'),
-       ('Bảo trì khẩn cấp', 'Xử lý sự cố đột xuất', '2023-12-10 08:00:00', '2023-12-10 14:00:00');
+       ('Bảo trì khẩn cấp', 'Xử lý sự cố đột xuất', '2023-12-10 08:00:00', '2023-12-10 14:00:00'),
+       ('Test Bao Tri', 'Kiem thu phan mem', '2025-04-29 08:00:00', '2025-04-29 23:00:00');
 
 INSERT INTO Equipment_Maintenance (equipment_id, maintenance_id, technician_id, description, result,
                                    repair_price, inspection_date, equipment_name, equipment_code)
@@ -81,7 +82,9 @@ VALUES (1, 1, 2, 'Kiểm tra laptop, hoạt động tốt', 1, 0, '2023-10-01 10
        (17, 2, 9, 'Máy hàn hoạt động tốt', 1, 0, '2023-11-18 12:00:00', 'Máy hàn', 'MACH004'),           -- NORMALLY
        (18, 3, 7, 'Xe ô tô đã thanh lý', 4, 0, '2023-12-01 15:00:00', 'Xe ô tô', 'VEH004'),              -- NEEDS_DISPOSAL
        (19, 5, 9, 'Tủ hồ sơ vẫn tốt', 1, 0, '2023-11-01 13:00:00', 'Tủ hồ sơ', 'FURN004'),              -- NORMALLY
-       (20, 4, 7, 'Búa không bị hư hại', 1, 0, '2023-10-15 10:30:00', 'Búa', 'TOOL004'); -- NORMALLY
+       (20, 4, 7, 'Búa không bị hư hại', 1, 0, '2023-10-15 10:30:00', 'Búa', 'TOOL004'), -- NORMALLY
+       (1, 8, 3, 'Tủ hồ sơ vẫn tốt', 1, 0, '2023-11-01 13:00:00', 'Tủ hồ sơ', 'FURN004');              -- NORMALLY
+
 
 INSERT INTO Maintenance_Repair_Suggestion (name, description, suggest_price)
 VALUES ('Thay động cơ', 'Thay động cơ cho máy khoan', 1500000),
