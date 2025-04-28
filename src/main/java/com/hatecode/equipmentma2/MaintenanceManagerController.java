@@ -204,6 +204,8 @@ public class MaintenanceManagerController {
         // Title Column
         TableColumn<Maintenance, String> titleColumn = createColumn("Title", "title", 200);
 
+
+
         // Start Date Column
         TableColumn<Maintenance, String> startDateColumn = new TableColumn<>("Start Date");
         startDateColumn.setPrefWidth(200);
@@ -223,9 +225,11 @@ public class MaintenanceManagerController {
                     maintenance.getEndDateTime() != null ? FormatDate.formatDateTime(maintenance.getEndDateTime())
                             : "");
         });
+        // Status Column
+        TableColumn<Maintenance, String> statusColumn = createColumn("Status", "maintenanceStatus", 200);
 
         // Add columns to table
-        maintenanceTable.getColumns().addAll(idColumn, titleColumn, startDateColumn, endDateColumn);
+        maintenanceTable.getColumns().addAll(idColumn, titleColumn, startDateColumn, endDateColumn, statusColumn);
         maintenanceTable.setPlaceholder(new Label("No maintenance records available"));
         maintenanceTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }

@@ -2,6 +2,7 @@ package com.hatecode.services.impl;
 
 import com.hatecode.pojo.*;
 import com.hatecode.services.ImageService;
+import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.EquipmentService;
 
@@ -293,6 +294,10 @@ public class EquipmentServiceImpl implements EquipmentService {
     public boolean updateEquipment(Equipment e) throws SQLException {
         if (e.getRegularMaintenanceDay() <= 0) {
             throw new SQLException("Regular maintenance day must be greater than zero");
+        }
+
+        if (e.getStatus() == Status.LIQUIDATED) {
+            throw new IllegalArgumentException(ExceptionMessage.LIQUIDATED_EQUIPMENT_CAN_NOT_UPDATE);
         }
 
         try (Connection conn = JdbcUtils.getConn()) {

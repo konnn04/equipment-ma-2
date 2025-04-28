@@ -15,8 +15,8 @@ public class JdbcUtils {
     // H2 in-memory database configuration
     private static final String DEFAULT_USER = "sa";
     private static final String DEFAULT_PASSWORD = "";
-    private static final String DEFAULT_DB_URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MYSQL";
-    
+    private static final String DEFAULT_DB_URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MYSQL;";
+
     // Static connection supplier pattern like the main class
     public static Supplier<Connection> connectionProvider = JdbcUtils::getConnection;
     
