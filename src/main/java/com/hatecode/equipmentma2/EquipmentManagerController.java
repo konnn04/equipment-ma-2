@@ -434,6 +434,12 @@ public class EquipmentManagerController {
                 selectedEquipment.setImageId(image.getId());
             }
 
+            // Validate required fields
+            if (!validateForm()) {
+                AlertBox.showError("Update Equipment", "Please fill all required fields");
+                return;
+            }
+
             // Update equipment details
             selectedEquipment.setCode(equipmentCodeTextField.getText());
             selectedEquipment.setName(equipmentNameTextField.getText());

@@ -52,13 +52,12 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean addImage(Image image) throws SQLException {
-        String sql = "INSERT INTO `Image` (filename, created_at, path) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO `Image` (filename, path) VALUES (?, ?)";
 
         try (Connection conn = JdbcUtils.getConn(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, image.getFilename());
-            pstmt.setTimestamp(2, Timestamp.valueOf(image.getCreatedAt()));
-            pstmt.setString(3, image.getPath());
+            pstmt.setString(2, image.getPath());
 
             return pstmt.executeUpdate() > 0;
         }

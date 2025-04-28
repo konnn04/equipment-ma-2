@@ -43,11 +43,14 @@ VALUES ('ELEC001', 'Laptop', 2, 1, 180, CURRENT_TIMESTAMP, 'Máy tính xách tay
        ('VEH003', 'Xe máy', 2, 3, 180, CURRENT_TIMESTAMP, 'Xe máy giao hàng', 1),               -- ACTIVE
        ('FURN003', 'Bàn họp', 2, 4, 330, CURRENT_TIMESTAMP, 'Bàn họp lớn', 1),                  -- ACTIVE
        ('TOOL003', 'Máy khoan cầm tay', 2, 5, 90, CURRENT_TIMESTAMP, 'Máy khoan không dây', 1), -- ACTIVE
-       ('ELEC004', 'Màn hình', 4, 1, 180, CURRENT_TIMESTAMP, 'Màn hình máy tính', 1),           -- BROKEN
+       ('ELEC004', 'Màn hình', 1, 1, 180, CURRENT_TIMESTAMP, 'Màn hình máy tính', 1),           -- BROKEN
        ('MACH004', 'Máy hàn', 2, 2, 90, CURRENT_TIMESTAMP, 'Máy hàn công nghiệp', 1),           -- ACTIVE
-       ('VEH004', 'Xe ô tô', 5, 3, 365, CURRENT_TIMESTAMP, 'Xe công ty cũ', 1),                 -- LIQUIDATED
+       ('VEH004', 'Xe ô tô', 1, 3, 365, CURRENT_TIMESTAMP, 'Xe công ty cũ', 1),                 -- ACTIVE
        ('FURN004', 'Tủ hồ sơ', 2, 4, 330, CURRENT_TIMESTAMP, 'Tủ đựng tài liệu', 1),            -- ACTIVE
-       ('TOOL004', 'Búa', 2, 5, 330, CURRENT_TIMESTAMP, 'Búa tay', 1); -- ACTIVE
+       ('TOOL004', 'Búa', 2, 5, 330, CURRENT_TIMESTAMP, 'Búa tay', 1), -- ACTIVE
+       ('ELEC005', 'Laptop ASUS', 5, 1, 330, CURRENT_TIMESTAMP, 'Laptop ASUS', 1), -- LIQUID
+        ('ELEC006', 'Laptop MSI', 5, 1, 330, CURRENT_TIMESTAMP, 'Laptop MSI', 1), -- LIQUID
+        ('ELEC007', 'Laptop ACER', 5, 1, 330, CURRENT_TIMESTAMP, 'Laptop ACER', 1); -- LIQUID
 
 INSERT INTO Maintenance (title, description, start_datetime, end_datetime)
 VALUES ('Kiểm tra điện tử hàng quý', 'Kiểm tra tất cả thiết bị điện tử', '2023-10-01 09:00:00', '2023-10-01 17:00:00'),

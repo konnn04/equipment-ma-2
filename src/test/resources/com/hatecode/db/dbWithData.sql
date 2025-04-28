@@ -151,7 +151,10 @@ INSERT INTO `Equipment` (code, name, status, category_id, regular_maintenance_da
 ('VEH004', 'Xe ô tô', 5, 3, 365, '2023-11-15 10:00:00', 'Xe công ty cũ', 1),
 ('FURN004', 'Tủ hồ sơ', 2, 4, 330, '2023-11-15 10:00:00', 'Tủ đựng tài liệu', 1),
 ('TOOL004', 'Búa', 2, 5, 330, '2023-11-15 10:00:00', 'Búa tay', 1),
-('ELEP001', 'dád', 2, 1, 180, '2023-11-15 10:00:00', 'Máy tính xách tay văn phòng', 1);
+('ELEP001', 'dád', 2, 1, 180, '2023-11-15 10:00:00', 'Máy tính xách tay văn phòng', 1),
+('ELEC005', 'Laptop ASUS', 5, 1, 330, '2023-11-15 10:00:00', 'Laptop ASUS', 1), -- LIQUID
+('ELEC006', 'Laptop MSI', 5, 1, 330, '2023-11-15 10:00:00', 'Laptop MSI', 1), -- LIQUID
+('ELEC007', 'Laptop ACER', 5, 1, 330, '2023-11-15 10:00:00', 'Laptop ACER', 1); -- LIQUID
 
 INSERT INTO `Maintenance` (title, description, start_datetime, end_datetime) VALUES
 ('Kiểm tra điện tử hàng quý', 'Kiểm tra tất cả thiết bị điện tử', '2023-10-01 09:00:00', '2023-10-01 17:00:00'),

@@ -4,6 +4,7 @@ import com.hatecode.pojo.Equipment;
 import com.hatecode.pojo.Image;
 import com.hatecode.pojo.Status;
 import com.hatecode.services.impl.EquipmentServiceImpl;
+import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -388,8 +389,8 @@ public class EquipmentServiceImplTest {
         List<Equipment> filteredByCategory = equipmentService.getEquipments("", 1, 10, "category_id", "1");
 
         // Assert
-        assertEquals(1, filteredByName.size(), "Should find one equipment matching name");
-        assertTrue(filteredByCategory.size() >= 3, "Should find at least 3 equipment in category 1");
+        assertEquals(4, filteredByName.size(), "Should find one equipment matching name");
+        assertTrue(filteredByCategory.size() >= 6, "Should find at least 6 equipment in category 1");
 
         // Verify the filtered results
         assertEquals("Laptop", filteredByName.getFirst().getName(), "Filtered equipment name should match");
@@ -509,5 +510,20 @@ public class EquipmentServiceImplTest {
 
         // Assert
         assertThrows(SQLException.class, () -> equipmentService.updateEquipment(nonExistent), "Update should fail for non-existent equipment");
+    }
+
+    @Test
+    void testUpdateLiquidatedEquipment() throws SQLException {
+        EquipmentService equipmentService = new EquipmentServiceImpl();
+        // ID 22-24 is liquidated equipment
+        // Arrange
+        Equipment e = equipmentService.getEquipmentById(22);
+        e.setName("Liquidated Equipment Name");
+        // Act & Assert
+        Exception ex =  assertThrows(
+                IllegalArgumentException.class,
+                () -> equipmentService.updateEquipment(e),
+                "Updating liquidated equipment should throw IllegalArgumentException");
+        assertEquals(ex.getMessage(), ExceptionMessage.LIQUIDATED_EQUIPMENT_CAN_NOT_UPDATE);
     }
 }
