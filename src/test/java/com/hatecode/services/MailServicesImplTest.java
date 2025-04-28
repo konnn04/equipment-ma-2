@@ -32,12 +32,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith({TestDatabaseConfig.class, MockitoExtension.class})
 public class MailServicesImplTest {
 
-    @Mock
-    private Session mockSession;
-    
-    @Mock
-    private MimeMessage mockMessage;
-    
     private MailServices mailServices;
     
     @BeforeEach
