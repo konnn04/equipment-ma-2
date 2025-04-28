@@ -28,6 +28,7 @@ public class ExceptionMessage {
     public static final String EQUIPMENT_MAINTENANCE_TIME_CONFLICT = 
         "Cannot schedule maintenance because one or more equipment already have maintenance scheduled during this time";
     public static final String LIQUIDATED_EQUIPMENT_CAN_NOT_UPDATE = "Cannot update liquidated equipment";
+    public static final String EQUIPMENT_MAINTENANCE_CANNOT_UPDATE_AFTER_MAINTENANCE_COMPLETED = "Cannot update equipment maintenance after it has been completed";
 
     public static final String ROLE_NOT_EXIST = "Role not found";
     public static final String PASSWORD_LESS_THAN_6 = "Password must be at least 6 characters";

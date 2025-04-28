@@ -39,7 +39,7 @@ public class NotificationServiceImplTest {
                 VALUES ('TEST001', 'Test Equipment 1', 1, 1, 1, 30, 'Test description 1'),
                        ('TEST002', 'Test Equipment 2', 2, 1, 1, 60, 'Test description 2'),
                        ('TEST003', 'Test Equipment 3', 1, 1, 1, 90, 'Test description 3'),
-                          ('TEST004', 'Test Equipment 4', 1, 1, 1, 90, 'Test description 4');
+                        ('TEST004', 'Test Equipment 4', 1, 1, 1, 90, 'Test description 4');
                 INSERT INTO notifications (equipment_id, equipment_name, equipment_code, maintenance_due_date, type, is_read)
                 VALUES (1, 'Test Equipment 1', 'EQ001', '2025-06-01 10:00:00', 1, false),
                        (2, 'Test Equipment 2', 'EQ002', '2025-07-15 09:00:00', 2, true),
@@ -79,7 +79,7 @@ public class NotificationServiceImplTest {
         // Assert
         assertNotNull(unreadNotifications);
         assertEquals(2, unreadNotifications.size());
-        assertTrue(unreadNotifications.stream().allMatch(n -> !n.isRead()));
+        assertTrue(unreadNotifications.stream().noneMatch(Notification::isRead));
     }
     
     @Test

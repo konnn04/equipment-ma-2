@@ -57,4 +57,9 @@ public class AppConfig {
     public static final String EMAIL_SMTP_HOST = "smtp.gmail.com";
     public static final int EMAIL_SMTP_PORT = 587;
     public static final String EMAIL_FROM_NAME = "Equipment Management System";
+
+    public static final int MIN_DAY_MAINTENANCE = 1;
+    public static final int MAX_DAY_MAINTENANCE = 30;
+
+    public static final int WARNING_TIME_BEFORE_MAIL_MAINTENANCE = 24; // 24 hours
 }

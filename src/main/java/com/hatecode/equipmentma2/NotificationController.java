@@ -9,6 +9,7 @@ import com.hatecode.utils.FormatDate;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 import java.sql.SQLException;
@@ -27,6 +28,9 @@ public class NotificationController {
     @FXML private Text equipmentDetails;
     @FXML private Button markReadButton;
     @FXML private Button markAllReadButton;
+
+    @FXML
+    VBox notificationVBox;
     
     private final NotificationService notificationService;
     private Notification selectedNotification;
@@ -37,6 +41,7 @@ public class NotificationController {
     
     @FXML
     public void initialize() {
+        notificationVBox.setVisible(false);
         setupNotificationListView();
         loadNotifications();
         
@@ -63,9 +68,9 @@ public class NotificationController {
                     // Format content để hiển thị trong cell
                     String content = notification.getEquipmentName();
                     if (notification.getType() == Notification.NotificationType.MAINTENANCE_DUE) {
-                        content += " - Sắp đến hạn bảo trì";
+                        content += " - Equipment Maintenance Due";
                     } else {
-                        content += " - Thông báo hệ thống";
+                        content += " - System Notification";
                     }
                     
                     setText(content);
@@ -96,11 +101,12 @@ public class NotificationController {
             
             // Nếu có thông báo, hiển thị thông báo đầu tiên
             if (!notifications.isEmpty()) {
+                notificationVBox.setVisible(true);
                 notificationList.getSelectionModel().selectFirst();
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error loading notifications", e);
-            AlertBox.showError("Lỗi", "Không thể tải danh sách thông báo");
+            AlertBox.showError("Error", "Could not load notifications");
         }
     }
     
@@ -112,21 +118,21 @@ public class NotificationController {
         
         // Hiển thị thông tin chi tiết của thông báo
         if (notification.getType() == Notification.NotificationType.MAINTENANCE_DUE) {
-            notificationTitle.setText("Thiết bị sắp đến hạn bảo trì");
+            notificationTitle.setText("Equipment Maintenance Due");
             LocalDateTime dueDate = notification.getMaintenanceDueDate();
-            notificationDate.setText("Ngày bảo trì: " + FormatDate.formatDateTime(dueDate));
-            notificationDescription.setText("Thiết bị cần được bảo trì theo lịch định kỳ.");
+            notificationDate.setText("Maintenance Due Date: " + FormatDate.formatDateTime(dueDate));
+            notificationDescription.setText("This equipment is due for maintenance.");
             equipmentDetails.setText(String.format(
-                "Mã thiết bị: %s\nTên thiết bị: %s",
+                "Equipment ID: %s\nEquipment Name: %s",
                 notification.getEquipmentCode(),
                 notification.getEquipmentName()
             ));
         } else {
             notificationTitle.setText(notification.getType().getDescription());
-            notificationDate.setText("Ngày tạo: " + FormatDate.formatDateTime(notification.getCreatedAt()));
-            notificationDescription.setText("Thông báo hệ thống");
+            notificationDate.setText("Created on: " + FormatDate.formatDateTime(notification.getCreatedAt()));
+            notificationDescription.setText("System Notification: ");
             equipmentDetails.setText(String.format(
-                "Mã thiết bị: %s\nTên thiết bị: %s",
+                "Equipment ID: %s\nEquipment Name: %s",
                 notification.getEquipmentCode(),
                 notification.getEquipmentName()
             ));
@@ -153,11 +159,11 @@ public class NotificationController {
             if (notificationService.markAsRead(selectedNotification.getId())) {
                 selectedNotification.setRead(true);
                 loadNotifications(); // Reload để cập nhật giao diện
-                AlertBox.showInfo("Thông báo", "Đã đánh dấu là đã đọc");
+                AlertBox.showInfo("Complete", "Marked as read successfully");
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error marking notification as read", e);
-            AlertBox.showError("Lỗi", "Không thể đánh dấu thông báo đã đọc");
+            AlertBox.showError("Error", "Could not mark notification as read");
         }
     }
     
@@ -165,11 +171,11 @@ public class NotificationController {
         try {
             if (notificationService.markAllAsRead()) {
                 loadNotifications(); // Reload để cập nhật giao diện
-                AlertBox.showInfo("Thông báo", "Đã đánh dấu tất cả thông báo là đã đọc");
+                AlertBox.showInfo("Complete", "All notifications marked as read successfully");
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error marking all notifications as read", e);
-            AlertBox.showError("Lỗi", "Không thể đánh dấu tất cả thông báo đã đọc");
+            AlertBox.showError("Error", "Could not mark all notifications as read");
         }
     }
 
@@ -179,7 +185,7 @@ public class NotificationController {
             loadNotifications();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error initializing NotificationController", e);
-            AlertBox.showError("Lỗi", "Không thể tải danh sách thông báo");
+            AlertBox.showError("Error", "Could not initialize notifications");
         }
     }
 }

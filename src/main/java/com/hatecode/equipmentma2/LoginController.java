@@ -64,7 +64,7 @@ public class LoginController {
         String password = passwordField.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
-            errorMessageLabel.setText("Vui lòng nhập tên đăng nhập và mật khẩu");
+            errorMessageLabel.setText("Please enter username and password");
             return;
         }
 
@@ -74,13 +74,13 @@ public class LoginController {
                 App.setCurrentUser(user);
                 App.switchToHome();
             } else {
-                errorMessageLabel.setText("Tên đăng nhập hoặc mật khẩu không đúng!");
+                errorMessageLabel.setText("Username or password is incorrect");
             }
         } catch (SQLException e) {
-            errorMessageLabel.setText("Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
+            errorMessageLabel.setText("Error connecting to database: " + e.getMessage());
         }
         catch (IOException e) {
-            errorMessageLabel.setText("Không thể mở trang chủ: " + e.getMessage());
+            errorMessageLabel.setText("Cannot load home page: " + e.getMessage());
             System.out.println(e.getMessage());
         }
     }

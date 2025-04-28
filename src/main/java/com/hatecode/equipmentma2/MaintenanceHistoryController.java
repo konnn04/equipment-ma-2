@@ -93,6 +93,9 @@ public class MaintenanceHistoryController {
 
         TableColumn<EquipmentMaintenance, String> equipmentNameColumn = new TableColumn<>("E.Name");
         equipmentNameColumn.prefWidthProperty().bind(equipmentsTableViewTable.widthProperty().multiply(0.5));
+        equipmentNameColumn.setCellValueFactory(
+                new PropertyValueFactory<>("equipmentName"));
+
 
 //        equipmentNameColumn.setCellValueFactory(cellData -> {
 //            EquipmentService equipmentService = new EquipmentServiceImpl();
@@ -109,11 +112,11 @@ public class MaintenanceHistoryController {
 //            }
 //
 //        });
-        equipmentNameColumn.setCellValueFactory(
-                new PropertyValueFactory<>("description")
-        );
+
 
         this.equipmentsTableViewTable.getColumns().addAll(equipmentIDColumn, equipmentNameColumn);
+        equipmentsTableViewTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
     }
 
     private void initSearchFields(){
@@ -219,6 +222,8 @@ public class MaintenanceHistoryController {
             maintenances = this.maintenanceService.getMaintenances(kw, fromDate, toDate);
 
             this.maintenancesTableViewTable.setItems(FXCollections.observableList(maintenances));
+            maintenancesTableViewTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

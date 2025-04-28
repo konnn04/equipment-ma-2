@@ -16,9 +16,9 @@ VALUES ('Electronics'),
 # -- ADMIN
 INSERT INTO User (first_name, last_name, username, password, email, phone, role, avatar_id)
 VALUES ('Nguyen', 'Van A', 'adminfake', '1', 'admin1@example.com', '1234567890', 1, 1),
-('Tran', 'Thi B', 'technician1', '1', 'tech1@example.com', '0987654321', 2, 1),  -- TECHNICIAN
-('Le', 'Van C', 'manager1', '1', 'manager1@example.com', '1122334455', 3, 1),    -- MANAGER
-('Pham', 'Thi D', 'technician2', '1', 'tech2@example.com', '2233445566', 2, 1),  -- TECHNICIAN
+('Phi', 'Minh Quang', 'quang', '1', '2251012121quang@ou.edu.vn', '0987654321', 2, 1),  -- TECHNICIAN
+('Hoang', 'Anh Duy', 'duy', '1', '2251012046duy@ou.edu.vn', '0122334455', 2, 2),    -- MANAGER
+('Nguyen', 'Thanh Trieu', 'trieu', '1', '2251052127trieu@ou.edu.vn', '0233445566', 2, 1),  -- TECHNICIAN
 ('Hoang', 'Van E', 'manager2', '1', 'manager2@example.com', '3344556677', 3, 1), -- MANAGER
 ('Bui', 'Thi F', 'admin2', '1', 'admin2@example.com', '4455667788', 1, 1),       -- ADMIN
 ('Dang', 'Van G', 'technician3', '1', 'tech3@example.com', '5566778899', 2, 1),  -- TECHNICIAN

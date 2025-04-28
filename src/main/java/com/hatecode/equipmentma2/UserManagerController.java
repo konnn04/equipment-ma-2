@@ -76,6 +76,7 @@ public class UserManagerController {
 
         TableColumn colRole = users.getColumns().get(2);
         colRole.setCellValueFactory(new PropertyValueFactory("role"));
+        users.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     public void loadUsers(String kw, int roleId) {
@@ -215,45 +216,7 @@ public class UserManagerController {
     }
 
     private void createNewUser() throws NoSuchAlgorithmException, InvalidKeySpecException, SQLException {
-//        try {
-//            String salt = PasswordUtils.generateSalt();
-//            String hashedPassword = PasswordUtils.hashPassword(passwordField.getText(), salt);
-//            Role selectedRole = roleComboBox.getSelectionModel().getSelectedItem();
-//            UserService services = new UserServiceImpl();
-//            com.hatecode.pojo.Image avatar = null;
-//            if (selectedAvatarFile != null) {
-//                String imgUrl = services.uploadUserImage(selectedAvatarFile);
-//                String fileName = ExtractImageIdUtils.extractPublicIdFromUrl(imgUrl);
-//                avatar = new com.hatecode.pojo.Image(
-//                        fileName,
-//                        LocalDateTime.now(),
-//                        imgUrl
-//                );
-//            }
-//
-//            this.currentUser = new User(
-//                    firstNameField.getText(),
-//                    lastNameField.getText(),
-//                    usernameField.getText(),
-//                    hashedPassword,
-//                    emailField.getText(),
-//                    phoneField.getText(),
-//                    selectedRole,
-//                    isActiveCheckBox.isSelected(),
-//                    avatar
-//            );
-//            if (services.addUser(currentUser)) {
-//                showInfoAlert("Succesfully", "Add new user Successfully");
-//                loadUsers(null, 0);
-//            } else {
-//                showErrorAlert("Failed", "Error", "Failed to add new user");
-//            }
-//            clearForm();
-//        } catch (Exception e) {
-//            showErrorAlert("Error", "Error", "Failed when add user");
-//            throw e;
-//        }
-
+    // Tạo một user mới
         clearForm();
         this.currentUser = new User(); // Tạo user mới với giá trị mặc định
         userIdField.setText("0"); // Đặt ID tạm thời là 0
@@ -276,7 +239,7 @@ public class UserManagerController {
 
     private void changeAvatar() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Chọn ảnh đại diện");
+        fileChooser.setTitle("Choose Avatar");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
         );
@@ -388,14 +351,14 @@ public class UserManagerController {
                                     roles.getSelectionModel().getSelectedItem().getId() : 0);
                 }
                 else{
-                    showErrorAlert("Lỗi", "Lỗi cơ sở dữ liệu", "BUGS");
+                    showErrorAlert("Error", "Update Failed", "Failed to update user");
                 }
             }
         } catch (SQLException e) {
-            showErrorAlert("Lỗi", "Lỗi cơ sở dữ liệu", e.getMessage());
+            showErrorAlert("Error", "Database Error", e.getMessage());
             throw e;
         } catch (Exception e) {
-            showErrorAlert("Lỗi", "Lỗi hệ thống", e.getMessage());
+            showErrorAlert("Error", "Error", "Failed to save user");
             throw e;
         }
     }

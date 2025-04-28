@@ -47,7 +47,7 @@
                   </AnchorPane>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="630.0" prefWidth="797.0" style="-fx-background-color: white;">
                      <children>
-                        <VBox prefHeight="476.0" prefWidth="976.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                        <VBox fx:id="notificationVBox" prefHeight="476.0" prefWidth="976.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                            <padding>
                               <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                            </padding>

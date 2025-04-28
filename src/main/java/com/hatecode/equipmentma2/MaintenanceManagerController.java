@@ -1,5 +1,6 @@
 package com.hatecode.equipmentma2;
 
+import com.hatecode.config.AppConfig;
 import com.hatecode.pojo.*;
 import com.hatecode.services.EquipmentMaintenanceService;
 import com.hatecode.services.EquipmentService;
@@ -26,6 +27,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -568,16 +570,16 @@ public class MaintenanceManagerController {
             // Bật nút xóa để cho phép xóa lịch bảo trì này nếu cần
             deleteMaintenanceButton.setDisable(false);
             
-            LOGGER.log(Level.INFO, "Đang chỉnh sửa lịch bảo trì có ID: " + selectedMaintenance.getId());
+            LOGGER.log(Level.INFO, "Editing maintenance schedule with ID: " + selectedMaintenance.getId());
             
         } catch (SQLException e) {
-            handleException(e, "Lỗi khi tải dữ liệu bảo trì");
+            handleException(e, "Error loading equipment maintenance data");
         }
     }
 
     private void handleSelectEquipment() throws IOException {
         Stage equipmentSelectStage = new Stage();
-        equipmentSelectStage.setTitle("Chọn Thiết Bị");
+        equipmentSelectStage.setTitle("Select Equipment");
         equipmentSelectStage.initModality(Modality.APPLICATION_MODAL);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("select-equipment-view.fxml"));
@@ -649,6 +651,24 @@ public class MaintenanceManagerController {
 
     private void handleSaveMaintenance() {
         try {
+            LocalDateTime startDateTime = FormatDate.combineDateAndTime(
+                    maintenanceFromDatePicker.getValue(),
+                    maintenanceFromTimeTextField.getText());
+            LocalDateTime endDateTime = FormatDate.combineDateAndTime(
+                    maintenanceToDatePicker.getValue(),
+                    maintenanceToTimeTextField.getText());
+            // Check maintenance day between min and max
+            long maintenanceDays = java.time.temporal.ChronoUnit.DAYS.between(startDateTime, endDateTime) ;
+            LOGGER.log(Level.INFO, "Saving maintenance days: " + maintenanceDays);
+
+            if (maintenanceDays < AppConfig.MIN_DAY_MAINTENANCE) {
+                AlertBox.showError("Error", "End date must be after or equal to start date");
+                return;
+            } else if (maintenanceDays > AppConfig.MAX_DAY_MAINTENANCE) {
+                AlertBox.showError("Error", "Maintenance period cannot exceed 30 days");
+                return;
+            }
+
             // Check required fields
             if (maintenanceTitleTextField.getText().isEmpty() || maintenanceFromDatePicker.getValue() == null
                     || maintenanceToDatePicker.getValue() == null || maintenanceFromTimeTextField.getText().isEmpty()
@@ -670,6 +690,8 @@ public class MaintenanceManagerController {
                     return;
                 }
             }
+
+
             
             // Determine if this is an update or a new creation
             boolean isUpdate = !maintenanceIdText.getText().isEmpty() && isCreateOrModify;
@@ -677,10 +699,8 @@ public class MaintenanceManagerController {
             // Create Maintenance object from form data
             Maintenance maintenance = new Maintenance();
             maintenance.setTitle(maintenanceTitleTextField.getText());
-            maintenance.setStartDateTime(FormatDate.combineDateAndTime(
-                    maintenanceFromDatePicker.getValue(), maintenanceFromTimeTextField.getText()));
-            maintenance.setEndDateTime(FormatDate.combineDateAndTime(
-                    maintenanceToDatePicker.getValue(), maintenanceToTimeTextField.getText()));
+            maintenance.setStartDateTime(startDateTime);
+            maintenance.setEndDateTime(endDateTime);
             maintenance.setDescription(maintenanceDescriptionTextArea.getText());
             
             boolean result;

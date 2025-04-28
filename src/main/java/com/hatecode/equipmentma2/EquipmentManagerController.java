@@ -12,6 +12,7 @@ import com.hatecode.services.CategoryService;
 import com.hatecode.services.EquipmentService;
 import com.hatecode.services.ImageService;
 import com.hatecode.utils.AlertBox;
+import com.hatecode.utils.FormatDate;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -122,6 +123,8 @@ public class EquipmentManagerController {
 
         // Add columns to table
         equipmentTable.getColumns().addAll(codeColumn, nameColumn, statusColumn, categoryColumn, dateColumn);
+        equipmentTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
     }
 
     /**
@@ -459,7 +462,7 @@ public class EquipmentManagerController {
             selectEquipmentInTable(selectedEquipment);
             
             // Show success message
-            AlertBox.showConfirmation("Update Equipment", "Equipment updated successfully!");
+            AlertBox.showSuccess("Update Equipment", "Equipment updated successfully!");
             
         } catch (Exception e) {
             handleException(e, "Failed to update equipment");
@@ -521,7 +524,7 @@ public class EquipmentManagerController {
             categoryService.getCategoryById(equipment.getCategoryId()));
         statusEquipmentText.setText(equipment.getStatus().getDescription());
         equipmentDescriptionTextField.setText(equipment.getDescription());
-        lastMaintenanceDateTextField.setText(equipment.getLastMaintenanceTime().toString());
+        lastMaintenanceDateTextField.setText(FormatDate.formatDateTime(equipment.getLastMaintenanceTime()));
         regularMaintenanceTimeTextField.setText(String.valueOf(equipment.getRegularMaintenanceDay()));
         
         // Clear previous image while loading
@@ -643,6 +646,11 @@ public class EquipmentManagerController {
     }
 
     public void refreshData() {
+        try {
+            refreshEquipmentData();
+        } catch (SQLException e) {
+            handleException(e, "Failed to refresh data");
+        }
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.hatecode.services.impl;
 
 import com.hatecode.pojo.*;
+import com.hatecode.services.MaintenanceService;
 import com.hatecode.utils.ExceptionMessage;
 import com.hatecode.utils.JdbcUtils;
 import com.hatecode.services.EquipmentMaintenanceService;
@@ -33,8 +34,8 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
                 rs.getInt("equipment_id"),
                 rs.getInt("maintenance_id"),
                 rs.getInt("technician_id"),
-                rs.getString("equipment_name"),
                 rs.getString("equipment_code"),
+                rs.getString("equipment_name"),
                 rs.getString("description"),
                 rs.getInt("result") == 0 ? null : Result.fromCode(rs.getInt("result")),
                 rs.getFloat("repair_price"),
@@ -280,6 +281,23 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
     @Override
     public boolean updateEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
         validateEquipmentMaintenance(em);
+
+        MaintenanceService service = new MaintenanceServiceImpl();
+        EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
+        if (em == null) {
+            throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL);
+        }
+        EquipmentMaintenance existingEM = equipmentMaintenanceService.getEquipmentMaintenanceById(em.getId());
+        if (existingEM == null) {
+            throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL);
+        }
+        Maintenance m = service.getMaintenanceById(em.getMaintenanceId());
+        if (m == null) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
+        }
+        if (m.getEndDateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_CANNOT_UPDATE_AFTER_MAINTENANCE_COMPLETED);
+        }
         return executeQuery(conn -> {
             String sql = "UPDATE equipment_maintenance" +
                     " SET equipment_id = ?, maintenance_id = ?, technician_id = ? ";

@@ -85,9 +85,9 @@ public class App extends Application {
 
     public static void showExitConfirmation() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Xác nhận thoát");
-        alert.setHeaderText("Bạn có chắc chắn muốn thoát không?");
-        alert.setContentText("Mọi thay đổi chưa lưu sẽ bị mất.");
+        alert.setTitle("Confirm Exit");
+        alert.setHeaderText("Are you sure you want to exit?");
+        alert.setContentText("OK to exit, Cancel to stay in the application.");
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {

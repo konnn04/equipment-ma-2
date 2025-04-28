@@ -2,7 +2,9 @@ package com.hatecode.equipmentma2;
 
 import com.hatecode.pojo.*;
 import com.hatecode.security.Permission;
+import com.hatecode.services.ImageService;
 import com.hatecode.services.NotificationService;
+import com.hatecode.services.impl.ImageServiceImpl;
 import com.hatecode.services.impl.NotificationServiceImpl;
 import com.hatecode.utils.AlertBox;
 import com.hatecode.utils.MaintenanceCheckScheduler;
@@ -12,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -41,6 +44,7 @@ public class MainController implements Initializable {
     @FXML private Button updateStatusesButton;
     @FXML private Button notificationButton;
     @FXML private Label notificationCountLabel;
+    @FXML private ImageView avatarImageView;
 
     private NotificationService notificationService;
     private final Map<String, Object> controllers = new HashMap<>();
@@ -55,6 +59,8 @@ public class MainController implements Initializable {
 
         if (!App.hasPermission(Permission.MAINTENANCE_SCHEDULE))
             tabPane.getTabs().remove(maintenanceTab);
+        // Tạm ẩn tab báo cáo
+        tabPane.getTabs().remove(reportTab);
     }
 
     @Override
@@ -258,9 +264,13 @@ public class MainController implements Initializable {
         return controller;
     }
 
-    private void initUI() {
+    private void initUI() throws SQLException {
         User currentUser = App.getCurrentUser();
         if (currentUser != null) {
+            ImageService imageService = new ImageServiceImpl();
+            Image avatar = imageService.getImageById(currentUser.getAvatarId());
+            javafx.scene.image.Image image = new javafx.scene.image.Image(avatar.getPath(), true);
+            avatarImageView.setImage(image);
             UIUsernameTextField.setText(currentUser.getUsername());
             UIRoleTextField.setText(currentUser.getRole().getName());
         } else {
@@ -271,7 +281,14 @@ public class MainController implements Initializable {
 
     private void initEvent() {
         logoutButton.setOnAction(event -> {
-            App.switchToLogin();
+            boolean confirm = AlertBox.showConfirmation(
+                "Logout Confirmation",
+                "Are you sure you want to log out?"
+            );
+            if (confirm) {
+                App.setCurrentUser(null);
+                App.switchToLogin();
+            }
         });
     }
 
