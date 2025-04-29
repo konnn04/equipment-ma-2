@@ -45,12 +45,21 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         );
     }
 
-    private void validateEquipmentMaintenance(EquipmentMaintenance em) {
+    private void validateEquipmentMaintenance(EquipmentMaintenance em) throws SQLException {
         if (em == null) {
             throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL);
         }
         if (em.getEquipmentId() <= 0 || em.getMaintenanceId() <= 0 || em.getTechnicianId() <= 0) {
             throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_NOT_INVALID);
+        }
+
+        MaintenanceService service = new MaintenanceServiceImpl();
+        Maintenance m = service.getMaintenanceById(em.getMaintenanceId());
+        if (m == null) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
+        }
+        if (m.getEndDateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_CANNOT_UPDATE_AFTER_MAINTENANCE_COMPLETED);
         }
     }
 
@@ -291,13 +300,7 @@ public class EquipmentMaintenanceServiceImpl implements EquipmentMaintenanceServ
         if (existingEM == null) {
             throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_ID_NULL);
         }
-        Maintenance m = service.getMaintenanceById(em.getMaintenanceId());
-        if (m == null) {
-            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_ID_NULL);
-        }
-        if (m.getEndDateTime().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException(ExceptionMessage.EQUIPMENT_MAINTENANCE_CANNOT_UPDATE_AFTER_MAINTENANCE_COMPLETED);
-        }
+
         return executeQuery(conn -> {
             String sql = "UPDATE equipment_maintenance" +
                     " SET equipment_id = ?, maintenance_id = ?, technician_id = ? ";

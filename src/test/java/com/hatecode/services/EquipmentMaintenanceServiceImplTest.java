@@ -256,7 +256,7 @@ public class EquipmentMaintenanceServiceImplTest {
         // Arrange
         LocalDateTime now = LocalDateTime.now();
         EquipmentMaintenance em = new EquipmentMaintenance(
-                999, 1, 1, 1, "EQ999", "Equipment 999",
+                999, 1, 3, 1, "EQ999", "Equipment 999",
                 "Non-existent record",
                 Result.NEED_REPAIR,
                 50.0f,
@@ -481,9 +481,9 @@ public class EquipmentMaintenanceServiceImplTest {
         // Maintenance ID 1 is completed in the test data
         EquipmentMaintenanceService equipmentMaintenanceService = new EquipmentMaintenanceServiceImpl();
         EquipmentMaintenance em = new EquipmentMaintenance(
-                2, 3, 1, "EQ002", "Equipment 2",
+                2, 1, 1, "EQ002", "Equipment 2",
                 "New maintenance for Equipment 2");
-        equipmentMaintenanceService.addEquipmentMaintenance(em);
+//        equipmentMaintenanceService.addEquipmentMaintenance(em);
 
         // Act & Assert
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
