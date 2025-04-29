@@ -305,12 +305,12 @@ public class MaintenanceServiceImplTest {
         Maintenance maintenance = maintenanceService.getMaintenanceById(1);
         maintenance.setTitle("Updated Title");
         // Act & Assert
-//        Exception e = assertThrows(IllegalArgumentException.class, () -> {
-//            maintenanceService.updateMaintenance(maintenance);
-//        });
-//        assertEquals(ExceptionMessage.MAINTENANCE_CANNOT_UPDATE_COMPLETED, e.getMessage());
-        boolean r = maintenanceService.updateMaintenance(maintenance);
-        assertTrue(r, "Failed to update maintenance");
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            maintenanceService.updateMaintenance(maintenance);
+        });
+        assertEquals(ExceptionMessage.MAINTENANCE_CANNOT_UPDATE_COMPLETED, e.getMessage());
+//        boolean r = maintenanceService.updateMaintenance(maintenance);
+//        assertTrue(r, "Failed to update maintenance");
     }
 
     /* =============================================================================

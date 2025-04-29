@@ -379,6 +379,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         if (maintenance.getStartDateTime().isAfter(maintenance.getEndDateTime())) {
             throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_START_DATE_INVALID);
         }
+        if (maintenance.getEndDateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(ExceptionMessage.MAINTENANCE_CANNOT_UPDATE_COMPLETED);
+        }
         
         // Lấy thông tin bảo trì hiện tại để kiểm tra
         Maintenance existingMaintenance = getMaintenanceById(maintenance.getId());
